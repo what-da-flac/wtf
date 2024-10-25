@@ -1,0 +1,15 @@
+Description: Builds wtf ui and sends files to s3 bucket
+Id: test-id
+Name: test-job
+Environments:
+  - Name: GITHUB_TOKEN
+    Type: secret
+    Value: github-token
+  - Name: SERVICE_NAME
+    Type: invalid
+    Value: wtf
+Source:
+  CodebuildScriptPath: /codebuild/test.yaml
+  Repo: wtf-devops
+  Owner: tech-component
+  Filter: pull-request

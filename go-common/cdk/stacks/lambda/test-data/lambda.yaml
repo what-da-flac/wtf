@@ -1,0 +1,24 @@
+- Name: torrent-download
+  Code:
+    Docker:
+      Type: custom
+      Url: torrent-download:v0.0.0.13
+  Environment:
+    - Name: BEER
+      Value: is good
+  EphemeralStorageSizeGb: 10
+  MemorySizeMb: 512
+  TimeoutSeconds: 900
+  Trigger:
+    Type: SQS
+- Name: torrent-processing
+  Code:
+    Docker:
+      Type: custom
+      Url: torrent-processing:v0.0.1
+  Environment:
+    - Name: WINE
+      Value: is better
+  EphemeralStorageSizeGb: 8
+  MemorySizeMb: 128
+  TimeoutSeconds: 900

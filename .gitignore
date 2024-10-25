@@ -1,0 +1,8 @@
+# mac os
+.DS_Store
+
+# ide files
+.idea
+
+# env files
+.env.*
