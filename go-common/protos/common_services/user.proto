@@ -1,0 +1,17 @@
+syntax = "proto3";
+package common_services;
+
+import "protos/common_domain/user.proto";
+
+
+message CreateUserRequest {
+    common_domain.User user = 1;
+}
+
+message CreateUserResponse {
+    common_domain.User user = 1;
+}
+
+service UserService {
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}
+}

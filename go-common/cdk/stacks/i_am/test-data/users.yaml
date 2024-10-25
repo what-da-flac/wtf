@@ -1,0 +1,8 @@
+- Username: mauleyzaola
+  Groups:
+    - administrators
+    - power_users
+    - users
+- Username: test@example.com
+  Groups:
+    - users

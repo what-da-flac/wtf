@@ -1,0 +1,12 @@
+- Name: email-service
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true
+- Name: file-manager-service
+  UseDefaults: true
+- Name: identity-manager-service
+  UseDefaults: true
+- Name: user-service
+  UseDefaults: true
+- Name: webapp
+  UseDefaults: true

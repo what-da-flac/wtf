@@ -1,0 +1,19 @@
+- Name: test-group-1
+  Policies:
+    - Action: s3:*
+      Name: s3-full
+      Resources:
+      - arn:aws:s3:::wtf-ui.what-da-flac.com
+      - arn:aws:s3:::wtf-ui.what-da-flac.com/*
+    - Action: ecr:*
+      Name: ecs-full
+      Resources:
+      - "*"
+  ManagedPolicies:
+    - AmazonS3ReadOnlyAccess
+- Name: test-group-2
+  Policies:
+    - Action: ecs:*
+      Name: ecs-full
+      Resources:
+      - arn:aws:ecs:::*

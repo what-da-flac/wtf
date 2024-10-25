@@ -1,0 +1,25 @@
+ComputeType: MEDIUM
+Description: Builds wtf ui and sends files to s3 bucket
+Id: test-id
+Name: test-job
+Environments:
+  - Name: GITHUB_TOKEN
+    Type: secret
+    Value: github-token
+  - Name: SERVICE_NAME
+    Type: text
+    Value: wtf
+Source:
+  CodebuildScriptPath: /codebuild/test.yaml
+  Repo: wtf-devops
+  Owner: tech-component
+  Filter: pull-request
+  PatternMatching: ^refs/tags/docker.*
+ManagedPolicies:
+  - S3Admin
+InlinePolicies:
+  s3:
+    Action: s3:*
+    Resources:
+      - arn:aws:s3:::wtf-ui.what-da-flac.com
+      - arn:aws:s3:::wtf-ui.what-da-flac.com/*
