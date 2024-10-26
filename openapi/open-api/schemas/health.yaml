@@ -1,0 +1,9 @@
+type: object
+required:
+  - ok
+  - version
+properties:
+  ok:
+    type: boolean
+  version:
+    type: string

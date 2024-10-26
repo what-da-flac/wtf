@@ -1,0 +1,19 @@
+parameters:
+  - name: limit
+    in: query
+    required: true
+    schema:
+      type: integer
+      minimum: 1
+  - name: offset
+    in: query
+    required: false
+    schema:
+      type: integer
+      default: 0
+      minimum: 0
+  - name: status
+    in: query
+    required: false
+    schema:
+      type: string

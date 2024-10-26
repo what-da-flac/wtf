@@ -1,0 +1,54 @@
+type: object
+description: a torrent magnet link with a description
+required:
+  - id
+  - magnet_link
+  - hash
+  - piece_count
+  - piece_size
+  - total_size
+  - privacy
+  - files
+  - name
+  - created
+  - status
+  - filename
+  - last_error
+properties:
+  id:
+    type: string
+  magnet_link:
+    type: string
+  hash:
+    type: string
+  piece_count:
+    type: integer
+  piece_size:
+    type: string
+  total_size:
+    type: string
+  privacy:
+    type: string
+  files:
+    type: array
+    items:
+      $ref: './torrent_file.yaml'
+  name:
+    type: string
+  created:
+    type: string
+    format: date-time
+  updated:
+    type: string
+    format: date-time
+  user:
+    $ref: './user.yaml'
+  status:
+    type: string
+    enum:
+      - parsed
+      - pending
+  filename:
+    type: string
+  last_error:
+    type: string

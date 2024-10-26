@@ -1,0 +1,24 @@
+required:
+  - offset
+  - emails
+  - ids
+  - only_deleted
+  - email_match
+properties:
+  limit:
+    type: integer
+  offset:
+    type: integer
+  emails:
+    type: array
+    items:
+      type: string
+  ids:
+    type: array
+    items:
+      type: string
+  only_deleted:
+    type: boolean
+    default: false
+  email_match:
+    type: string

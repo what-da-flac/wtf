@@ -1,4 +1,4 @@
-Description: Runs unit tests on wtf-library
+Description: Runs unit tests on openapi
 Docker:
   Type: custom
   Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
@@ -10,7 +10,7 @@ Environments:
   - Name: GO_PRIVATE
     Type: text
     Value: github.com/what-da-flac/*
-Id: wtf-library-pr-checker
+Id: openapi-pr-checker
 InlinePolicies:
   secrets:
     Action: secretsmanager:GetSecretValue
@@ -20,10 +20,10 @@ InlinePolicies:
     Action: ecr:*
     Resources:
       - "*"
-Name: wtf-library-pr-checker
+Name: openapi-pr-checker
 Source:
-  CodebuildScriptPath: codebuild/pr-checker.yaml
-  Repo: wtf-library
-  Owner: tech-component
+  CodebuildScriptPath: openapi/codebuild/pr-checker.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: pull-request
 

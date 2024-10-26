@@ -1,0 +1,11 @@
+get:
+  summary: returns the version and the current status of the rest api
+  tags:
+    - system
+  responses:
+    '200':
+      description: successful response
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/health.yaml'

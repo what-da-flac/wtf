@@ -1,0 +1,68 @@
+put:
+  summary: updates a role
+  tags:
+    - role
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: the role id
+      schema:
+        type: string
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/role_put.yaml'
+  responses:
+    '200':
+      description: ok
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/role.yaml'
+get:
+  summary: returns a role by its id
+  tags:
+    - role
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: the role id
+      schema:
+        type: string
+  responses:
+    '200':
+      description: ok
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/role.yaml'
+delete:
+  summary: deletes a role by its id
+  tags:
+    - role
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: the role id
+      schema:
+        type: string
+  responses:
+    '200':
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/role.yaml'

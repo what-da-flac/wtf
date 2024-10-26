@@ -1,0 +1,21 @@
+post:
+  summary: creates new user
+  tags:
+    - user
+  security:
+    - bearerAuth: []
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/user_post.yaml'
+  responses:
+    '201':
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/user.yaml'

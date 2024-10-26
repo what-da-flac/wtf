@@ -8,7 +8,7 @@ phases:
   pre_build:
     commands:
       - |
-        if echo "$CHANGED_FILES" | grep -q "deployment/"; then
+        if echo "$CHANGED_FILES" | grep -q "openapi/"; then
           echo "Relevant files have changed. Proceeding with build."
           export RUN_BUILD=true
         else
@@ -29,8 +29,7 @@ phases:
           ssh-keyscan github.com >> ~/.ssh/known_hosts
           # Force Git to use SSH instead of HTTPS
           git config --global url."git@github.com:".insteadOf "https://github.com/"
-          # run cdk diff just to health check there are no errors in yaml files/code
-          cd deployment/cdk && cdk --region us-east-2 diff --all
+          make swagger-gen ci
         else
           echo "Skipping build phase as no relevant files were changed."
         fi
