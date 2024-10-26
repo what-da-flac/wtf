@@ -17,4 +17,4 @@ phases:
       # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       # run cdk diff just to health check there are no errors in yaml files/code
-      - cd deployment/cdk && make diff
+      - cd deployment/cdk && cdk --region us-east-2 diff --all
