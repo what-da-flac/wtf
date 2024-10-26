@@ -10,13 +10,13 @@ docker-build:
 	docker build -t wtf-go-builder:$(GIT_TAG) --platform linux/amd64 -f dockerfiles/wtf-go-builder.Dockerfile .
 
 diff:
-	cdk --profile $(PROFILE) --region us-east-2 diff
+	cdk --profile $(PROFILE) --region us-east-2 diff --all
 
 deploy:
-	cdk --profile $(PROFILE) --region us-east-2 deploy --require-approval never
+	cdk --profile $(PROFILE) --region us-east-2 deploy --all --require-approval never
 
 destroy:
-	cdk --profile $(PROFILE) --region us-east-2 destroy
+	cdk --profile $(PROFILE) --region us-east-2 --all destroy
 
 golang-imports:
 	goimports -w .

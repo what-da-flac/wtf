@@ -9,8 +9,8 @@ Environments:
     Value: mauleyzaola-private-key
   - Name: GO_PRIVATE
     Type: text
-    Value: github.com/tech-component/*
-Id: wtf-deployment-pr-checker
+    Value: github.com/what-da-flac/*
+Id: deployment-pr-checker
 InlinePolicies:
   secrets:
     Action: secretsmanager:GetSecretValue
@@ -40,10 +40,10 @@ InlinePolicies:
     Action: ssm:*
     Resources:
       - "*"
-Name: wtf-deployment-pr-checker
+Name: deployment-pr-checker
 Source:
-  CodebuildScriptPath: codebuild/pr-checker.yaml
-  Repo: wtf-deployment
-  Owner: tech-component
+  CodebuildScriptPath: deployment/codebuild/pr-checker.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: pull-request
 

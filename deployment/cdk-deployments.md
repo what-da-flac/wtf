@@ -53,7 +53,7 @@ Environment Variables
 
 | Name            | Type   | Value                       |
 |-----------------|--------|-----------------------------|
-| GO_PRIVATE      | text   | github.com/tech-component/* |
+| GO_PRIVATE      | text   | github.com/what-da-flac/* |
 | SSH_PRIVATE_KEY | secret | mauleyzaola-private-key     |
 
 Use a buildspec file: `docker.yaml`

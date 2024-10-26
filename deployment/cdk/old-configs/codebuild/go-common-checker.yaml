@@ -8,7 +8,7 @@ Environments:
     Value: mauleyzaola-private-key
   - Name: GO_PRIVATE
     Type: text
-    Value: github.com/tech-component/*
+    Value: github.com/what-da-flac/*
 InlinePolicies:
   secrets:
     Action: secretsmanager:GetSecretValue

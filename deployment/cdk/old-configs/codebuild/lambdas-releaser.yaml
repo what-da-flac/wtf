@@ -11,7 +11,7 @@ Environments:
     Value: gh-token
   - Name: GOPRIVATE
     Type: text
-    Value: "github.com/tech-component/*"
+    Value: "github.com/what-da-flac/*"
 Id: wtf-lambdas-releaser
 InlinePolicies:
   ecr:
