@@ -4,6 +4,18 @@ phases:
   install:
     commands:
       - echo Installing dependencies...
+      # List files changed in the latest commit and filter by path
+      - CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+      - echo "Changed files: $CHANGED_FILES"
+  pre_build:
+    commands:
+      - |
+        if echo "$CHANGED_FILES" | grep -q "deployment/"; then
+          echo "Relevant files have changed. Proceeding with build."
+        else
+          echo "No relevant files changed. Skipping build."
+          exit 0
+        fi
   build:
     commands:
       - echo build started on `date`
