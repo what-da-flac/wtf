@@ -1,0 +1,67 @@
+// ************************ Campaign List ************************
+.campaign-card-container {
+  .campaign-card-description {
+    text-align: justify;
+    height: 70px;
+    font-size: x-small;
+  }
+
+  .mantine-Button-label {
+    display: flex !important;
+    gap: 5px !important;
+    justify-content: center;
+  }
+}
+
+// ************************ Campaign Details ************************
+.form-wrapper {
+  border: 1px solid #e7e4e442;
+  padding: 20px 15px;
+  border-radius: 0.5rem;
+
+  .campaign-image-section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+
+    .legend-tag {
+      margin: 10px 0 -10px 0;
+      font-weight: 600;
+    }
+  }
+
+  .form-image {
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .link-button a {
+    text-decoration: none;
+  }
+
+  .import-survey-btn {
+    .mantine-Input-input {
+      color: var(--mantine-color-blue-outline) !important;
+      border-color: calc(0.0625rem * var(--mantine-scale)) solid
+        var(--mantine-color-blue-outline) !important;
+    }
+    .mantine-InputPlaceholder-placeholder {
+      color: var(--mantine-color-blue-outline);
+      font-weight: 600 !important;
+    }
+    svg {
+      color: var(--mantine-color-blue-outline);
+    }
+  }
+  .btn-with-icon {
+    display: flex;
+    align-items: center;
+
+    .icon {
+      margin-right: 10px;
+      font-size: 24px;
+    }
+  }
+}

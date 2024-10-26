@@ -1,0 +1,98 @@
+// ************************ PreLoader ************************
+.preloder {
+  height: calc(100vh - 100px);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ************************ Mantine Table ************************
+.table-container {
+  .table-head-container {
+    --table-vertical-spacing: calc(1.2rem * var(--mantine-scale));
+    background-color: #ededed0d !important;
+
+    .numbers {
+      width: 200px !important;
+    }
+
+    .content-center {
+      text-align: center;
+    }
+  }
+
+  .table-loader {
+    width: 100%;
+    height: max-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1rem;
+  }
+
+  .table-row-container {
+    min-height: 200px !important;
+    border-radius: 8px;
+
+    .content-center {
+      text-align: center;
+    }
+
+    img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+    }
+
+    .row-title {
+      height: 60px !important;
+      max-width: 250px;
+    }
+
+    .action-buttons {
+      text-align: center;
+    }
+
+    .row-checkbox {
+      display: flex;
+      justify-content: center;
+    }
+
+    .flex-column {
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+    }
+  }
+
+  .table-row-container {
+    height: 50px !important;
+  }
+}
+
+// ************************ React Video Player ************************
+.video-player-continer {
+  margin-top: 20px;
+
+  .button {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+
+    .icon {
+      margin: 5px 0 0 5px;
+    }
+  }
+}
+
+// ************************ Flex ************************
+.flex-verticle-center {
+  display: flex;
+  align-items: center;
+}
+
+// ************************ CSS Common Classes ************************
+.cursor {
+  cursor: pointer;
+}
