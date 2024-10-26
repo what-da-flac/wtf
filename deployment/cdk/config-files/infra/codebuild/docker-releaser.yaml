@@ -24,7 +24,7 @@ ManagedPolicies:
 Name: docker-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: docker.yaml
+  CodebuildScriptPath: deployment/docker.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
