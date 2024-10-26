@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+  build:
+    commands:
+      - echo build started on `date`
+      # Start the SSH agent
+      - eval $(ssh-agent -s)
+      # Add the SSH key from the environment variable to the agent
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      # Add GitHub to known hosts to prevent host key verification failures
+      - mkdir -p ~/.ssh
+      - ssh-keyscan github.com >> ~/.ssh/known_hosts
+      # Force Git to use SSH instead of HTTPS
+      - git config --global url."git@github.com:".insteadOf "https://github.com/"
+      # building with latest tag avoids a bunch of issues and workarounds
+      - export GIT_TAG=latest
+      - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
+      - cd deployment/cdk && make docker-build
+      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
+      - docker tag wtf-go-builder:${GIT_TAG} $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:${GIT_TAG}
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:${GIT_TAG}

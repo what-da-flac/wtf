@@ -1,0 +1,13 @@
+AutoDeleteObjects: true
+BlockPublicAccess: false
+EnforceSSL: false
+InlinePolicies:
+  s3:
+    Action: s3:*
+    Resources:
+      - arn:aws:s3:::wtf.torrent-parsed
+      - arn:aws:s3:::wtf.torrent-parsed/*
+Name: wtf.torrent-parsed
+RemoveOnDestroy: true
+Versioned: false
+WebsiteIndexDocument: index.html

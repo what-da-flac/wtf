@@ -1,0 +1,4 @@
+- Name: wtf-gateway
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true

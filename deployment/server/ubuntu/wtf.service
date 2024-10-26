@@ -1,0 +1,16 @@
+[Unit]
+Description=WTF Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=ubuntu
+
+ExecStartPre=/usr/bin/docker compose -f /home/ubuntu/wtf-deployment/docker-compose.yaml down --remove-orphans
+ExecStart=/usr/bin/docker compose -f /home/ubuntu/wtf-deployment/docker-compose.yaml up -d
+ExecStop=/usr/bin/docker compose -f /home/ubuntu/wtf-deployment/docker-compose.yaml down
+
+[Install]
+WantedBy=multi-user.target

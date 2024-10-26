@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies...
+  build:
+    commands:
+      - echo build started on `date`
+      # Start the SSH agent
+      - eval $(ssh-agent -s)
+      # Add the SSH key from the environment variable to the agent
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      # Add GitHub to known hosts to prevent host key verification failures
+      - mkdir -p ~/.ssh
+      - ssh-keyscan github.com >> ~/.ssh/known_hosts
+      # Force Git to use SSH instead of HTTPS
+      - git config --global url."git@github.com:".insteadOf "https://github.com/"
+      # run cdk diff just to health check there are no errors in yaml files/code
+      - cd deployment/cdk && cdk --region us-east-2 diff --all
