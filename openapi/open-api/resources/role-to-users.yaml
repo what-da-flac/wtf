@@ -1,0 +1,22 @@
+get:
+  summary: returns a list of users which are related to a given role
+  tags:
+    - role
+  security:
+    - bearerAuth: []
+  parameters:
+    - name: role_id
+      in: path
+      required: true
+      description: the role id
+      schema:
+        type: string
+  responses:
+    '200':
+      description: ok
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '../schemas/user.yaml'
