@@ -21,11 +21,11 @@ InlinePolicies:
       - arn:aws:secretsmanager:*:*
 ManagedPolicies:
   - AmazonEC2ContainerRegistryPowerUser
-Name: docker
+Name: docker-releaser
 Privileged: true
 Source:
   CodebuildScriptPath: docker.yaml
-  Repo: wtf-deployment
-  Owner: tech-component
+  Repo: wtf
+  Owner: what-da-flac
   Filter: tag-release
   PatternMatching: ^refs/tags/docker.*
