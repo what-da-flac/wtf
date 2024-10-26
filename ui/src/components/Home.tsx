@@ -1,4 +1,4 @@
-export function                      HomeSection() {
+export function HomeSection() {
   return (
     <div className="publux-container">
       <div className="publux-heading">
