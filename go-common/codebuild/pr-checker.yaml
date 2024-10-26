@@ -3,9 +3,22 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo Installing dependencies...
+      - echo "Checking for changes in the target directory..."
+      # List files changed in the latest commit and filter by path
+      - CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
+      - echo "Changed files: $CHANGED_FILES"
+  pre_build:
+    commands:
+      - |
+        if echo "$CHANGED_FILES" | grep -q "go-common/"; then
+          echo "Relevant files have changed. Proceeding with build."
+        else
+          echo "No relevant files changed. Skipping build."
+          exit 0
+        fi
   build:
     commands:
+      - echo "Running the build as changes are detected in the specified files."
       - echo build started on `date`
       # Start the SSH agent
       - eval $(ssh-agent -s)
@@ -16,4 +29,7 @@ phases:
       - ssh-keyscan github.com >> ~/.ssh/known_hosts
       # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - make ci
+      - cd go-common && make ci
+  post_build:
+    commands:
+      - echo "Build completed."
