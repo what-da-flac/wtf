@@ -10,7 +10,7 @@ Environments:
   - Name: GO_PRIVATE
     Type: text
     Value: github.com/what-da-flac/*
-Id: wtf-deployment
+Id: cdk-deployment
 InlinePolicies:
   secrets:
     Action: secretsmanager:GetSecretValue
@@ -47,11 +47,11 @@ InlinePolicies:
       - "*"
 ManagedPolicies:
   - AmazonS3FullAccess
-Name: wtf-deployment
+Name: cdk-deployment
 Privileged: false
 Source:
-  CodebuildScriptPath: deployment/codebuild/release.yaml
+  CodebuildScriptPath: deployment/codebuild/cdk-release.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
-  PatternMatching: ^refs/tags/v.*
+  PatternMatching: ^refs/tags/cdk.*
