@@ -1,0 +1,10 @@
+- Name: wtf-apps
+  ManagedPolicies:
+    - AmazonS3FullAccess
+    - AmazonEC2ContainerRegistryReadOnly
+    - AmazonSQSFullAccess
+  Policies:
+    - Action: lambda:InvokeFunction
+      Name: InvokeFunction
+      Resources:
+        - "*"

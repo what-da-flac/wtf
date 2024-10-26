@@ -1,0 +1,12 @@
+- Name: wtf-gateway
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true
+- Name: wtf-go-builder
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true
+- Name: wtf-user-service
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true

@@ -1,0 +1,57 @@
+Description: Runs a remote update of services and UI at dev.what-da-flac.com
+Docker:
+  Type: custom
+  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
+ComputeType: SMALL
+Environments:
+  - Name: SSH_PRIVATE_KEY
+    Type: secret
+    Value: mauleyzaola-private-key
+  - Name: GO_PRIVATE
+    Type: text
+    Value: github.com/tech-component/*
+Id: wtf-deployment
+InlinePolicies:
+  secrets:
+    Action: secretsmanager:GetSecretValue
+    Resources:
+      - arn:aws:secretsmanager:*:*
+  s3:
+    Action: s3:*
+    Resources:
+      - arn:aws:s3:::wtf-ui.what-da-flac.com
+      - arn:aws:s3:::wtf-ui.what-da-flac.com/*
+  ecr:
+    Action: ecr:*
+    Resources:
+      - "*"
+  cloudformation:
+    Action: cloudformation:*
+    Resources:
+      - "*"
+  s3-all:
+    Action: s3:*
+    Resources:
+      - "*"
+  iam:
+    Action: iam:*
+    Resources:
+      - "*"
+  lambda:
+    Action: lambda:*
+    Resources:
+      - "*"
+  ssm:
+    Action: ssm:*
+    Resources:
+      - "*"
+ManagedPolicies:
+  - AmazonS3FullAccess
+Name: wtf-deployment
+Privileged: false
+Source:
+  CodebuildScriptPath: codebuild/release.yaml
+  Repo: wtf-deployment
+  Owner: tech-component
+  Filter: tag-release
+  PatternMatching: ^refs/tags/v.*

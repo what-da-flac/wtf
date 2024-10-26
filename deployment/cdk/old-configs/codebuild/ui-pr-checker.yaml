@@ -1,0 +1,21 @@
+Description: Runs unit tests on wtf-ui
+Docker:
+  Type: custom
+  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:v0.0.1.5
+ComputeType: SMALL
+Id: wtf-ui-pr-checker
+InlinePolicies:
+  secrets:
+    Action: secretsmanager:GetSecretValue
+    Resources:
+      - arn:aws:secretsmanager:*:*
+  ecr:
+    Action: ecr:*
+    Resources:
+      - "*"
+Name: wtf-ui-pr-checker
+Source:
+  CodebuildScriptPath: codebuild/pr-checker.yaml
+  Repo: wtf-ui
+  Owner: tech-component
+  Filter: pull-request

@@ -1,0 +1,28 @@
+Docker:
+  Type: custom
+  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:v0.0.1.5
+ComputeType: MEDIUM
+Environments:
+  - Name: SSH_PRIVATE_KEY
+    Type: secret
+    Value: mauleyzaola-private-key
+  - Name: GO_PRIVATE
+    Type: text
+    Value: github.com/tech-component/*
+InlinePolicies:
+  secrets:
+    Action: secretsmanager:GetSecretValue
+    Resources:
+      - arn:aws:secretsmanager:*:*
+  ecr:
+    Action: ecr:*
+    Resources:
+      - "*"
+Privileged: true
+Name: go-common-checker
+Source:
+  CodebuildScriptPath: codebuild/pr-checker.yaml
+  Repo: go-common
+  Owner: tech-component
+  Filter: pull-request
+

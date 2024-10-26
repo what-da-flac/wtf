@@ -1,0 +1,33 @@
+Description: Builds wtf-lambdas and pushes images to ecr
+Docker:
+  Type: aws
+ComputeType: MEDIUM
+Environments:
+  - Name: SSH_PRIVATE_KEY
+    Type: secret
+    Value: mauleyzaola-private-key
+  - Name: GITHUB_ACCESS_TOKEN
+    Type: secret
+    Value: gh-token
+  - Name: GOPRIVATE
+    Type: text
+    Value: "github.com/tech-component/*"
+Id: wtf-lambdas-releaser
+InlinePolicies:
+  ecr:
+    Action: ecr:*
+    Resources:
+      - arn:aws:ecr:*:*
+  secrets:
+    Action: secretsmanager:GetSecretValue
+    Resources:
+      - arn:aws:secretsmanager:*:*
+ManagedPolicies:
+  - AmazonEC2ContainerRegistryPowerUser
+Name: wtf-lambdas-releaser
+Privileged: true
+Source:
+  CodebuildScriptPath: codebuild/release.yaml
+  Repo: wtf-lambdas
+  Owner: tech-component
+  Filter: tag-release

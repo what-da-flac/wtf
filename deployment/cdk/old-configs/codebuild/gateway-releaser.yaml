@@ -1,0 +1,30 @@
+Description: Builds wtf gateway image and sends to ecr
+Docker:
+  Type: aws
+ComputeType: SMALL
+Environments:
+  - Name: SSH_PRIVATE_KEY
+    Type: secret
+    Value: mauleyzaola-private-key
+  - Name: GITHUB_ACCESS_TOKEN
+    Type: secret
+    Value: gh-token
+Id: wtf-gateway-releaser
+InlinePolicies:
+  ecr:
+    Action: ecr:*
+    Resources:
+      - arn:aws:ecr:*:*
+  secrets:
+    Action: secretsmanager:GetSecretValue
+    Resources:
+      - arn:aws:secretsmanager:*:*
+ManagedPolicies:
+  - AmazonEC2ContainerRegistryPowerUser
+Name: wtf-gateway-releaser
+Privileged: true
+Source:
+  CodebuildScriptPath: codebuild/release.yaml
+  Repo: wtf-gateway
+  Owner: tech-component
+  Filter: tag-release

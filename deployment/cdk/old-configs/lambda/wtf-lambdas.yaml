@@ -1,0 +1,25 @@
+- Name: torrent-metadata
+  Code:
+    Docker:
+      Type: custom
+      Url: torrent-metadata:v0.0.15
+  Environment:
+    - Name: SQS_TORRENT_PARSED_URL
+      Value: https://sqs.us-east-2.amazonaws.com/160885250498/TorrentParsed.fifo
+    - Name: S3_TORRENT_PARSED_BUCKET
+      Value: wtf.torrent-parsed
+  EphemeralStorageSizeGb: 1
+  MemorySizeMb: 128
+  TimeoutSeconds: 60
+  Trigger:
+    Type: SQS
+  InlinePolicies:
+    sqs:
+      Action: sqs:*
+      Resources:
+        - arn:aws:sqs:us-east-2:160885250498:TorrentParsed.fifo
+    s3:
+      Action: "s3:*"
+      Resources:
+        - arn:aws:s3:::wtf.torrent-parsed
+        - arn:aws:s3:::wtf.torrent-parsed/*
