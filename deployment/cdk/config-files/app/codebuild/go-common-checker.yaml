@@ -1,6 +1,6 @@
 Docker:
   Type: custom
-  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:v0.0.1.5
+  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
 ComputeType: MEDIUM
 Environments:
   - Name: SSH_PRIVATE_KEY
@@ -21,8 +21,8 @@ InlinePolicies:
 Privileged: true
 Name: go-common-checker
 Source:
-  CodebuildScriptPath: codebuild/pr-checker.yaml
-  Repo: go-common
-  Owner: tech-component
+  CodebuildScriptPath: go-common/codebuild/pr-checker.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: pull-request
 

@@ -1,7 +1,7 @@
 Description: Runs unit tests on wtfmedia
 Docker:
   Type: custom
-  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:v0.0.1.5
+  Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
 ComputeType: SMALL
 Environments:
   - Name: SSH_PRIVATE_KEY

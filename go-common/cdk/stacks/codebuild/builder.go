@@ -63,20 +63,18 @@ func Build(stack awscdk.Stack, model *Model) {
 	// define webhook filters
 	switch model.Source.Filter {
 	case WebhookPullRequest:
-		webhookFilters = append(webhookFilters,
+		webhookFilters = []awscodebuild.FilterGroup{
 			awscodebuild.FilterGroup_InEventOf(awscodebuild.EventAction_PULL_REQUEST_CREATED),
 			awscodebuild.FilterGroup_InEventOf(awscodebuild.EventAction_PULL_REQUEST_REOPENED),
 			awscodebuild.FilterGroup_InEventOf(awscodebuild.EventAction_PULL_REQUEST_UPDATED),
-		)
+		}
 	case WebhookTagRelease:
 		patternMatching := model.Source.PatternMatching
 		if patternMatching == "" {
 			patternMatching = "^refs/tags/.*"
 		}
-		webhookFilters = append(webhookFilters, awscodebuild.
-			FilterGroup_InEventOf(awscodebuild.EventAction_PUSH).
-			AndHeadRefIs(jsii.String(patternMatching)),
-		)
+		webhookFilters = append(webhookFilters, awscodebuild.FilterGroup_InEventOf(awscodebuild.EventAction_PUSH).
+			AndHeadRefIs(jsii.String(patternMatching)))
 		// cannot build docker images without this setting
 		model.Privileged = true
 	}
