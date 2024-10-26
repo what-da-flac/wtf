@@ -109,7 +109,7 @@ like the others. Its goal is to update docker images we store in ECR to build ot
 objects using the same name in most cases. Occasionally, there is little magic to use enums, that's all.
 
 *`main.go`* basically just parses YAML files into `go-common`
-cdk [types](https://github.com/tech-component/go-common/blob/main/cdk/stacks/stacks.go).
+cdk [types](https://github.com/what-da-flac/wtf/go-common/blob/main/cdk/stacks/stacks.go).
 
 ## Conventions
 

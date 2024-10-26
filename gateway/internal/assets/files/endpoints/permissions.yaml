@@ -1,0 +1,98 @@
+- path: /v1/healthz
+  method: get
+  insecure: true
+
+- path: /v1/roles
+  method: post
+  roles:
+    - administrators
+
+- path: /v1/roles
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/roles/{id}
+  method: put
+  roles:
+    - administrators
+
+- path: /v1/roles/{id}
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/roles/{id}
+  method: delete
+  roles:
+    - administrators
+
+- path: /v1/roles/{role_id}/users
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/roles/{role_id}/users/{user_id}
+  method: put
+  roles:
+    - administrators
+
+- path: /v1/roles/{role_id}/users/{user_id}
+  method: delete
+  roles:
+    - administrators
+
+- path: /v1/torrents/magnets
+  method: post
+  roles:
+    - administrators
+
+- path: /v1/torrents
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/torrents/{id}
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/users
+  method: post
+  roles:
+    - administrators
+
+- path: /v1/user-list
+  method: post
+  roles:
+    - administrators
+
+- path: /v1/users/login
+  method: post
+  insecure: true
+
+- path: /v1/users/whoami
+  method: get
+  roles:
+    - administrators
+    - users
+
+- path: /v1/users/{id}
+  method: get
+  roles:
+    - administrators
+
+- path: /v1/users/{id}
+  method: delete
+  roles:
+    - administrators
+
+- path: /v1/users/{id}
+  method: put
+  roles:
+    - administrators
+
+- path: /v1/users/{user_id}/roles
+  method: get
+  roles:
+    - administrators

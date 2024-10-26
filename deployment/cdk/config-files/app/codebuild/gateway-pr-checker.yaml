@@ -1,8 +1,8 @@
-Description: Runs linter and unit tests on wtf-gateway
+Description: Runs linter and unit tests on gateway
 Docker:
   Type: custom
   Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
-ComputeType: MEDIUM
+ComputeType: SMALL
 Environments:
   - Name: SSH_PRIVATE_KEY
     Type: secret
@@ -10,7 +10,7 @@ Environments:
   - Name: GO_PRIVATE
     Type: text
     Value: github.com/what-da-flac/*
-Id: wtf-gateway-pr-checker
+Id: gateway-pr-checker
 InlinePolicies:
   secrets:
     Action: secretsmanager:GetSecretValue
@@ -20,10 +20,10 @@ InlinePolicies:
     Action: ecr:*
     Resources:
       - "*"
-Name: wtf-gateway-pr-checker
+Name: gateway-pr-checker
 Source:
-  CodebuildScriptPath: codebuild/pr-checker.yaml
-  Repo: wtf-gateway
-  Owner: tech-component
+  CodebuildScriptPath: gateway/codebuild/pr-checker.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: pull-request
 
