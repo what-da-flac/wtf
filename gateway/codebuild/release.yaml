@@ -22,5 +22,5 @@ phases:
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
       - cd gateway && make docker-build
       - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
-      - docker tag wtf-gateway:${GIT_TAG} $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/wtf-gateway:${GIT_TAG}
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/wtf-gateway:${GIT_TAG}
+      - docker tag gateway:${GIT_TAG} $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/gateway:${GIT_TAG}
+      - docker push $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/gateway:${GIT_TAG}
