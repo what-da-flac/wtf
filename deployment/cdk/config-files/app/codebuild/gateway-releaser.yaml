@@ -1,4 +1,4 @@
-Description: Builds wtf gateway image and sends to ecr
+Description: Builds gateway image and sends to ecr
 Docker:
   Type: aws
 ComputeType: SMALL
@@ -9,7 +9,7 @@ Environments:
   - Name: GITHUB_ACCESS_TOKEN
     Type: secret
     Value: gh-token
-Id: wtf-gateway-releaser
+Id: gateway-releaser
 InlinePolicies:
   ecr:
     Action: ecr:*
@@ -21,10 +21,10 @@ InlinePolicies:
       - arn:aws:secretsmanager:*:*
 ManagedPolicies:
   - AmazonEC2ContainerRegistryPowerUser
-Name: wtf-gateway-releaser
+Name: gateway-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: codebuild/release.yaml
-  Repo: wtf-gateway
-  Owner: tech-component
+  CodebuildScriptPath: gateway/codebuild/release.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: tag-release
