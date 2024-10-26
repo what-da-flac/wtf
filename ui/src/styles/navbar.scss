@@ -1,0 +1,31 @@
+.web-menu {
+  @media (max-width: 786px) {
+    display: none;
+  }
+}
+
+.mobile-menu {
+  display: none;
+
+  @media (max-width: 786px) {
+    display: block;
+  }
+}
+
+.mobile-drawer {
+  .NavbarNested_navbar__SjRbG {
+    height: 100vh;
+  }
+
+  .mantine-AppShell-navbar {
+    width: 100%;
+  }
+
+  .mantine-Drawer-body {
+    padding: 0;
+  }
+}
+
+.NavbarNested_navbar__8FUXP {
+  background-color: transparent !important;
+}
