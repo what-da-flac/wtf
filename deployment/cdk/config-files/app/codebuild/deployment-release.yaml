@@ -50,8 +50,8 @@ ManagedPolicies:
 Name: wtf-deployment
 Privileged: false
 Source:
-  CodebuildScriptPath: codebuild/release.yaml
-  Repo: wtf-deployment
-  Owner: tech-component
+  CodebuildScriptPath: deployment/codebuild/release.yaml
+  Repo: wtf
+  Owner: what-da-flac
   Filter: tag-release
   PatternMatching: ^refs/tags/v.*

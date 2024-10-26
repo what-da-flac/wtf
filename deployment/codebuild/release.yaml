@@ -18,7 +18,7 @@ phases:
       - ssh-keyscan dev.what-da-flac.com >> ~/.ssh/known_hosts
         # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - cd cdk && cdk deploy --require-approval never
+      - cd deployment/cdk && make deploy
       # Remotely run bash script to update git repository for deployment
       - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "cd && cd wtf-deployment && git pull"'
       # Remotely run bash script to update wtf ui and services
