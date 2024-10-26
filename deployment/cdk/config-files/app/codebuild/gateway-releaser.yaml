@@ -28,3 +28,4 @@ Source:
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
+  PatternMatching: ^refs/tags/gateway.*

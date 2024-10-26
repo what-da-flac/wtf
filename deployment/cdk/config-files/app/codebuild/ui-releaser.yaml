@@ -35,4 +35,4 @@ Source:
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
-  PatternMatching: ^refs/tags/v*
+  PatternMatching: ^refs/tags/ui.*
