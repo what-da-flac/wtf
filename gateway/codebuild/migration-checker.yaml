@@ -1,40 +1,15 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo "Checking for changes in the target directory..."
-      - CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
-  pre_build:
-    commands:
-      - |
-        if echo "$CHANGED_FILES" | grep -Eq "gateway/internal/assets/files/migrations/"; then
-          echo "Relevant files have changed. Proceeding with build."
-          export RUN_BUILD=true
-        else
-          echo "No relevant files changed. Skipping build."
-          export RUN_BUILD=false
-        fi
   build:
     commands:
-      - |
-        if [ "$RUN_BUILD" = "true" ]; then
-          echo build started on `date`
-          # Start the SSH agent
-          eval $(ssh-agent -s)
-          # Add the SSH key from the environment variable to the agent
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-          # Add GitHub to known hosts to prevent host key verification failures
-          mkdir -p ~/.ssh
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
-          # Force Git to use SSH instead of HTTPS
-          git config --global url."git@github.com:".insteadOf "https://github.com/"
-          export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
-          git fetch
-          cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
-        else
-          echo "Skipping build phase as no relevant files were changed."
-        fi
-  post_build:
-    commands:
-      - echo "Build completed."
+      - echo build started on `date`
+      - eval $(ssh-agent -s)
+      - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+      - mkdir -p ~/.ssh
+      - ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - git config --global url."git@github.com:".insteadOf "https://github.com/"
+      - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
+      - git fetch
+      - cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
+      - echo finished
