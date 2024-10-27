@@ -12,5 +12,5 @@ phases:
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch --prune
       - export branch=$CODEBUILD_WEBHOOK_HEAD_REF
-      - export GIT_TAG=$branch#origin/
+      - export GIT_TAG=$branch#origin/refs/heads/
       - cd gateway && ./scripts/migration-validation.sh $GIT_TAG
