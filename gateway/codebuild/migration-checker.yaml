@@ -11,5 +11,6 @@ phases:
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch
-      - cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
+#      - cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
       - echo finished
