@@ -11,7 +11,4 @@ phases:
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch --prune
-#      - export branch=$CODEBUILD_WEBHOOK_HEAD_REF
-#      - export GIT_TAG=$branch#origin/refs/heads/
-#      - export GIT_TAG=WTF-81-implement-codebuild-job-to-check-migration-scripts
       - cd gateway && ./scripts/migration-validation.sh main
