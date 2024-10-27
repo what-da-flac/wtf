@@ -12,5 +12,5 @@ phases:
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch --prune
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION
-#      - cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
+      - cd gateway && ./scripts/migration-validation.sh $CODEBUILD_RESOLVED_SOURCE_VERSION
       - echo finished
