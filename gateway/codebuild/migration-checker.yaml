@@ -30,6 +30,7 @@ phases:
           # Force Git to use SSH instead of HTTPS
           git config --global url."git@github.com:".insteadOf "https://github.com/"
           export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
+          git fetch
           cd gateway && ./scripts/migration-validation.sh $GIT_BRANCH
         else
           echo "Skipping build phase as no relevant files were changed."
