@@ -12,9 +12,7 @@ phases:
       - mkdir -p ~/.ssh
       - ssh-keyscan github.com >> ~/.ssh/known_hosts
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - cd gateway
-      - make -C ../go-common ci
-      - make -C ../openapi swagger-gen
+      - make -C openapi swagger-gen
       - make ci
   post_build:
     commands:
