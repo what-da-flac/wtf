@@ -14,4 +14,6 @@ There are some naming conventions since we are using a monorepo, in order to det
 
 `gateway.*` Deploys `gateway` service.
 
+`lambda.*` Deploys `lambdas` services.
+
 `ui.*` Deploys `ui` application to S3.

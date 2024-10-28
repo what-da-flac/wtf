@@ -28,6 +28,7 @@ Name: wtf-lambdas-releaser
 Privileged: true
 Source:
   CodebuildScriptPath: codebuild/release.yaml
-  Repo: wtf-lambdas
-  Owner: tech-component
+  Repo: wtf
+  Owner: what-da-flac
   Filter: tag-release
+  PatternMatching: ^refs/tags/lambda.*
