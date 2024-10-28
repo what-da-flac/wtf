@@ -1,6 +1,6 @@
 .PHONY: ci
 
 ci:
-	MAKE -C gateway/ ci
-	MAKE -C go-common/ ci
-	MAKE -C openapi/ ci
+	make -C gateway/ ci
+	make -C go-common/ ci
+	make -C openapi/ ci
