@@ -11,4 +11,5 @@ phases:
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch --prune
-      - cd gateway && ./scripts/migration-validation.sh main
+      - default_branch=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+      - cd gateway && ./scripts/migration-validation.sh $default_branch
