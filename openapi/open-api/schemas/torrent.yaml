@@ -15,7 +15,7 @@ required:
   - filename
   - last_error
 properties:
-  id2:
+  id:
     type: string
   magnet_link:
     type: string
