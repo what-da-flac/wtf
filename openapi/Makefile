@@ -10,11 +10,14 @@ OPEN_API_OUTPUT:=openapi-gen.yaml
 build:
 	go build
 
-ci: test
+ci: lint test
 
 clean:
 	rm -rf $(GEN_DIR)/*
 	mkdir -p $(GEN_DIR)
+
+lint:
+	golangci-lint run --config golangci.yaml --timeout 10m
 
 swagger-bundle:
 	redocly bundle open-api/openapi.yaml --output $(OPEN_API_OUTPUT)

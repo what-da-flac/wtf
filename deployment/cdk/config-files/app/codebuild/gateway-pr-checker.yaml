@@ -2,7 +2,7 @@ Description: Runs linter and unit tests on gateway
 Docker:
   Type: custom
   Url: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-go-builder:latest
-ComputeType: SMALL
+ComputeType: MEDIUM
 Environments:
   - Name: SSH_PRIVATE_KEY
     Type: secret
