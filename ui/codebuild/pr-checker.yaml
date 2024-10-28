@@ -4,7 +4,6 @@ phases:
   install:
     commands:
       - echo "Checking for changes in the target directory..."
-      # List files changed in the latest commit and filter by path
       - CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD)
   pre_build:
     commands:

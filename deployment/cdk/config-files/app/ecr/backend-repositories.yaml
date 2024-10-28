@@ -1,4 +1,4 @@
-- Name: wtf-gateway
+- Name: gateway
   EmptyOnDelete: true
   Mutable: true
   RemoveOnDestroy: true
