@@ -1,9 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo "Checking for changes in the target directory..."
   build:
     commands:
       - echo build started on `date`
@@ -12,8 +9,7 @@ phases:
       - mkdir -p ~/.ssh
       - ssh-keyscan github.com >> ~/.ssh/known_hosts
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - make -C openapi swagger-gen
-      - make ci
-  post_build:
-    commands:
-      - echo "Build completed."
+      - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
+      - git fetch --prune
+      - default_branch=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
+      - cd gateway && ./scripts/migration-validation.sh $default_branch
