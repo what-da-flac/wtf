@@ -1,4 +1,0 @@
-- Name: torrent-metadata
-  EmptyOnDelete: true
-  Mutable: true
-  RemoveOnDestroy: true

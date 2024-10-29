@@ -18,7 +18,7 @@ phases:
 #      - ssh-keyscan dev.what-da-flac.com >> ~/.ssh/known_hosts
         # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
-      - cd deployment/cdk && cdk --region us-east-2 deploy --all --require-approval never
+      - cd deployment/cdk && cdk --region us-east-2 deploy app --require-approval never
       # TODO: enable ssh commands as the last step of monorepo migration
       # Remotely run bash script to update git repository for deployment
 #      - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "cd && cd wtf-deployment && git pull"'

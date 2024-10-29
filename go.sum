@@ -15,6 +15,8 @@ github.com/apapsch/go-jsonmerge/v2 v2.0.0 h1:axGnT1gRIfimI7gJifB699GoE/oq+F2MU7D
 github.com/apapsch/go-jsonmerge/v2 v2.0.0/go.mod h1:lvDnEdqiQrp0O42VQGgmlKpxL1AP2+08jFMw88y4klk=
 github.com/aws/aws-cdk-go/awscdk/v2 v2.161.1 h1:xs+9Va7Ff12tYWTZe9R7HJFG127svNpBUp553M4pIYw=
 github.com/aws/aws-cdk-go/awscdk/v2 v2.161.1/go.mod h1:yYaymWYxyViLcsF3+rX8gq8MBkViop4q392HsOuAi9M=
+github.com/aws/aws-lambda-go v1.47.0 h1:0H8s0vumYx/YKs4sE7YM0ktwL2eWse+kfopsRI1sXVI=
+github.com/aws/aws-lambda-go v1.47.0/go.mod h1:dpMpZgvWx5vuQJfBt0zqBha60q7Dd7RfgJv23DymV8A=
 github.com/aws/aws-sdk-go v1.52.6 h1:nw1AMg0wIj5tTnI89KaDe9G5aISqXm4KJEe1DfNbFvA=
 github.com/aws/aws-sdk-go v1.52.6/go.mod h1:LF8svs817+Nz+DmiMQKTO3ubZ/6IaTpq3TjupRn3Eqk=
 github.com/aws/aws-sdk-go v1.55.5 h1:KKUZBfBoyqy5d3swXyiC7Q76ic40rYcbqH7qjh59kzU=
