@@ -19,8 +19,4 @@ bp
 .idea
 
 # env files
-.env.*
-
-# bundled files
-output.yaml
-go-common
+.env*
