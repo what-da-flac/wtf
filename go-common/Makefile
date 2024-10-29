@@ -43,10 +43,6 @@ lint:
 
 lint-install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(LINT_VERSION)
-
-protos: clean
-	buf generate
-
 test:
 	go test -cover -short ./...
 

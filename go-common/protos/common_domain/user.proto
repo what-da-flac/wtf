@@ -1,9 +1,0 @@
-syntax = "proto3";
-package common_domain;
-
-message User {
-    string id = 1;
-    string email = 8;
-    string image_url = 9;
-    bool is_deleted = 10;
-}
