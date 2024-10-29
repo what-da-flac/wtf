@@ -5,10 +5,11 @@ ARG GITHUB_ACCESS_TOKEN=""
 ARG LAMBDA_NAME=""
 
 WORKDIR /app
-
+RUN pwd && ls -l
 COPY . .
 RUN echo "machine github.com login ${GITHUB_ACCESS_TOKEN}" > ~/.netrc
-RUN CGO_ENABLED=0 go build -buildvcs=false -a --installsuffix cgo -o lambda ./${LAMBDA_NAME}
+RUN cd lambdas && \
+    CGO_ENABLED=0 go build -buildvcs=false -a --installsuffix cgo -o lambda ./${LAMBDA_NAME}
 
 FROM public.ecr.aws/docker/library/alpine:3.16
 
@@ -17,5 +18,5 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 WORKDIR /app
 
-COPY --from=builder /app/lambda /app/lambda
+COPY --from=builder /app/lambdas/lambda /app/lambda
 ENTRYPOINT ["/app/lambda"]

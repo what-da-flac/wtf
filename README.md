@@ -17,3 +17,9 @@ There are some naming conventions since we are using a monorepo, in order to det
 `lambda.*` Deploys `lambdas` services.
 
 `ui.*` Deploys `ui` application to S3.
+
+You can easily generate next git tag through makefile. In this example we are generating the next git tag for `cdk`.
+
+```bash
+make next-tag-cdk
+```

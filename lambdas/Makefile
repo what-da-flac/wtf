@@ -13,14 +13,14 @@ ci: test-all
 
 docker-build-all:
 	@$(foreach lambda, $(LAMBDAS), \
-		docker build \
+		docker build --progress plain \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg GITHUB_ACCESS_TOKEN=$(GITHUB_ACCESS_TOKEN) \
 		--build-arg LAMBDA_NAME=$(lambda) \
 		-t $(lambda):$(GIT_TAG) \
 		-f $(lambda)/Dockerfile \
-		. ; \
+		.. ; \
 	)
 
 docker-push-all:

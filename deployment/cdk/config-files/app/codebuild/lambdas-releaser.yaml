@@ -12,7 +12,7 @@ Environments:
   - Name: GOPRIVATE
     Type: text
     Value: "github.com/what-da-flac/*"
-Id: wtf-lambdas-releaser
+Id: lambdas-releaser
 InlinePolicies:
   ecr:
     Action: ecr:*
@@ -24,10 +24,10 @@ InlinePolicies:
       - arn:aws:secretsmanager:*:*
 ManagedPolicies:
   - AmazonEC2ContainerRegistryPowerUser
-Name: wtf-lambdas-releaser
+Name: lambdas-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: codebuild/release.yaml
+  CodebuildScriptPath: lambdas/codebuild/release.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
