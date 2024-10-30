@@ -24,7 +24,7 @@ services:
     #   - "5432:5432"
   
   gateway:
-    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-gateway:${GATEWAY_VERSION}
+    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/gateway:${GATEWAY_VERSION}
     container_name: gateway
     entrypoint: ["/app/service", "serve"]
     healthcheck:
@@ -45,7 +45,7 @@ services:
       - "8000:${GATEWAY_PORT}"
 
   listener:
-    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/wtf-gateway:${GATEWAY_VERSION}
+    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/gateway:${GATEWAY_VERSION}
     container_name: listener
     entrypoint: ["/app/service", "listener"]
     depends_on:
