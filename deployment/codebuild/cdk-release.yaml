@@ -19,8 +19,7 @@ phases:
         # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       - cd deployment/cdk && cdk --region us-east-2 deploy app --require-approval never
-      # TODO: enable ssh commands as the last step of monorepo migration
       # Remotely run bash script to update git repository for deployment
-#      - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "cd && cd wtf-deployment && git pull"'
+      - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "cd && cd wtf && git pull"'
       # Remotely run bash script to update wtf ui and services
-#      - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "make -C /home/ubuntu/wtf-deployment/ update"'
+      - ssh root@dev.what-da-flac.com 'sudo -u ubuntu sh -c "make -C /home/ubuntu/wtf/deployment/ update"'
