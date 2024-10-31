@@ -1,6 +1,9 @@
 # unwanted directories/projects
+.idea
 deployment/
 mocks/
 ui/
 
+# python stuff
+Pipfile*
 

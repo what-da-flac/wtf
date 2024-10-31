@@ -1,10 +1,9 @@
-.PHONY: build ci docker-build-all  test-all
+.PHONY: ci docker-build-all docker-push-all docker-tag-all
 
-SHELL := /bin/sh
+SHELL := /bin/bash
 
-# add more lambdas space separated if needed
-# LAMBDAS=torrent-download another-lambda
-LAMBDAS=torrent-metadata
+LAMBDAS=torrent-metadata torrent-download
+#LAMBDAS=torrent-download
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0)
