@@ -1,9 +1,25 @@
 # torrent-download
 
-This lambda listens to SQS queue. Message is a torrent object as JSON.
+## Run Locally
 
-Lambda should download all torrent files into `/tmp/downloads` directory.
+You can run this lambda locally without any other no sense tooling.
 
-Once download is completed, sends all files into S3 bucket. Within S3 bucket, it will use a naming convention, so we keep downloaded files identified and grouped together (as they belong to the same torrent anyway).
+### PyCharm
 
-For instance
+```bash
+python local.py
+```
+
+### Docker
+
+Run `make docker-build-all`. Once all lambda images have been built, run this command.
+
+```bash
+docker run --rm -p 9000:8080 torrent-download:lambda.0.0.9
+```
+
+Wait for docker container to be up and running, then invoke like this:
+
+```bash
+curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"name":"Mauricio"}'
+```

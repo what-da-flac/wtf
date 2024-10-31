@@ -23,3 +23,11 @@
       Resources:
         - arn:aws:s3:::torrent-parsed
         - arn:aws:s3:::torrent-parsed/*
+- Name: torrent-download
+  Code:
+    Docker:
+      Type: custom
+      Url: torrent-download:lambda.0.0.9
+  EphemeralStorageSizeGb: 1
+  MemorySizeMb: 128
+  TimeoutSeconds: 60
