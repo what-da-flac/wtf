@@ -1,9 +1,12 @@
 import json
 
+from aws_lambda_powertools.utilities.typing import LambdaContext
 
-def lambda_handler(event: dict, context):
+
+def lambda_handler(event: dict, context: LambdaContext):
     name = event.get('name', 'stranger')
-    return {
+    res = {
+        "greeting": f"Hello, {name}!",
         "statusCode": 200,
-        "body": json.dumps(f"Hello, {name}!")
     }
+    return json.dumps(res)
