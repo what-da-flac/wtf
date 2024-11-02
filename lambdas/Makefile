@@ -3,7 +3,6 @@
 SHELL := /bin/bash
 
 LAMBDAS=torrent-metadata torrent-download
-#LAMBDAS=torrent-download
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0)

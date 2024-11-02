@@ -11,20 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/what-da-flac/wtf/go-common/ifaces"
-	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/downloaders"
-	"go.uber.org/zap"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/what-da-flac/wtf/go-common/amazon"
+	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/downloaders"
 	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/environment"
 	"github.com/what-da-flac/wtf/openapi/models"
-)
-
-var (
-	logger ifaces.Logger
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -38,7 +33,7 @@ func handler(_ context.Context, sqsEvent *events.SQSEvent) error {
 	if err != nil {
 		return err
 	}
-	logger = zl.Sugar()
+	logger := zl.Sugar()
 	config := environment.New()
 	// loop over messages received
 	for _, record := range sqsEvent.Records {
@@ -47,7 +42,7 @@ func handler(_ context.Context, sqsEvent *events.SQSEvent) error {
 			log.Println(err)
 			return err
 		}
-		if err := process(config, payload); err != nil {
+		if err := process(logger, config, payload); err != nil {
 			log.Println(err)
 			// TODO: if above fails, send a message to another queue to deal with failed torrents
 			// ignoring it for the time being
@@ -57,7 +52,7 @@ func handler(_ context.Context, sqsEvent *events.SQSEvent) error {
 	return nil
 }
 
-func process(config *environment.Config, torrent *models.Torrent) error {
+func process(logger ifaces.Logger, config *environment.Config, torrent *models.Torrent) error {
 	// validate incoming torrent
 	if err := validateTorrent(torrent); err != nil {
 		return err
@@ -77,7 +72,7 @@ func process(config *environment.Config, torrent *models.Torrent) error {
 	}
 	// clean up resources for next lambda execution
 	defer func() { _ = os.RemoveAll(torrentDir) }()
-	torrentFilename, err := downloadTorrentFromS3(config, sess, torrent, torrentDir)
+	torrentFilename, err := downloadTorrentFromS3(logger, config, sess, torrent, torrentDir)
 	if err != nil {
 		return err
 	}
@@ -93,31 +88,38 @@ func process(config *environment.Config, torrent *models.Torrent) error {
 		return err
 	}
 	// upload all resulting files to s3
-	return uploadResultToS3(sess, config, torrent, targetDir)
+	return uploadResultToS3(logger, sess, config, torrent, targetDir)
 }
 
 func uploadResultToS3(
+	logger ifaces.Logger,
 	sess *session.Session, config *environment.Config,
 	torrent *models.Torrent, targetDir string) error {
 	bucket := config.BucketDownloads
 	uploadFn := func(key, filename string) error {
+		logger.Infof("starting uploading file: %s", key)
 		info, err := os.Stat(filename)
 		if err != nil {
+			logger.Errorf("failed to stat file: %s", filename)
 			return err
 		}
 		file, err := os.Open(filename)
 		if err != nil {
+			logger.Errorf("failed to open file: %s", filename)
 			return err
 		}
 		defer func() { _ = file.Close() }()
-		return amazon.Upload(sess, file, bucket, key, amazon.Content{
+		if err = amazon.Upload(sess, file, bucket, key, amazon.Content{
 			// TODO: set all fields
 			// ContentDisposition: "",
 			// ContentEncoding:    "",
 			ContentLanguage: "en",
 			ContentLength:   info.Size(),
 			// ContentType:        "",
-		})
+		}); err != nil {
+			logger.Errorf("failed to upload file: %s", filename)
+		}
+		return nil
 	}
 	// loop over all files in targetDir and send to s3
 	return filepath.Walk(targetDir, func(path string, info fs.FileInfo, err error) error {
@@ -134,17 +136,20 @@ func uploadResultToS3(
 	})
 }
 
-func downloadTorrentFromS3(config *environment.Config, sess *session.Session,
+func downloadTorrentFromS3(logger ifaces.Logger, config *environment.Config, sess *session.Session,
 	torrent *models.Torrent, targetDir string) (*string, error) {
 	// torrent file from s3 is downloaded to /tmp/current.torrent
 	const targetTorrentFilename = "current.torrent"
 	filename := filepath.Join(targetDir, targetTorrentFilename)
 	file, err := os.Create(filename)
 	if err != nil {
+		logger.Errorf("failed to create file: %s", filename)
 		return nil, err
 	}
 	defer func() { _ = file.Close() }()
+	logger.Infof("starting downloading torrent from s3: %s", torrent.Filename)
 	if err := amazon.Download(sess, file, config.BucketDownloads, torrent.Filename); err != nil {
+		logger.Errorf("failed to download torrent from s3: %s", torrent.Filename)
 		return nil, err
 	}
 	return &filename, nil

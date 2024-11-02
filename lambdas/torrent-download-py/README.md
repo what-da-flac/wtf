@@ -2,6 +2,8 @@
 
 This lambda receives SQS message which contains a torrent as payload.
 
+Decided to move on with Go, because getting errors on stupid tasks such as initializing/locking pipenv.
+
 ```json
 {
   "id": "77be913c-6cbe-4db2-bba0-0ae6e755f63f",
