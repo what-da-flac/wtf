@@ -84,7 +84,7 @@ func process(logger ifaces.Logger, config *environment.Config, torrent *models.T
 	defer func() { _ = os.RemoveAll(targetDir) }()
 
 	// download torrent contents
-	if err = downloadTorrent(logger, config, targetDir, *torrentFilename); err != nil {
+	if err = downloadTorrentContents(logger, config, targetDir, *torrentFilename); err != nil {
 		return err
 	}
 	// upload all resulting files to s3
@@ -121,6 +121,7 @@ func uploadResultToS3(
 		}
 		return nil
 	}
+	// TODO: instead of walking directory, loop over torrent files slice
 	// loop over all files in targetDir and send to s3
 	return filepath.Walk(targetDir, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
@@ -148,14 +149,14 @@ func downloadTorrentFromS3(logger ifaces.Logger, config *environment.Config, ses
 	}
 	defer func() { _ = file.Close() }()
 	logger.Infof("starting downloading torrent from s3: %s", torrent.Filename)
-	if err := amazon.Download(sess, file, config.BucketDownloads, torrent.Filename); err != nil {
+	if err := amazon.Download(sess, file, config.BucketParsed, torrent.Filename); err != nil {
 		logger.Errorf("failed to download torrent from s3: %s", torrent.Filename)
 		return nil, err
 	}
 	return &filename, nil
 }
 
-func downloadTorrent(logger ifaces.Logger, config *environment.Config,
+func downloadTorrentContents(logger ifaces.Logger, config *environment.Config,
 	targetDir, torrentFilename string) error {
 	interval := time.Second * 5
 	downloader := downloaders.NewTorrentDownloader(logger)

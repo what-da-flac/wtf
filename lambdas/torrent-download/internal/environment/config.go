@@ -8,30 +8,24 @@ import (
 )
 
 const (
-	envVarSQSTorrentParsedURL   = "SQS_TORRENT_PARSED_URL"
-	envVarS3TorrentParsedBucket = "S3_TORRENT_PARSED_BUCKET"
-	envVarTimeout               = "TIMEOUT"
-	envVarTorrentBucket         = "BUCKET_TORRENT"
-	envVarDownloadsBucket       = "BUCKET_DOWNLOADS"
+	envVarBucketParsed    = "BUCKET_PARSED"
+	envVarDownloadsBucket = "BUCKET_DOWNLOADS"
+	envVarTimeout         = "TIMEOUT"
 )
 
 type Config struct {
 	*environment.Config
-	BucketDownloads       string
-	BucketTorrent         string
-	SQSTorrentParsedURL   string
-	S3TorrentParsedBucket string
-	Timeout               time.Duration
+	BucketDownloads string
+	BucketParsed    string
+	Timeout         time.Duration
 }
 
 func New() *Config {
 	globalConfig := environment.New()
 	return &Config{
-		Config:                globalConfig,
-		BucketDownloads:       viper.GetString(envVarDownloadsBucket),
-		BucketTorrent:         viper.GetString(envVarTorrentBucket),
-		SQSTorrentParsedURL:   viper.GetString(envVarSQSTorrentParsedURL),
-		S3TorrentParsedBucket: viper.GetString(envVarS3TorrentParsedBucket),
-		Timeout:               viper.GetDuration(envVarTimeout),
+		Config:          globalConfig,
+		BucketDownloads: viper.GetString(envVarDownloadsBucket),
+		BucketParsed:    viper.GetString(envVarBucketParsed),
+		Timeout:         viper.GetDuration(envVarTimeout),
 	}
 }
