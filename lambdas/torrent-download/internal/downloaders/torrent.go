@@ -46,7 +46,11 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 			return false
 		}
 		str := string(data)
-		return strings.Contains(str, "ID")
+		if strings.Contains(str, "ID") {
+			x.logger.Infof("daemon responding: %s", str)
+			return true
+		}
+		return false
 	}
 
 	for {
