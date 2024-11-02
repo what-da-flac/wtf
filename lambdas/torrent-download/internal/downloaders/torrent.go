@@ -3,6 +3,7 @@ package downloaders
 import (
 	"bufio"
 	"bytes"
+	"fmt"
 	"os/exec"
 	"strings"
 	"time"
@@ -11,12 +12,14 @@ import (
 )
 
 type TorrentDownloader struct {
-	logger ifaces.Logger
+	logger  ifaces.Logger
+	timeout time.Duration
 }
 
-func NewTorrentDownloader(logger ifaces.Logger) *TorrentDownloader {
+func NewTorrentDownloader(logger ifaces.Logger, timeout time.Duration) *TorrentDownloader {
 	return &TorrentDownloader{
-		logger: logger,
+		logger:  logger,
+		timeout: timeout,
 	}
 }
 
@@ -24,7 +27,42 @@ func NewTorrentDownloader(logger ifaces.Logger) *TorrentDownloader {
 func (x *TorrentDownloader) Start() error {
 	x.logger.Info("starting torrent downloader")
 	cmd := exec.Command("transmission-daemon")
-	return cmd.Start()
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+	return x.waitForStart(x.timeout)
+}
+
+func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
+	interval := time.Second * 2
+	timeout := time.After(wait)
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	checkFn := func() bool {
+		cmd := exec.Command("transmission-remote", "--list")
+		data, err := cmd.Output()
+		if err != nil {
+			return false
+		}
+		str := string(data)
+		return strings.Contains(str, "ID")
+	}
+
+	for {
+		select {
+		case <-timeout:
+			err := fmt.Errorf("torrent download timed out")
+			x.logger.Errorf("torrent download timed out: %v", err)
+			return err
+		case <-ticker.C:
+			x.logger.Info("waiting for torrent download")
+			if checkFn() {
+				x.logger.Info("torrent download completed")
+				return nil
+			}
+		}
+	}
 }
 
 // AddTorrent adds a torrent file to download stack.

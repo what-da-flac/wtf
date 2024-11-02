@@ -156,7 +156,8 @@ func downloadTorrentFromS3(logger ifaces.Logger, config *environment.Config, ses
 func downloadTorrentContents(logger ifaces.Logger, config *environment.Config,
 	targetDir, torrentFilename string) error {
 	interval := time.Second * 5
-	downloader := downloaders.NewTorrentDownloader(logger)
+	daemonTimeout := time.Second * 10
+	downloader := downloaders.NewTorrentDownloader(logger, daemonTimeout)
 	if err := downloader.Start(); err != nil {
 		return err
 	}
