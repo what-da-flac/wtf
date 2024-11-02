@@ -28,7 +28,7 @@
   Code:
     Docker:
       Type: custom
-      Url: torrent-download:lambda.0.0.10
+      Url: torrent-download:lambda.0.0.11
   EphemeralStorageSizeGb: 10
   MemorySizeMb: 128
   TimeoutSeconds: 900

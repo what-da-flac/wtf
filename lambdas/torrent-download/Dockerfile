@@ -14,7 +14,7 @@ RUN cd lambdas && \
 FROM public.ecr.aws/docker/library/alpine:3.16
 
 RUN apk update && \
-    apk add --no-cache ca-certificates libc6-compat aria2 transmission-cli && \
+    apk add --no-cache ca-certificates libc6-compat transmission-cli transmission-daemon && \
     rm -rf /var/cache/apk/*
 WORKDIR /app
 
