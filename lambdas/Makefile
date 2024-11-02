@@ -1,4 +1,5 @@
 .PHONY: ci docker-build-all docker-push-all docker-tag-all
+.PHONY: mock-all test-all
 
 SHELL := /bin/bash
 
@@ -31,5 +32,10 @@ docker-tag-all:
 		docker tag $(lambda):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(lambda):$(GIT_TAG); \
 	)
 
-test-all:
+mock-all:
+	@$(foreach lambda, $(LAMBDAS), \
+		cd $(lambda) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
+	)
+
+test-all: mock-all
 	go test -cover  ./...

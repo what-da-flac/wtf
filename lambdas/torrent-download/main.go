@@ -11,6 +11,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/uploaders"
+
+	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/interfaces"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -85,14 +89,18 @@ func process(logger ifaces.Logger, config *environment.Config, torrent *models.T
 		return err
 	}
 	// upload all resulting files to s3
-	return uploadResultToS3(logger, sess, config, torrent, targetDir)
+	uploader := uploaders.NewUploader(sess)
+	return uploadResultToS3(logger, uploader, config, torrent, targetDir)
 }
 
 func uploadResultToS3(
 	logger ifaces.Logger,
-	sess *session.Session, config *environment.Config,
+	uploader interfaces.Uploader,
+	config *environment.Config,
 	torrent *models.Torrent, targetDir string) error {
+	const slash = "/"
 	bucket := config.BucketDownloads
+	// targetDir requires a trailing slash
 	uploadFn := func(key, filename string) error {
 		logger.Infof("starting uploading file: %s", key)
 		info, err := os.Stat(filename)
@@ -106,7 +114,7 @@ func uploadResultToS3(
 			return err
 		}
 		defer func() { _ = file.Close() }()
-		if err = amazon.Upload(sess, file, bucket, key, amazon.Content{
+		if err = uploader.Upload(file, bucket, key, amazon.Content{
 			// TODO: set all fields
 			// ContentDisposition: "",
 			// ContentEncoding:    "",
@@ -129,9 +137,9 @@ func uploadResultToS3(
 			return nil
 		}
 		// remove targetDir from path
-		basePath := strings.TrimPrefix(path, targetDir)
+		basePath := strings.TrimPrefix(path, targetDir+slash)
 		// remove torrent internal directory from path
-		basePath = strings.TrimPrefix(basePath, torrent.Filename)
+		basePath = strings.TrimPrefix(basePath, torrent.Name+slash)
 		// use only the id as root for torrent contents
 		key := filepath.Join(torrent.Id, basePath)
 		return uploadFn(key, path)
