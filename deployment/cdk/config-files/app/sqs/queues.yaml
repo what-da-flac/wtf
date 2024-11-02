@@ -3,6 +3,7 @@
   RemoveOnDestroy: true
   RetentionPeriodSeconds: 1209600
   VisibilityTimeoutSeconds: 10800
+
 - Name: TorrentDownloaded.fifo
   DeliveryDelaySeconds: 0
   RemoveOnDestroy: true
