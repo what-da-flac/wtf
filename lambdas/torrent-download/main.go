@@ -43,10 +43,7 @@ func handler(_ context.Context, sqsEvent *events.SQSEvent) error {
 			return err
 		}
 		if err := process(logger, config, payload); err != nil {
-			log.Println(err)
-			// TODO: if above fails, send a message to another queue to deal with failed torrents
-			// ignoring it for the time being
-			return nil
+			return err
 		}
 	}
 	return nil
@@ -121,7 +118,7 @@ func uploadResultToS3(
 		}
 		return nil
 	}
-	// TODO: instead of walking directory, loop over torrent files slice
+	// TODO: instead of walking directory, loop over torrent select files
 	// loop over all files in targetDir and send to s3
 	return filepath.Walk(targetDir, func(path string, info fs.FileInfo, err error) error {
 		if info.IsDir() {
