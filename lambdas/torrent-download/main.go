@@ -128,7 +128,11 @@ func uploadResultToS3(
 			// ignoring files that cannot be processed
 			return nil
 		}
+		// remove targetDir from path
 		basePath := strings.TrimPrefix(path, targetDir)
+		// remove torrent internal directory from path
+		basePath = strings.TrimPrefix(basePath, torrent.Filename)
+		// use only the id as root for torrent contents
 		key := filepath.Join(torrent.Id, basePath)
 		return uploadFn(key, path)
 	})
