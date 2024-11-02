@@ -173,6 +173,8 @@ func downloadTorrentContents(logger ifaces.Logger, config *environment.Config,
 	if err := downloader.Start(); err != nil {
 		return err
 	}
+	// clean up resources for next execution
+	defer func() { _ = downloader.ClearAll() }()
 	if err := downloader.AddTorrent(targetDir, torrentFilename); err != nil {
 		return err
 	}
