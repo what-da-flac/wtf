@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
 )
 
 func TestParse(t *testing.T) {
@@ -15,7 +14,7 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    *Model
+		want    []*Model
 		wantErr bool
 	}{
 		{
@@ -23,22 +22,15 @@ func TestParse(t *testing.T) {
 			args: args{
 				filename: "happy-path.yaml",
 			},
-			want: &Model{
-				AutoDeleteObjects: true,
-				EnforceSSL:        false,
-				InlinePolicies: map[string]common.Policy{
-					"s3": {
-						Action: "s3:*",
-						Resources: []string{
-							"arn:aws:s3:::wtf-ui.what-da-flac.com",
-							"arn:aws:s3:::wtf-ui.what-da-flac.com/*",
-						},
-					},
+			want: []*Model{
+				{
+					Name:            "wtf.torrent-parsed",
+					RemoveOnDestroy: true,
 				},
-				Name:                 "wtf-ui.what-da-flac.com",
-				BlockPublicAccess:    false,
-				Versioned:            false,
-				WebsiteIndexDocument: "index.html",
+				{
+					Name:            "wtf.torrent-downloads",
+					RemoveOnDestroy: true,
+				},
 			},
 			wantErr: false,
 		},
