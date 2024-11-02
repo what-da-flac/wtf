@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import time
@@ -5,32 +6,43 @@ from datetime import datetime, timedelta
 
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
+from models.model import Torrent
+
 
 def lambda_handler(event: dict, context: LambdaContext):
     wait_seconds = 900
-    torrent_file = event.get("file")
-    # name matches folder where files are downloaded
-    name = event.get("name")
+    data = event
+    torrent = Torrent(**data)
+    return torrent.model_dump(exclude_unset=True)
     target_dir = "/Users/mau/Downloads/xxx"
-    download_torrent(target_dir, torrent_file)
-    # TODO: filenames should come in torrent payload, this is just for local development
-    filenames = [
-        os.path.join(target_dir, name, "David Guetta Ft. SIA - Titanium Anky.mp3"),
-    ]
-    if wait_for_download_completion(wait_seconds=wait_seconds, interval_check_seconds=10):
-        print("download completed successfully.")
-        upload_files_to_s3(filenames)
-        # print("completed uploading files to s3")
-    else:
-        print(f"download did not complete within the {wait_seconds} seconds limit.")
+    # download_torrent(target_dir, torrent_file)
+    # filenames = [
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/01. Moon Music (Feat. Jon Hopkins).flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/02. Feelslikeimfallinginlove.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/03. We Pray (Feat. Little Simz, Burna Boy, Elyanna & Tini).flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/04. Jupiter.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/05. Good Feelings (Feat. Ayra Starr).flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/06. Rainbow.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/07. Iaam.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/08. Aeterna.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/09. All My Love.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/10. One World.flac",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/INFO.nfo",
+    #     "Coldplay - Moon Music (2024) FLAC [PMEDIA] ⭐️/cover.jpg",
+    # ]
+    # filenames_with_path = [os.path.join(target_dir, filename) for filename in filenames]
+    # if wait_for_download_completion(wait_seconds=wait_seconds, interval_check_seconds=10):
+    #     print("download completed successfully.")
+    #     upload_files_to_s3(filenames_with_path)
+    #     print("completed uploading files to s3")
+    # else:
+    #     print(f"download did not complete within the {wait_seconds} seconds limit.")
 
 
 def upload_files_to_s3(filenames: list[str]):
     for filename in filenames:
-        # TODO: read file info, sends error now
-        print(f"filename to be uploaded: {filename}")
-    #     file_info = os.stat(filename)
-    #     print(f"file name: {filename}  size: {file_info.st_size} bytes")
+        file_info = os.stat(filename)
+        print(f"file name: {filename}  size: {file_info.st_size} bytes")
 
 
 def download_torrent(target_dir: str, torrent_file: str):
