@@ -19,9 +19,3 @@ func (x IString) Reverse() IString {
 	}
 	return res
 }
-
-func (x IString) Len() int { return len(x) }
-
-func (x IString) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
-
-func (x IString) Less(i, j int) bool { return x[i] < x[j] }
