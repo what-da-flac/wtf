@@ -64,7 +64,7 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 		select {
 		case <-timeout:
 			err := fmt.Errorf("torrent download timed out")
-			x.logger.Errorf("torrent download timed out: %v", err)
+			x.logger.Error(err)
 			return err
 		case <-ticker.C:
 			x.logger.Info("waiting for torrent download, elapsed: %v", time.Since(start))

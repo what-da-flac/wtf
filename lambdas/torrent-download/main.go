@@ -11,10 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/uploaders"
-
-	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/interfaces"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -22,6 +18,8 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/downloaders"
 	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/environment"
+	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/interfaces"
+	"github.com/what-da-flac/wtf/lambdas/torrent-download/internal/uploaders"
 	"github.com/what-da-flac/wtf/openapi/models"
 	"go.uber.org/zap"
 )
