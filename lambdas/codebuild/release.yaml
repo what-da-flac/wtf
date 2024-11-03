@@ -22,4 +22,4 @@ phases:
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
       - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
       - cd lambdas
-      - make docker-build-all docker-tag-all docker-push-all
+      - make build-all docker-tag-all docker-push-all

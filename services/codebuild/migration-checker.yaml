@@ -12,4 +12,4 @@ phases:
       - export GIT_BRANCH=$CODEBUILD_SOURCE_VERSION
       - git fetch --prune
       - default_branch=$(git remote show origin | grep 'HEAD branch' | awk '{print $NF}')
-      - cd services/gateway && ./scripts/migration-validation.sh $default_branch
+      - cd services && ./scripts/migration-validation.sh $default_branch

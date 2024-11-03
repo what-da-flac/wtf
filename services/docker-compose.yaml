@@ -1,32 +1,34 @@
-volumes:
-  postgres_data:
-    driver: local
-
 services:
 
   postgres:
     image: postgres:14
     container_name: postgres-user
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
+      test: [ "CMD-SHELL", "pg_isready" ]
       interval: 1s
       timeout: 1s
       retries: 100
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ${HOME}/data/wtf/postgres:/var/lib/postgresql/data
       - ./scripts:/scripts
     env_file:
       - .env
     environment:
       POSTGRES_PASSWORD: password
       PGUSER: postgres
-    # ports:
-    #   - "5432:5432"
+    ports:
+      - "5432:5432"
 
   gateway:
-    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/gateway:${SERVICE_VERSION}
+    build:
+      context: ..
+      dockerfile: ./services/gateway/Dockerfile
+      args:
+        BASE_GO_BUILD_IMAGE: public.ecr.aws/docker/library/golang
+        BASE_GO_VERSION: 1.23
+        SERVICE_NAME: gateway
     container_name: gateway
-    entrypoint: ["/app/service", "serve"]
+    entrypoint: [ "/app/service", "serve" ]
     healthcheck:
       test: curl http://localhost:$$GATEWAY_PORT/api/v1/healthz
       interval: 3s
@@ -39,15 +41,21 @@ services:
       - .env
       - .env.credentials
     environment:
-      DB_URL: ${DB_URL_USER}
+      DB_URL: ${DB_URL}
       PORT: ${GATEWAY_PORT}
     ports:
       - "8000:${GATEWAY_PORT}"
 
   listener:
-    image: 160885250498.dkr.ecr.us-east-2.amazonaws.com/gateway:${SERVICE_VERSION}
+    build:
+      context: ..
+      dockerfile: ./services/gateway/Dockerfile
+      args:
+        BASE_GO_BUILD_IMAGE: public.ecr.aws/docker/library/golang
+        BASE_GO_VERSION: 1.23
+        SERVICE_NAME: gateway
     container_name: listener
-    entrypoint: ["/app/service", "listener"]
+    entrypoint: [ "/app/service", "listener" ]
     depends_on:
       postgres:
         condition: service_healthy
@@ -55,4 +63,4 @@ services:
       - .env
       - .env.credentials
     environment:
-      DB_URL: ${DB_URL_USER}
+      DB_URL: ${DB_URL}

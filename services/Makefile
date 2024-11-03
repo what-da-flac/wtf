@@ -1,16 +1,21 @@
-.PHONY: ci docker-build-all docker-push-all docker-tag-all
-.PHONY: mock-all test-all
+.PHONY: ci build-all login mock-all push-all tag-all test-all
+.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull
 
-SHELL := /bin/bash
+# AWS account
 ACCOUNT_ID=160885250498
+SHELL := /bin/bash
 SERVICES=gateway
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0 --always)
 
+$(shell touch .env .env.development)
+include .env .env.development
+export
+
 ci: test-all
 
-docker-build-all:
+build-all:
 	@$(foreach service, $(SERVICES), \
 		docker build --progress plain \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
@@ -22,21 +27,26 @@ docker-build-all:
 		.. ; \
 	)
 
-docker-push-all:
-	@$(foreach service, $(SERVICES), \
-		docker push $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
-	)
+local-build:
+	docker compose build
 
-docker-tag-all:
-	@$(foreach service, $(SERVICES), \
-		docker tag $(service):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
-	)
+local-start:
+	docker compose up -d
+
+local-stop:
+	docker compose down --remove-orphans
+
+local-pull: login
+	docker compose pull
 
 login:
 	aws --profile wtf ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com
 
-logs:
-	docker compose logs gateway
+local-logs:
+	docker compose logs -f $(SERVICES)
+
+local-pg:
+	docker compose exec -it postgres psql
 
 mock-all:
 	@$(foreach service, $(SERVICES), \
@@ -46,11 +56,15 @@ mock-all:
 pull:
 	docker compose pull
 
-start:
-	docker compose up -d
+push-all:
+	@$(foreach service, $(SERVICES), \
+		docker push $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
+	)
 
-stop:
-	docker compose down --remove-orphans
+tag-all:
+	@$(foreach service, $(SERVICES), \
+		docker tag $(service):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
+	)
 
 test-all: mock-all
 	go test -cover  ./...

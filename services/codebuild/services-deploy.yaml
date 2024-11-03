@@ -20,6 +20,6 @@ phases:
       - git fetch --tags
       - export GIT_TAG=$(git describe --tags --abbrev=0 --always)
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
-      - cd services && make docker-build-all
+      - cd services && make build-all
       - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
-      - make docker-tag-all docker-push-all
+      - make tag-all push-all

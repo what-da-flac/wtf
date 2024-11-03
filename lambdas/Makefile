@@ -1,4 +1,4 @@
-.PHONY: ci docker-build-all docker-push-all docker-tag-all
+.PHONY: ci build-all docker-push-all docker-tag-all
 .PHONY: mock-all test-all
 
 SHELL := /bin/bash
@@ -10,7 +10,7 @@ GIT_TAG=$(shell git describe --tags --abbrev=0)
 
 ci: test-all
 
-docker-build-all:
+build-all:
 	@$(foreach lambda, $(LAMBDAS), \
 		docker build --progress plain \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \

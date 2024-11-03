@@ -32,7 +32,7 @@ python local.py
 
 ### Docker
 
-Run `make docker-build-all`. Once all lambda images have been built, run this command.
+Run `make build-all`. Once all lambda images have been built, run this command.
 
 ```bash
 docker run --rm -p 9000:8080 torrent-download:lambda.0.0.9
