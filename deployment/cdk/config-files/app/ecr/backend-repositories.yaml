@@ -1,0 +1,4 @@
+- Name: gateway
+  EmptyOnDelete: true
+  Mutable: true
+  RemoveOnDestroy: true
