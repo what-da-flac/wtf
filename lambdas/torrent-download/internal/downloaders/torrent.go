@@ -5,11 +5,23 @@ import (
 	"bytes"
 	"fmt"
 	"os/exec"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 )
+
+// TorrentLine represents one torrent in the list
+type TorrentLine struct {
+	ID     string
+	Done   string
+	Have   string
+	ETA    string
+	Down   string
+	Status string
+	Name   string
+}
 
 type TorrentDownloader struct {
 	logger  ifaces.Logger
@@ -38,6 +50,7 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 	timeout := time.After(wait)
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
+	start := time.Now()
 
 	checkFn := func() bool {
 		cmd := exec.Command("transmission-remote", "--list")
@@ -60,7 +73,7 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 			x.logger.Errorf("torrent download timed out: %v", err)
 			return err
 		case <-ticker.C:
-			x.logger.Info("waiting for torrent download")
+			x.logger.Info("waiting for torrent download, elapsed: %v", time.Since(start))
 			if checkFn() {
 				x.logger.Info("torrent download completed")
 				return nil
@@ -104,6 +117,37 @@ func (x *TorrentDownloader) checkCompleted() bool {
 	return false
 }
 
+func (x *TorrentDownloader) readTorrentLine(line string) *TorrentLine {
+	const sep = "\t"
+	res := &TorrentLine{}
+	values := strings.Fields(line)
+	for i, v := range values {
+		if i == 0 {
+			idVal := strings.TrimSpace(v)
+			if _, err := strconv.Atoi(idVal); err != nil {
+				return nil
+			}
+		}
+		switch i {
+		case 0:
+			res.ID = strings.TrimSpace(v)
+		case 1:
+			res.Done = strings.TrimSpace(v)
+		case 2, 3:
+			res.Have += v
+		case 4, 5:
+			res.ETA += v
+		case 7:
+			res.Down += v
+		case 9:
+			res.Status = v
+		default:
+			continue
+		}
+	}
+	return res
+}
+
 func (x *TorrentDownloader) checkLine(line string) bool {
 	expected := map[string]struct{}{
 		"100%": {},
@@ -139,6 +183,7 @@ func (x *TorrentDownloader) WaitForDownload(wait, interval time.Duration) bool {
 }
 
 func (x *TorrentDownloader) ClearAll() error {
+	x.logger.Info("clearing pending torrents and related files")
 	cmd := exec.Command("transmission-remote", "-t", "all", "--remove-and-delete")
 	output, err := cmd.CombinedOutput()
 	if err != nil {
