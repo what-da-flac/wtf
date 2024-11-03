@@ -9,7 +9,7 @@ Environments:
   - Name: GITHUB_ACCESS_TOKEN
     Type: secret
     Value: gh-token
-Id: gateway-releaser
+Id: services-releaser
 InlinePolicies:
   ecr:
     Action: ecr:*
@@ -21,11 +21,11 @@ InlinePolicies:
       - arn:aws:secretsmanager:*:*
 ManagedPolicies:
   - AmazonEC2ContainerRegistryPowerUser
-Name: gateway-releaser
+Name: services-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: gateway/codebuild/release.yaml
+  CodebuildScriptPath: services/deploy.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
-  PatternMatching: ^refs/tags/gateway.*
+  PatternMatching: ^refs/tags/service.*

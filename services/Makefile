@@ -6,7 +6,7 @@ SHELL := /bin/bash
 SERVICES=gateway
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
-GIT_TAG=$(shell git describe --tags --abbrev=0)
+GIT_TAG=$(shell git describe --tags --abbrev=0 --always)
 
 ci: test-all
 
@@ -16,7 +16,7 @@ docker-build-all:
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg GITHUB_ACCESS_TOKEN=$(GITHUB_ACCESS_TOKEN) \
-		--build-arg LAMBDA_NAME=$(service) \
+		--build-arg SERVICE_NAME=$(service) \
 		-t $(service):$(GIT_TAG) \
 		-f $(service)/Dockerfile \
 		.. ; \

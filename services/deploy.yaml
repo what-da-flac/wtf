@@ -18,9 +18,8 @@ phases:
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       # Fetch all tags
       - git fetch --tags
-      - export GIT_TAG=$(git describe --tags --abbrev=0)
+      - export GIT_TAG=$(git describe --tags --abbrev=0 --always)
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
-      - cd services && make docker-build
+      - cd services && make docker-build-all
       - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
-      - docker tag gateway:${GIT_TAG} $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/gateway:${GIT_TAG}
-      - docker push $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com/gateway:${GIT_TAG}
+      - make docker-tag-all docker-push-all
