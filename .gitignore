@@ -9,3 +9,6 @@
 
 # python stuff
 __pycache__
+
+# mocked files
+mocks
