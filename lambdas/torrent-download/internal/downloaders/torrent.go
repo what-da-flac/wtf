@@ -14,13 +14,7 @@ import (
 
 // TorrentLine represents one torrent in the list
 type TorrentLine struct {
-	ID     string
-	Done   string
-	Have   string
-	ETA    string
-	Down   string
-	Status string
-	Name   string
+	ID string
 }
 
 type TorrentDownloader struct {
@@ -131,16 +125,6 @@ func (x *TorrentDownloader) readTorrentLine(line string) *TorrentLine {
 		switch i {
 		case 0:
 			res.ID = strings.TrimSpace(v)
-		case 1:
-			res.Done = strings.TrimSpace(v)
-		case 2, 3:
-			res.Have += v
-		case 4, 5:
-			res.ETA += v
-		case 7:
-			res.Down += v
-		case 9:
-			res.Status = v
 		default:
 			continue
 		}
@@ -155,6 +139,9 @@ func (x *TorrentDownloader) checkLine(line string) bool {
 	}
 	values := strings.Fields(line)
 	for _, v := range values {
+		if line := x.readTorrentLine(v); line != nil {
+			x.logger.Info(v)
+		}
 		delete(expected, v)
 	}
 	return len(expected) == 0
