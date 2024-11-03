@@ -4,6 +4,7 @@ ci:
 	make -C services/ ci
 	make -C go-common/ ci
 	make -C openapi/ ci
+	make -C ui/ ci
 
 _next-tag:
 	git tag | go run ./gateway next-version $(ARGS)
