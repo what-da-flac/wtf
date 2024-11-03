@@ -16,7 +16,7 @@ deploy:
 	cdk --profile $(PROFILE) --region us-east-2 deploy --all --require-approval never
 
 destroy:
-	cdk --profile $(PROFILE) --region us-east-2 --all destroy
+	cdk --profile $(PROFILE) --region us-east-2 destroy --all
 
 golang-imports:
 	goimports -w .

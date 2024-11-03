@@ -1,5 +1,0 @@
-- Name: TorrentParsed.fifo
-  DeliveryDelaySeconds: 0
-  RemoveOnDestroy: true
-  RetentionPeriodSeconds: 1209600
-  VisibilityTimeoutSeconds: 10800

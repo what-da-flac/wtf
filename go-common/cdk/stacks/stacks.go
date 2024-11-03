@@ -1,6 +1,8 @@
 package stacks
 
 import (
+	"log"
+
 	"github.com/aws/aws-cdk-go/awscdk/v2"
 	"github.com/what-da-flac/wtf/go-common/cdk/stacks/codebuild"
 	"github.com/what-da-flac/wtf/go-common/cdk/stacks/ecr"
@@ -90,11 +92,14 @@ func RunLambda(stack awscdk.Stack, filenames ...string) {
 
 func RunS3(stack awscdk.Stack, filenames ...string) {
 	for _, filename := range filenames {
-		build, err := s3.Parse(filename)
+		builds, err := s3.Parse(filename)
 		if err != nil {
+			log.Println("error parsing file:", filename, err)
 			panic(err)
 		}
-		s3.Build(stack, build)
+		for _, build := range builds {
+			s3.Build(stack, build)
+		}
 	}
 }
 

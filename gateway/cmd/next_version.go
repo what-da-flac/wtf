@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -24,7 +25,19 @@ var nextVersionCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// example
 		// git tag | go run . next-version cdk
-		return nextVersion(args)
+		if len(args) != 1 {
+			return fmt.Errorf("Usage: next-version <type>")
+		}
+		versionType := args[0]
+		reader, err := pipes.ReadStdin()
+		if err != nil {
+			if !errors.Is(err, pipes.ErrNoPipe) {
+				return err
+			}
+			return fmt.Errorf("no pipe in stdin, cannot execute")
+		}
+		writer := os.Stdout
+		return nextVersion(reader, writer, versionType)
 	},
 }
 
@@ -32,18 +45,7 @@ func init() {
 	rootCmd.AddCommand(nextVersionCmd)
 }
 
-func nextVersion(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: next-version <type>")
-	}
-	versionType := args[0]
-	r, err := pipes.ReadStdin()
-	if err != nil {
-		if !errors.Is(err, pipes.ErrNoPipe) {
-			return err
-		}
-		return fmt.Errorf("no pipe in stdin, cannot execute")
-	}
+func nextVersion(r io.Reader, w io.Writer, versionType string) error {
 	tags, err := tagMatches(r, versionType)
 	if err != nil {
 		return err
@@ -52,8 +54,8 @@ func nextVersion(args []string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Println(lastTag)
-	return nil
+	_, err = fmt.Fprintln(w, lastTag)
+	return err
 }
 
 func calcNextTag(versionType string, tags []string) (string, error) {
@@ -85,6 +87,24 @@ func tagMatches(r io.Reader, versionType string) ([]string, error) {
 		}
 		return strings.HasPrefix(s, versionType)
 	})
-	sort.Strings(tags)
+	sort.Slice(tags, func(i, j int) bool {
+		prev := Tag(tags[i]).Number()
+		curr := Tag(tags[j]).Number()
+		return prev < curr
+	})
 	return tags.Reverse(), nil
+}
+
+type Tag string
+
+func (x Tag) Number() int {
+	values := strings.Split(string(x), sep)
+	if len(values) == 0 {
+		return 0
+	}
+	value, err := strconv.Atoi(values[len(values)-1])
+	if err != nil {
+		return 0
+	}
+	return value
 }

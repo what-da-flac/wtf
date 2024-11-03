@@ -1,10 +1,9 @@
-.PHONY: build ci docker-build-all  test-all
+.PHONY: ci docker-build-all docker-push-all docker-tag-all
+.PHONY: mock-all test-all
 
-SHELL := /bin/sh
+SHELL := /bin/bash
 
-# add more lambdas space separated if needed
-# LAMBDAS=torrent-download another-lambda
-LAMBDAS=torrent-metadata
+LAMBDAS=torrent-metadata torrent-download
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0)
@@ -33,5 +32,10 @@ docker-tag-all:
 		docker tag $(lambda):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(lambda):$(GIT_TAG); \
 	)
 
-test-all:
+mock-all:
+	@$(foreach lambda, $(LAMBDAS), \
+		cd $(lambda) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
+	)
+
+test-all: mock-all
 	go test -cover  ./...
