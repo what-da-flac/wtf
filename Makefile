@@ -1,9 +1,8 @@
 .PHONY: ci _next-tag next-tag-cdk next-tag-docker next-tag-gateway next-tag-lambda next-tag-ui
 
 ci:
-	make -C gateway/ ci
+	make -C services/ ci
 	make -C go-common/ ci
-	make -C lambdas/ ci
 	make -C openapi/ ci
 
 _next-tag:

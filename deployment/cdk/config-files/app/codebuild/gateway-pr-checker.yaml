@@ -22,7 +22,7 @@ InlinePolicies:
       - "*"
 Name: gateway-pr-checker
 Source:
-  CodebuildScriptPath: gateway/codebuild/pr-checker.yaml
+  CodebuildScriptPath: services/gateway/codebuild/pr-checker.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: pull-request
