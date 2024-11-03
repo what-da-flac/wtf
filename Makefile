@@ -7,7 +7,7 @@ ci:
 	make -C ui/ ci
 
 _next-tag:
-	git tag | go run ./gateway next-version $(ARGS)
+	git tag | go run ./services/gateway next-version $(ARGS)
 
 next-tag-cdk:
 	make _next-tag ARGS=cdk

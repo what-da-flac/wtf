@@ -1,0 +1,4 @@
+- AutoDeleteObjects: true
+  Name: wtf-ui.what-da-flac.com
+  RemoveOnDestroy: true
+  Versioned: false
