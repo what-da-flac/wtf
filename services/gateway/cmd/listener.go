@@ -23,7 +23,7 @@ import (
 
 var listenCmd = &cobra.Command{
 	Use:   "listener",
-	Short: "Listen one or more sqs queues for messages",
+	Short: "listen one or more sqs queues for messages",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		zl, err := zap.NewProductionConfig().Build()
 		if err != nil {
