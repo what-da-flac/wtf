@@ -2,7 +2,7 @@
 .PHONY: mock-all test-all
 
 SHELL := /bin/bash
-
+ACCOUNT_ID=160885250498
 SERVICES=gateway
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
@@ -32,10 +32,25 @@ docker-tag-all:
 		docker tag $(service):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
 	)
 
+login:
+	aws --profile wtf ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com
+
+logs:
+	docker compose logs gateway
+
 mock-all:
 	@$(foreach service, $(SERVICES), \
 		cd $(service) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
 	)
+
+pull:
+	docker compose pull
+
+start:
+	docker compose up -d
+
+stop:
+	docker compose down --remove-orphans
 
 test-all: mock-all
 	go test -cover  ./...
