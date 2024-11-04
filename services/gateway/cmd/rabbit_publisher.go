@@ -1,13 +1,13 @@
 package cmd
 
 import (
-	"github.com/what-da-flac/wtf/go-common/loggers"
-	"github.com/what-da-flac/wtf/go-common/rabbits"
-	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	"os"
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/what-da-flac/wtf/go-common/loggers"
+	"github.com/what-da-flac/wtf/go-common/rabbits"
+	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 )
 
 var rabbitPublisherCmd = &cobra.Command{

@@ -1,4 +1,4 @@
-.PHONY: ci build-all login mock-all push-all tag-all test-all
+.PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
 .PHONY: local-build local-logs local-pg local-start local-stop local-pull pull
 
 # AWS account
@@ -9,8 +9,8 @@ BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0 --always)
 
-$(shell touch .env .env.development)
-include .env .env.development
+$(shell touch .env .env.credentials)
+include .env .env.credentials
 export
 
 ci: test-all
@@ -26,6 +26,9 @@ build-all:
 		-f $(service)/Dockerfile \
 		.. ; \
 	)
+
+golang-imports:
+	goimports -w .
 
 local-build:
 	docker compose build
