@@ -78,6 +78,7 @@ func (x *Publisher) Build() error {
 		return err
 	}
 	x.queue = &queue
+	x.built = true
 	return nil
 }
 

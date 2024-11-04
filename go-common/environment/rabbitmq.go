@@ -8,6 +8,7 @@ const (
 	envVarRabbitMQPort     = "RABBITMQ_PORT"
 	envVarRabbitMQProtocol = "RABBITMQ_PROTOCOL"
 	envVarRabbitMQUsername = "RABBITMQ_USERNAME"
+	envVarRabbitMQUrl      = "RABBITMQ_URL"
 )
 
 type RabbitMQ struct {
@@ -16,6 +17,7 @@ type RabbitMQ struct {
 	Port     string
 	Protocol string
 	Username string
+	URL      string
 }
 
 func newRabbitMQ() RabbitMQ {
@@ -25,5 +27,6 @@ func newRabbitMQ() RabbitMQ {
 		Port:     viper.GetString(envVarRabbitMQPort),
 		Protocol: viper.GetString(envVarRabbitMQProtocol),
 		Username: viper.GetString(envVarRabbitMQUsername),
+		URL:      viper.GetString(envVarRabbitMQUrl),
 	}
 }
