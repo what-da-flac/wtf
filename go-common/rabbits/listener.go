@@ -120,7 +120,6 @@ func (x *Listener) createQueue() (*amqp091.Queue, error) {
 }
 
 func (x *Listener) processMessage(fn ifaces.MessageHandlerFn, msg amqp091.Delivery) {
-	x.logger.Debugf("received message: %s", msg.Body)
 	// Process the message here
 	ackType, err := fn(msg.Body)
 	if err != nil {

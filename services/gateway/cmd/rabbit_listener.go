@@ -1,11 +1,12 @@
 package cmd
 
 import (
-	"fmt"
+	"time"
+
+	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -13,8 +14,8 @@ import (
 var rabbitListenerCmd = &cobra.Command{
 	Use:   "rabbit-listener",
 	Short: "Listens to rabbitmq messages",
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return fmt.Errorf("not implemented")
+	Run: func(cmd *cobra.Command, args []string) {
+		rabbitListener()
 	},
 }
 
@@ -25,6 +26,10 @@ func init() {
 func rabbitListener() {
 	logger := loggers.MustNewDevelopmentLogger()
 	config := environment.New()
-	rabbits.NewListener(logger, "test-queue", config.RabbitMQ.URL, time.Second)
-	// TODO: continue with listener and publisher
+	l := rabbits.NewListener(logger, "test-queue", config.RabbitMQ.URL, time.Second)
+	l.ListenAsync(func(msg []byte) (ack ifaces.AckType, err error) {
+		logger.Info("received:", string(msg))
+		return ifaces.MessageAcknowledge, nil
+	})
+	select {}
 }

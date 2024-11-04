@@ -16,11 +16,6 @@ SHELL := /bin/bash
 GIT_TAG=$(shell git describe --tags --abbrev=0)
 SRC_DIR:=internal/models
 
-# .env.development may not exist
-$(shell touch .env .env.development)
-include .env .env.development
-export
-
 build:
 	CGO_ENABLED=0 go build -buildvcs=false -a --installsuffix cgo -o $(SERVICE_NAME) $(LDFLAGS) && chmod 777 $(SERVICE_NAME)
 
