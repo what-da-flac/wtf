@@ -6,6 +6,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	Version string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "wtf-gateway",
 	Short: "Rest API to expose wtf backend to UI",

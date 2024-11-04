@@ -6,14 +6,14 @@
 .PHONY: test test-html-output
 
 DOCKER_IMAGE_NAME=gateway
-LDFLAGS=-ldflags "-X=github.com/what-da-flac/wtf/services/gateway/cmd.Version=$(SERVICE_VERSION)"
+LDFLAGS=-ldflags "-X=main.Version=$(SERVICE_VERSION)"
 LINT_VERSION=v1.61.0
 MIGRATE_VERSION=v4.18.1
 MOQ_VERSION=v0.5.0
 SERVICE_NAME := "service"
-SERVICE_VERSION := $(shell git describe --tags --abbrev=0 --always)
+SERVICE_VERSION := $(shell git describe --tags --abbrev=0)
 SHELL := /bin/bash
-GIT_TAG=$(shell git describe --tags --abbrev=0)
+GIT_TAG=$(shell git describe --tags --abbrev=0 --always)
 SRC_DIR:=internal/models
 
 build:

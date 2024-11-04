@@ -1,4 +1,4 @@
-# wtf-gateway
+# gateway
 
 
 ## Diagrams
