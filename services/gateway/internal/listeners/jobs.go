@@ -2,7 +2,6 @@ package listeners
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/domain/torrent"
@@ -61,27 +60,29 @@ func (x *Jobs) Map() map[string]*Job {
 		defaultVisibilityTimeout = 10 * time.Second
 		defaultWaitTime          = 5 * time.Second
 	)
-	return map[string]*Job{
-		// receives parsed torrent
-		"TorrentParsed": {
-			Fn: func(body string) error {
-				payload := &models.Torrent{}
-				if err := json.Unmarshal([]byte(body), payload); err != nil {
-					return err
-				}
-				x.logger.Infof("received torrent id: %s name: %s", payload.Id, payload.Name)
-				ctx := context.Background()
-				// TODO: report to sentry on any error below
-				err := x.torrentUpdate.Save(ctx, payload)
-				if err != nil {
-					x.logger.Errorf("failed to save torrent id: %s name: %s", payload.Id, payload.Name)
-				}
-				return err
-			},
-			ListenerUri:         x.config.SQS.TorrentParsedUrl,
-			MaxNumberOfMessages: 1,
-			VisibilityTimeout:   time.Minute,
-			WaitTime:            time.Second * 20,
-		},
-	}
+	// TODO: fix all queue mess
+	panic("TODO: fix all queue mess")
+	//return map[string]*Job{
+	//	receives parsed torrent
+	//"TorrentParsed": {
+	//	Fn: func(body string) error {
+	//		payload := &models.Torrent{}
+	//		if err := json.Unmarshal([]byte(body), payload); err != nil {
+	//			return err
+	//		}
+	//		x.logger.Infof("received torrent id: %s name: %s", payload.Id, payload.Name)
+	//		ctx := context.Background()
+	//		TODO: report to sentry on any error below
+	//err := x.torrentUpdate.Save(ctx, payload)
+	//if err != nil {
+	//	x.logger.Errorf("failed to save torrent id: %s name: %s", payload.Id, payload.Name)
+	//}
+	//return err
+	//},
+	//ListenerUri:         x.config.SQS.TorrentParsedUrl,
+	//MaxNumberOfMessages: 1,
+	//VisibilityTimeout:   time.Minute,
+	//WaitTime:            time.Second * 20,
+	//},
+	//}
 }

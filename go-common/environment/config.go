@@ -21,6 +21,7 @@ type Config struct {
 	RabbitMQ    RabbitMQ
 	Sentry      Sentry
 	ServiceName string
+	Queues      Queues
 }
 
 func New() *Config {
@@ -36,6 +37,7 @@ func New() *Config {
 		RabbitMQ:    newRabbitMQ(),
 		Sentry:      newSentry(),
 		ServiceName: viper.GetString(envVarServiceName),
+		Queues:      newQueues(),
 	}
 	if c.LogLevel == "" {
 		c.LogLevel = defaultLogLevel

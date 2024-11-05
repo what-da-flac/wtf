@@ -59,9 +59,11 @@ func (x *Create) Create(ctx context.Context, user *models.User, req *models.Post
 		if err := x.repository.InsertTorrent(ctx, payload); err != nil {
 			return err
 		}
-		if err := x.sender.Send(x.config.SQS.TorrentMetadataUrl, payload); err != nil {
-			return err
-		}
+		// TODO: use rabbitmq instead
+		//if err := x.sender.Send(x.config.SQS.TorrentMetadataUrl, payload); err != nil {
+		//	return err
+		//}
+		return fmt.Errorf("not implemented")
 	}
 	return nil
 }

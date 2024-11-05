@@ -19,10 +19,8 @@ type Config struct {
 	APIUrlPrefix          string
 	CorsAllowedHeaders    string
 	ForceProfileCompleted bool
-	Gateways              Gateways
 	HeaderTimeout         time.Duration
 	SourceURL             string
-	SQS                   SQS
 }
 
 func New() *Config {
@@ -31,8 +29,6 @@ func New() *Config {
 		APIUrlPrefix:       viper.GetString(envVarAPIUrlPrefix),
 		CorsAllowedHeaders: viper.GetString(envVarCorsAllowedHeaders),
 		Config:             *globalConfig,
-		Gateways:           newGateways(),
 		HeaderTimeout:      viper.GetDuration(envVarHeaderTimeout),
-		SQS:                newSQS(),
 	}
 }
