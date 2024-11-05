@@ -1,0 +1,3 @@
+- Name: wtf.torrent-parsed
+  RemoveOnDestroy: true
+  Versioned: false

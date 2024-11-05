@@ -15,6 +15,16 @@ export
 
 ci: test-all
 
+build-%:
+	docker build \
+		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
+		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
+		--build-arg GITHUB_ACCESS_TOKEN=$(GITHUB_ACCESS_TOKEN) \
+		--build-arg SERVICE_NAME=$* \
+		-t $*:$(GIT_TAG) \
+		-f $*/Dockerfile \
+		..
+
 build-all:
 	@$(foreach service, $(SERVICES), \
 		docker build --progress plain \

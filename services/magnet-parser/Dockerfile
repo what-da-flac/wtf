@@ -15,7 +15,7 @@ RUN cd services/${SERVICE_NAME} && make build
 FROM public.ecr.aws/docker/library/alpine:3.16
 ARG SERVICE_NAME=""
 RUN apk update && \
-    apk add ca-certificates libc6-compat curl && \
+    apk add ca-certificates libc6-compat aria2 transmission-cli && \
     rm -rf /var/cache/apk/*
 WORKDIR /app
 

@@ -66,7 +66,7 @@ func (x *Jobs) Map() map[string]*Job {
 	//	receives parsed torrent
 	//"TorrentParsed": {
 	//	Fn: func(body string) error {
-	//		payload := &models.Torrent{}
+	//		payload := &models.TorrentParser{}
 	//		if err := json.Unmarshal([]byte(body), payload); err != nil {
 	//			return err
 	//		}
