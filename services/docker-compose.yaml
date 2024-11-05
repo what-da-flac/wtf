@@ -44,13 +44,7 @@ services:
       start_period: 5s
 
   gateway:
-    build:
-      context: ..
-      dockerfile: ./services/gateway/Dockerfile
-      args:
-        BASE_GO_BUILD_IMAGE: public.ecr.aws/docker/library/golang
-        BASE_GO_VERSION: 1.23
-        SERVICE_NAME: gateway
+    image: gateway:${GIT_TAG}
     container_name: gateway
     entrypoint: [ "/app/service", "serve" ]
     healthcheck:
@@ -61,6 +55,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
       - .env.credentials
@@ -70,21 +66,16 @@ services:
     ports:
       - "8000:${GATEWAY_PORT}"
 
-  listener:
-    build:
-      context: ..
-      dockerfile: ./services/gateway/Dockerfile
-      args:
-        BASE_GO_BUILD_IMAGE: public.ecr.aws/docker/library/golang
-        BASE_GO_VERSION: 1.23
-        SERVICE_NAME: gateway
-    container_name: listener
-    entrypoint: [ "/app/service", "listener" ]
+  magnet-parser:
+    image: magnet-parser:${GIT_TAG}
+    container_name: magnet-parser
+    entrypoint: ["/app/service"]
     depends_on:
-      postgres:
+      rabbitmq:
         condition: service_healthy
     env_file:
       - .env
       - .env.credentials
-    environment:
-      DB_URL: ${DB_URL}
+
+
+
