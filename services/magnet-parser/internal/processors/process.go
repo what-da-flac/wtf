@@ -11,58 +11,42 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/environment"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/magnet-parser/internal/parsing"
 )
 
 func Process(publisher ifaces.Publisher, logger ifaces.Logger,
-	sess *session.Session,
-	config *environment.Config, torrent *models.Torrent) error {
+	sess *session.Session, config *environment.Config, torrent *models.Torrent) error {
 	// base dir must be /tmp since lambdas cannot write anywhere else
 	baseDir := os.TempDir()
 	// create torrent from magnet link
 	torrentFile, err := createTorrentFile(baseDir, torrent.MagnetLink)
 	if err != nil {
+		logger.Error(err)
 		return err
 	}
 	info, err := os.Stat(torrentFile)
 	if err != nil {
-		log.Println("could not stat torrent file:", torrentFile)
+		logger.Errorf("could not stat torrent file: %s", torrentFile)
 		return err
 	}
-	log.Println("torrent file size:", info.Size())
+	logger.Infof("torrent file size: %s", info.Size())
 	defer func() { _ = os.RemoveAll(torrentFile) }()
-	// extract metadata from torrent file
-	metaInfo, err := torrentMetadata(torrentFile)
-	if err != nil {
-		return err
-	}
-	log.Println("metaInfo:", *metaInfo)
-	// parse metadata into local torrent struct
-	parsedTorrent, err := parsing.ParseTorrent(*metaInfo)
-	if err != nil {
-		return err
-	}
 	// save torrent file in s3
 	key := filepath.Base(torrentFile)
-	payload := parsedTorrent.ToDomain()
 	// hash is always filename without extension,
 	// the info may contain versions which makes this straightforward
 	// and simpler
-	payload.Hash = strings.TrimSuffix(filepath.Base(torrentFile), filepath.Ext(torrentFile))
-	payload.Id = torrent.Id
-	payload.User = torrent.User
-	payload.Filename = key
-	payload.MagnetLink = torrent.MagnetLink
-	payload.Status = models.Parsed
+	torrent.Hash = strings.TrimSuffix(filepath.Base(torrentFile), filepath.Ext(torrentFile))
+	// id is set to torrent hash, so we automatically avoid duplicated torrents in db
+	torrent.Id = torrent.Hash
+	torrent.Filename = key
 	file, err := os.Open(torrentFile)
 	if err != nil {
-		log.Println("could not open torrent file for reading:", torrentFile)
+		logger.Errorf("could not open torrent file for reading: %s", torrentFile)
 		return err
 	}
 	defer func() { _ = file.Close() }()
@@ -72,11 +56,11 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 		ContentLength:      info.Size(),
 		ContentType:        "application/x-bittorrent",
 	}); err != nil {
-		log.Println("could not upload torrent file to s3:", torrentFile)
+		logger.Errorf("could not upload torrent file to s3: %s", torrentFile)
 		return err
 	}
 	// send resulting torrent struct to SQS
-	data, err := json.Marshal(payload)
+	data, err := json.Marshal(torrent)
 	if err != nil {
 		return err
 	}
@@ -113,13 +97,4 @@ func createTorrentFile(baseDir, magnet string) (string, error) {
 		return res, nil
 	}
 	return "", fmt.Errorf("unable to find torrent file")
-}
-
-func torrentMetadata(torrentFilename string) (*string, error) {
-	cmd := exec.Command("transmission-show", torrentFilename)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, err
-	}
-	return aws.String(string(output)), nil
 }

@@ -27,6 +27,7 @@ const (
 const (
 	Parsed  TorrentStatus = "parsed"
 	Pending TorrentStatus = "pending"
+	Saved   TorrentStatus = "saved"
 )
 
 // Health defines model for health.
