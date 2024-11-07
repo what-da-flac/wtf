@@ -4,7 +4,7 @@
 # AWS account
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
-SERVICES=gateway magnet-parser torrent-info
+SERVICES=gateway magnet-parser torrent-info torrent-parser
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
 GIT_TAG=$(shell git describe --tags --abbrev=0 --always)

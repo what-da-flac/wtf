@@ -87,3 +87,16 @@ services:
     env_file:
       - .env
       - .env.credentials
+
+  torrent-parser:
+    image: torrent-parser:${GIT_TAG}
+    container_name: torrent-parser
+    entrypoint: ["/app/service"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+      - .env.credentials

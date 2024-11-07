@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/what-da-flac/wtf/services/torrent-info/internal/domain"
+	"github.com/what-da-flac/wtf/services/torrent-parser/internal/domain"
 )
 
 func TestParseTorrent(t *testing.T) {
