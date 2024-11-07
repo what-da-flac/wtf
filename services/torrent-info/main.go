@@ -10,7 +10,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/torrent-parser/internal/processors"
+	"github.com/what-da-flac/wtf/services/torrent-info/internal/processors"
 )
 
 var (
@@ -21,7 +21,7 @@ func main() {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting torrent-parser version:", Version)
 	config := environment.New()
-	l := rabbits.NewListener(logger, config.Queues.TorrentParser, config.RabbitMQ.URL, time.Second)
+	l := rabbits.NewListener(logger, config.Queues.TorrentDownload, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	publisher := rabbits.NewPublisher(logger, config.Queues.TorrentInfo, config.RabbitMQ.URL)
 	if err := publisher.Build(); err != nil {

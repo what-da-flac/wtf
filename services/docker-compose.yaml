@@ -77,9 +77,9 @@ services:
       - .env
       - .env.credentials
 
-  torrent-parser:
-    image: torrent-parser:${GIT_TAG}
-    container_name: torrent-parser
+  torrent-info:
+    image: torrent-info:${GIT_TAG}
+    container_name: torrent-info
     entrypoint: ["/app/service"]
     depends_on:
       rabbitmq:

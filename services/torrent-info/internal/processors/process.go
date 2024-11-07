@@ -11,7 +11,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/environment"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/torrent-parser/internal/parsing"
+	"github.com/what-da-flac/wtf/services/torrent-info/internal/parsing"
 )
 
 func Process(publisher ifaces.Publisher, logger ifaces.Logger,

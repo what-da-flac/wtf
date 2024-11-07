@@ -23,7 +23,7 @@ func main() {
 	config := environment.New()
 	l := rabbits.NewListener(logger, config.Queues.MagnetParser, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
-	publisher := rabbits.NewPublisher(logger, config.Queues.TorrentParser, config.RabbitMQ.URL)
+	publisher := rabbits.NewPublisher(logger, config.Queues.TorrentInfo, config.RabbitMQ.URL)
 	if err := publisher.Build(); err != nil {
 		logger.Fatal(err)
 	}

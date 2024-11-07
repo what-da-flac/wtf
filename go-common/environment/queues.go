@@ -1,17 +1,17 @@
 package environment
 
 type Queues struct {
-	// MagnetParser a magnet_link in the payload
+	// MagnetParser downloads a torrent file from magnet link
 	MagnetParser string
 
-	// TorrentDownload  a full torrent object
+	// TorrentDownload downloads torrent content
 	TorrentDownload string
 
-	// TorrentParser a torrent filename
-	TorrentParser string
-
-	// TorrentInfo a full torrent object
+	// TorrentInfo gets info from torrent file
 	TorrentInfo string
+
+	// TorrentParser receives torrent information and stores in db
+	TorrentParser string
 }
 
 func newQueues() Queues {

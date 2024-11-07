@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/what-da-flac/wtf/services/torrent-parser/internal/domain"
+	"github.com/what-da-flac/wtf/services/torrent-info/internal/domain"
 )
 
 func ParseTorrent(metadata string) (*domain.Torrent, error) {
