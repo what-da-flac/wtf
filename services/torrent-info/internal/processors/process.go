@@ -8,6 +8,6 @@ import (
 
 func Process(logger ifaces.Logger, config *environment.Config, torrent *models.Torrent) error {
 	logger.Infof("torrent name: %s file count: %d", torrent.Name, len(torrent.Files))
-	logger.Warn("TODO: store in database")
+	logger.Info("TODO: store in database")
 	return nil
 }

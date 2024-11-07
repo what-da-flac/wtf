@@ -52,7 +52,6 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 	if err != nil {
 		return err
 	}
-	logger.Infof("torrent info payload to next listener: %s", string(data))
 	return publisher.Publish(data)
 }
 
