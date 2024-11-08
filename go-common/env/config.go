@@ -13,7 +13,6 @@ const (
 
 type Config struct {
 	AWS         AWS
-	Buckets     Buckets
 	DB          DB
 	Env         string
 	Google      Google
@@ -29,7 +28,6 @@ func New() *Config {
 	viper.AutomaticEnv()
 	c := &Config{
 		AWS:         newAWS(),
-		Buckets:     newBuckets(),
 		DB:          newDB(),
 		Env:         viper.GetString(envVarEnv),
 		Google:      newGoogle(),

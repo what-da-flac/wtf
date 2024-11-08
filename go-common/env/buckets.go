@@ -1,11 +1,9 @@
 package env
 
-type Buckets struct {
-	TorrentParsed string
-}
+type BucketName string
 
-func newBuckets() Buckets {
-	return Buckets{
-		TorrentParsed: "wtf.torrent-parsed",
-	}
-}
+func (x BucketName) String() string { return string(x) }
+
+const (
+	BucketTorrentParsed BucketName = "wtf.torrent-parsed"
+)

@@ -36,6 +36,8 @@ func main() {
 }
 
 func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+	// maximum time it can take to download all torrent files
+	downloadTimeout := time.Minute * 15
 	awsSession := amazon.NewAWSSessionFromEnvironment()
 	if err := awsSession.Build(); err != nil {
 		return nil, err
@@ -48,7 +50,7 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *en
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		if err := processors.Process(publisher, logger, sess, config, torrent); err != nil {
+		if err := processors.Process(sess, logger, downloadTimeout, torrent); err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}

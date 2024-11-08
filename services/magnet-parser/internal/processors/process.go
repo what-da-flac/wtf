@@ -50,7 +50,7 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 		return err
 	}
 	defer func() { _ = file.Close() }()
-	if err = amazon.Upload(sess, file, config.Buckets.TorrentParsed, key, amazon.Content{
+	if err = amazon.Upload(sess, file, env.BucketTorrentParsed.String(), key, amazon.Content{
 		ContentDisposition: "attachment; filename=\"" + key + "\"",
 		ContentLanguage:    "en",
 		ContentLength:      info.Size(),

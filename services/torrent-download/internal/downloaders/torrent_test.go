@@ -1,8 +1,9 @@
 package downloaders
 
 import (
-	"github.com/what-da-flac/wtf/go-common/loggers"
 	"testing"
+
+	"github.com/what-da-flac/wtf/go-common/loggers"
 
 	"github.com/stretchr/testify/assert"
 )

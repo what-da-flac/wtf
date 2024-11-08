@@ -24,7 +24,7 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 		return err
 	}
 	defer func() { _ = os.RemoveAll(file.Name()) }()
-	if err = amazon.Download(sess, file, config.Buckets.TorrentParsed, torrent.Filename); err != nil {
+	if err = amazon.Download(sess, file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
 		return err
 	}
 	if err = file.Close(); err != nil {
