@@ -15,6 +15,9 @@ export
 
 ci: test-all
 
+ci-%: mock-% test-%
+	go test -cover  ./$*/...
+
 build-%:
 	docker build \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
@@ -64,6 +67,9 @@ mock-all:
 		cd $(service) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
 	)
 
+mock-%:
+	cd $* && rm -rf mocks && mkdir -p mocks && go generate ./...
+
 pull:
 	docker compose pull
 
@@ -79,3 +85,6 @@ tag-all:
 
 test-all: mock-all
 	go test -cover  ./...
+
+test-%:
+	go test ./$*/...

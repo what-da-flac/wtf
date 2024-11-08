@@ -8,7 +8,8 @@ import (
 
 func (x *PgRepo) InsertTorrent(_ context.Context, torrent *models.Torrent) error {
 	db := x.GORM()
-	return db.Create(torrentFromModel(torrent)).Error
+	dto := torrentFromModel(torrent)
+	return db.Create(dto).Error
 }
 
 func (x *PgRepo) UpdateTorrent(ctx context.Context, torrent *models.Torrent) error {
