@@ -1,4 +1,4 @@
-package environment
+package env
 
 type Buckets struct {
 	TorrentParsed string

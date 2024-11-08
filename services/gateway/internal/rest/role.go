@@ -3,10 +3,9 @@ package rest
 import (
 	"net/http"
 
-	role2 "github.com/what-da-flac/wtf/services/gateway/internal/domain/role"
-
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
 	"github.com/what-da-flac/wtf/openapi/models"
+	role2 "github.com/what-da-flac/wtf/services/gateway/internal/domain/role"
 )
 
 func (x *Server) GetV1Roles(w http.ResponseWriter, r *http.Request) {

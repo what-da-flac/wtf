@@ -1,4 +1,4 @@
-package repositories
+package pgrepo
 
 import (
 	"github.com/jinzhu/copier"

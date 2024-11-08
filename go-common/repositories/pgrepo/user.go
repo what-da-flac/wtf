@@ -1,4 +1,4 @@
-package repositories
+package pgrepo
 
 import (
 	"context"
@@ -7,19 +7,19 @@ import (
 	"github.com/what-da-flac/wtf/openapi/models"
 )
 
-func (x *PG) InsertUser(_ context.Context, user *models.User) error {
+func (x *PgRepo) InsertUser(_ context.Context, user *models.User) error {
 	db := x.GORM()
 	row := fromProtoUser(user)
 	return db.Create(row).Error
 }
 
-func (x *PG) UpdateUser(cxt context.Context, user *models.User) error {
+func (x *PgRepo) UpdateUser(cxt context.Context, user *models.User) error {
 	db := x.GORM()
 	row := fromProtoUser(user)
 	return db.Updates(row).Error
 }
 
-func (x *PG) SelectUser(cxt context.Context, id, email *string) (*models.User, error) {
+func (x *PgRepo) SelectUser(cxt context.Context, id, email *string) (*models.User, error) {
 	db := x.GORM()
 	row := &UserDto{}
 	where := &UserDto{}
@@ -38,7 +38,7 @@ func (x *PG) SelectUser(cxt context.Context, id, email *string) (*models.User, e
 	return row.toProto(), nil
 }
 
-func (x *PG) ListUsers(_ context.Context, req *models.UserListParams) ([]*models.User, error) {
+func (x *PgRepo) ListUsers(_ context.Context, req *models.UserListParams) ([]*models.User, error) {
 	var (
 		result []*models.User
 		rows   []*UserDto

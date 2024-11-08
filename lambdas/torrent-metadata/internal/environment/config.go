@@ -2,7 +2,7 @@ package environment
 
 import (
 	"github.com/spf13/viper"
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 )
 
 const (
@@ -11,13 +11,13 @@ const (
 )
 
 type Config struct {
-	*environment.Config
+	*env.Config
 	SQSTorrentParsedURL   string
 	S3TorrentParsedBucket string
 }
 
 func New() *Config {
-	globalConfig := environment.New()
+	globalConfig := env.New()
 	return &Config{
 		Config:                globalConfig,
 		SQSTorrentParsedURL:   viper.GetString(envVarSQSTorrentParsedURL),

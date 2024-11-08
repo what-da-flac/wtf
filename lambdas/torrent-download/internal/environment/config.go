@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 )
 
 const (
@@ -14,14 +14,14 @@ const (
 )
 
 type Config struct {
-	*environment.Config
+	*env.Config
 	BucketDownloads string
 	BucketParsed    string
 	Timeout         time.Duration
 }
 
 func New() *Config {
-	globalConfig := environment.New()
+	globalConfig := env.New()
 	return &Config{
 		Config:          globalConfig,
 		BucketDownloads: viper.GetString(envVarDownloadsBucket),

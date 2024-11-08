@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
@@ -19,8 +19,8 @@ var (
 func main() {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting torrent-parser version:", Version)
-	config := environment.New()
-	l := rabbits.NewListener(logger, config.Queues.TorrentInfo, config.RabbitMQ.URL, time.Second)
+	config := env.New()
+	l := rabbits.NewListener(logger, env.QueueTorrentInfo, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	fn, err := processMessage(logger, config)
 	if err != nil {
@@ -30,7 +30,7 @@ func main() {
 	select {}
 }
 
-func processMessage(logger ifaces.Logger, config *environment.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {

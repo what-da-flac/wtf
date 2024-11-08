@@ -10,7 +10,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/magnet-parser/internal/processors"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/processors"
 )
 
 var (
@@ -19,11 +19,11 @@ var (
 
 func main() {
 	logger := loggers.MustNewDevelopmentLogger()
-	logger.Info("starting magnet-parser version:", Version)
+	logger.Info("starting torrent-parser version:", Version)
 	config := env.New()
-	l := rabbits.NewListener(logger, env.QueueMagnetParser, config.RabbitMQ.URL, time.Second)
+	l := rabbits.NewListener(logger, env.QueueTorrentParser, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
-	publisher := rabbits.NewPublisher(logger, env.QueueTorrentParser, config.RabbitMQ.URL)
+	publisher := rabbits.NewPublisher(logger, env.QueueTorrentInfo, config.RabbitMQ.URL)
 	if err := publisher.Build(); err != nil {
 		logger.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *en
 			logger.Errorf("deserializing payload error: %v", err)
 			return ifaces.MessageReject, nil
 		}
-		logger.Infof("received torrent with magnet link: %s", torrent.MagnetLink)
+		logger.Infof("received torrent with filename: %s", torrent.Filename)
 		if err := processors.Process(publisher, logger, sess, config, torrent); err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil

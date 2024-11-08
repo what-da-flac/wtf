@@ -4,24 +4,33 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/jinzhu/copier"
+	"github.com/what-da-flac/wtf/go-common/env"
+	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/go-common/ihandlers"
+	"github.com/what-da-flac/wtf/go-common/rabbits"
+	"github.com/what-da-flac/wtf/openapi/models"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
-	"github.com/jinzhu/copier"
-	"github.com/what-da-flac/wtf/go-common/ihandlers"
-	"github.com/what-da-flac/wtf/openapi/models"
 )
 
 type Server struct {
-	config        *environment.Config
-	identifier    interfaces2.Identifier
-	repository    interfaces2.Repository
-	timer         interfaces2.Timer
-	messageSender interfaces2.MessageSender
+	config     *environment.Config
+	identifier interfaces2.Identifier
+	logger     ifaces.Logger
+	repository interfaces2.Repository
+	timer      ifaces.Timer
+	publishers map[env.QueueName]ifaces.Publisher
+
+	rabbitURL string
 }
 
-func New() *Server {
-	return &Server{}
+func New(logger ifaces.Logger, rabbitURL string) *Server {
+	return &Server{
+		logger:     logger,
+		publishers: make(map[env.QueueName]ifaces.Publisher),
+		rabbitURL:  rabbitURL,
+	}
 }
 
 func (x *Server) WithConfig(config *environment.Config) *Server {
@@ -29,7 +38,7 @@ func (x *Server) WithConfig(config *environment.Config) *Server {
 	return x
 }
 
-func (x *Server) WithIdentifier(identifier interfaces2.Identifier) *Server {
+func (x *Server) WithIdentifier(identifier ifaces.Identifier) *Server {
 	x.identifier = identifier
 	return x
 }
@@ -39,14 +48,18 @@ func (x *Server) WithRepository(repository interfaces2.Repository) *Server {
 	return x
 }
 
-func (x *Server) WithTimer(timer interfaces2.Timer) *Server {
+func (x *Server) WithTimer(timer ifaces.Timer) *Server {
 	x.timer = timer
 	return x
 }
 
-func (x *Server) WithMessageSender(messageSender interfaces2.MessageSender) *Server {
-	x.messageSender = messageSender
+func (x *Server) AddPublisher(key env.QueueName) *Server {
+	x.publishers[key] = rabbits.NewPublisher(x.logger, key, x.rabbitURL)
 	return x
+}
+
+func (x *Server) publisher(key env.QueueName) ifaces.Publisher {
+	return x.publishers[key]
 }
 
 func (x *Server) context(r *http.Request) context.Context {

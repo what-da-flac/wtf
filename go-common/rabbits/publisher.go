@@ -3,6 +3,8 @@ package rabbits
 import (
 	"fmt"
 
+	"github.com/what-da-flac/wtf/go-common/env"
+
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 )
@@ -18,11 +20,11 @@ type Publisher struct {
 	queue *amqp091.Queue
 }
 
-func NewPublisher(logger ifaces.Logger, name, uri string) *Publisher {
+func NewPublisher(logger ifaces.Logger, name env.QueueName, uri string) *Publisher {
 	return &Publisher{
 		built:  false,
 		logger: logger,
-		name:   name,
+		name:   name.String(),
 		uri:    uri,
 	}
 }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/what-da-flac/wtf/go-common/env"
+
 	"github.com/rabbitmq/amqp091-go"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 )
@@ -23,10 +25,10 @@ type Listener struct {
 // name: unique name of queue.
 // uri: fully qualified rabbitMQ url to connect at.
 // interval: the amount of time listener waits for next message.
-func NewListener(logger ifaces.Logger, name, uri string, interval time.Duration) *Listener {
+func NewListener(logger ifaces.Logger, name env.QueueName, uri string, interval time.Duration) *Listener {
 	return &Listener{
 		logger:   logger,
-		name:     name,
+		name:     name.String(),
 		uri:      uri,
 		interval: interval,
 	}

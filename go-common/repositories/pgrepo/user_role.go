@@ -1,4 +1,4 @@
-package repositories
+package pgrepo
 
 import (
 	"context"
@@ -6,14 +6,14 @@ import (
 	"github.com/what-da-flac/wtf/openapi/models"
 )
 
-func (x *PG) AddUser(_ context.Context, role *models.Role, user *models.User) error {
+func (x *PgRepo) AddUser(_ context.Context, role *models.Role, user *models.User) error {
 	db := x.GORM()
 	return db.Create(&UserRoleDto{
 		RoleId: role.Id,
 		UserId: user.Id,
 	}).Error
 }
-func (x *PG) RemoveUser(_ context.Context, role *models.Role, user *models.User) error {
+func (x *PgRepo) RemoveUser(_ context.Context, role *models.Role, user *models.User) error {
 	model := &UserRoleDto{
 		RoleId: role.Id,
 		UserId: user.Id,
@@ -22,7 +22,7 @@ func (x *PG) RemoveUser(_ context.Context, role *models.Role, user *models.User)
 	return db.Where(model).Delete(&UserRoleDto{}).Unscoped().Error
 }
 
-func (x *PG) ListUsersInRole(_ context.Context, roleId string) ([]*models.User, error) {
+func (x *PgRepo) ListUsersInRole(_ context.Context, roleId string) ([]*models.User, error) {
 	var (
 		result []*models.User
 		rows   []*UserRoleDto
@@ -37,7 +37,7 @@ func (x *PG) ListUsersInRole(_ context.Context, roleId string) ([]*models.User, 
 	return result, nil
 }
 
-func (x *PG) ListRolesForUser(_ context.Context, user *models.User) ([]*models.Role, error) {
+func (x *PgRepo) ListRolesForUser(_ context.Context, user *models.User) ([]*models.Role, error) {
 	var (
 		result []*models.Role
 		rows   []*UserRoleDto

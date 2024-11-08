@@ -8,7 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/what-da-flac/wtf/go-common/amazon"
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
 	"github.com/what-da-flac/wtf/services/torrent-parser/internal/parsing"
@@ -16,7 +16,7 @@ import (
 
 func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 	sess *session.Session,
-	config *environment.Config, torrent *models.Torrent) error {
+	config *env.Config, torrent *models.Torrent) error {
 	// base dir must be /tmp since lambdas cannot write anywhere else
 	// download torrent from s3
 	file, err := os.CreateTemp(os.TempDir(), "_torrent")

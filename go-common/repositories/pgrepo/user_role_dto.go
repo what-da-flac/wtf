@@ -1,4 +1,4 @@
-package repositories
+package pgrepo
 
 type UserRoleDto struct {
 	RoleId string
