@@ -77,6 +77,19 @@ services:
       - .env
       - .env.credentials
 
+  torrent-download:
+    image: torrent-download:${GIT_TAG}
+    container_name: torrent-download
+    entrypoint: ["/app/service"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+      - .env.credentials
+
   torrent-info:
     image: torrent-info:${GIT_TAG}
     container_name: torrent-info
@@ -93,8 +106,6 @@ services:
     container_name: torrent-parser
     entrypoint: ["/app/service"]
     depends_on:
-      postgres:
-        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     env_file:
