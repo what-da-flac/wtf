@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/what-da-flac/wtf/go-common/pipes"
+	"github.com/what-da-flac/wtf/services/gateway/internal/pipes"
 )
 
 const (
