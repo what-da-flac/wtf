@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/what-da-flac/wtf/go-common/istring"
 	"github.com/what-da-flac/wtf/go-common/pipes"
 )
 
@@ -81,7 +80,7 @@ func tagMatches(r io.Reader, versionType string) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	tags := istring.IString(strings.Split(string(data), "\n")).Filter(func(s string) bool {
+	tags := IString(strings.Split(string(data), "\n")).Filter(func(s string) bool {
 		if strings.TrimSpace(s) == "" {
 			return false
 		}
@@ -107,4 +106,24 @@ func (x Tag) Number() int {
 		return 0
 	}
 	return value
+}
+
+type IString []string
+
+func (x IString) Filter(filter func(s string) bool) IString {
+	var res IString
+	for _, v := range x {
+		if filter(v) {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+func (x IString) Reverse() IString {
+	var res IString
+	for i := len(x) - 1; i >= 0; i-- {
+		res = append(res, x[i])
+	}
+	return res
 }
