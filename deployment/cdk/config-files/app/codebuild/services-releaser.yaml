@@ -24,7 +24,7 @@ ManagedPolicies:
 Name: services-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: services/codebuild/services-deploy.yaml
+  CodebuildScriptPath: codebuild/services-deploy.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release
