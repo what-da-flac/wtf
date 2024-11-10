@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/what-da-flac/wtf/go-common/identifiers"
+
 	"github.com/what-da-flac/wtf/services/torrent-info/internal/interfaces"
 
 	"github.com/what-da-flac/wtf/go-common/pgpq"
@@ -34,7 +36,8 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fn, err := processMessage(logger, repo)
+	identifier := identifiers.NewIdentifier()
+	fn, err := processMessage(logger, repo, identifier)
 	if err != nil {
 		logger.Error(err)
 	}
@@ -53,7 +56,7 @@ func processMessage(logger ifaces.Logger, repo interfaces.Repository,
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		if err = upsertTorrent(ctx, repo, identifier); err != nil {
+		if err = upsertTorrent(ctx, repo, identifier, torrent); err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}
