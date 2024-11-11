@@ -12,23 +12,18 @@ import (
 )
 
 type Create struct {
-	config     *environment.Config
-	identifier interfaces2.Identifier
-	timer      interfaces2.Timer
-	repository interfaces2.Repository
-	publisher  ifaces.Publisher
+	config    *environment.Config
+	timer     interfaces2.Timer
+	publisher ifaces.Publisher
 }
 
 func NewCreate(
 	config *environment.Config,
-	identifier interfaces2.Identifier, repository interfaces2.Repository,
 	timer interfaces2.Timer, sender ifaces.Publisher) *Create {
 	return &Create{
-		config:     config,
-		identifier: identifier,
-		repository: repository,
-		publisher:  sender,
-		timer:      timer,
+		config:    config,
+		publisher: sender,
+		timer:     timer,
 	}
 }
 
@@ -55,13 +50,9 @@ func (x *Create) Create(ctx context.Context, user *models.User, req *models.Post
 	for _, v := range *req.Urls {
 		payload := &models.Torrent{
 			Created:    now,
-			Id:         x.identifier.UUIDv4(),
 			MagnetLink: v,
 			Status:     models.Pending,
 			User:       user,
-		}
-		if err := x.repository.InsertTorrent(ctx, payload); err != nil {
-			return err
 		}
 		data, err := json.Marshal(payload)
 		if err != nil {

@@ -22,7 +22,7 @@ func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("user not found"))
 		return
 	}
-	if err := torrent.NewCreate(x.config, x.identifier, x.repository, x.timer, x.publisher(env.QueueMagnetParser)).
+	if err := torrent.NewCreate(x.config, x.timer, x.publisher(env.QueueMagnetParser)).
 		Create(ctx, user, payload); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return

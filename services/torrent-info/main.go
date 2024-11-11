@@ -5,20 +5,17 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/what-da-flac/wtf/go-common/identifiers"
-
-	"github.com/what-da-flac/wtf/services/torrent-info/internal/interfaces"
-
-	"github.com/what-da-flac/wtf/go-common/pgpq"
-	"github.com/what-da-flac/wtf/go-common/repositories/pgrepo"
-
-	"golang.org/x/net/context"
-
+	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/env"
+	"github.com/what-da-flac/wtf/go-common/identifiers"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
+	"github.com/what-da-flac/wtf/go-common/pgpq"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
+	"github.com/what-da-flac/wtf/go-common/repositories/pgrepo"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/torrent-info/internal/interfaces"
+	"golang.org/x/net/context"
 )
 
 func main() {
@@ -85,6 +82,11 @@ func upsertTorrent(ctx context.Context, repo interfaces.Repository, identifier i
 	if len(files) != 0 {
 		return nil
 	}
+	// delete previous files
+	if err = repo.DeleteTorrentFiles(ctx, t.Id); err != nil {
+		return err
+	}
+	// insert current files
 	for _, file := range t.Files {
 		file.Id = identifier.UUIDv4()
 		file.TorrentId = t.Id

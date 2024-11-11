@@ -27,6 +27,7 @@ func main() {
 	if err := publisher.Build(); err != nil {
 		logger.Fatal(err)
 	}
+	defer func() { _ = publisher.Close() }()
 	fn, err := processMessage(publisher, logger, config)
 	if err != nil {
 		logger.Fatal(err)

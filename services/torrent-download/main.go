@@ -18,24 +18,32 @@ var (
 )
 
 func main() {
+	if err := run(); err != nil {
+		panic(err)
+	}
+}
+
+func run() error {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting torrent-parser version:", Version)
 	config := env.New()
-	l := rabbits.NewListener(logger, env.QueueTorrentParser, config.RabbitMQ.URL, time.Second)
+	l := rabbits.NewListener(logger, env.QueueTorrentDownload, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	publisher := rabbits.NewPublisher(logger, env.QueueTorrentInfo, config.RabbitMQ.URL)
 	if err := publisher.Build(); err != nil {
 		logger.Fatal(err)
 	}
-	fn, err := processMessage(publisher, logger, config)
+	defer func() { _ = publisher.Close() }()
+	fn, err := processMessage(logger, config)
 	if err != nil {
 		logger.Fatal(err)
 	}
 	l.ListenAsync(fn)
 	select {}
+
 }
 
-func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	// maximum time it can take to download all torrent files
 	downloadTimeout := time.Minute * 15
 	awsSession := amazon.NewAWSSessionFromEnvironment()

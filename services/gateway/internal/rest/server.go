@@ -54,7 +54,11 @@ func (x *Server) WithTimer(timer ifaces.Timer) *Server {
 }
 
 func (x *Server) AddPublisher(key env.QueueName) *Server {
-	x.publishers[key] = rabbits.NewPublisher(x.logger, key, x.rabbitURL)
+	p := rabbits.NewPublisher(x.logger, key, x.rabbitURL)
+	if err := p.Build(); err != nil {
+		panic(err)
+	}
+	x.publishers[key] = p
 	return x
 }
 
