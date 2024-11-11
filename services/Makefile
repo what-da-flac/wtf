@@ -1,5 +1,6 @@
 .PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
 .PHONY: local-build local-logs local-pg local-start local-stop local-pull pull
+.PHONY: sql-assign-roles
 
 # AWS account
 ACCOUNT_ID=160885250498
@@ -77,6 +78,9 @@ push-all:
 	@$(foreach service, $(SERVICES), \
 		docker push $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
 	)
+
+sql-assign-roles:
+	docker compose exec postgres psql -f /scripts/assign-roles.sql
 
 tag-all:
 	@$(foreach service, $(SERVICES), \

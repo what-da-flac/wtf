@@ -9,6 +9,3 @@ migrate-new:
 
 migrate-install:
 	go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@$(MIGRATE_VERSION)
-
-sql-assign-roles:
-	docker compose exec postgres psql -f /scripts/assign-roles.sql
