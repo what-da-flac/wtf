@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	torrent2 "github.com/what-da-flac/wtf/services/gateway/internal/domain/torrent"
-
+	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/gateway/internal/domain/torrent"
 )
 
 func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +22,7 @@ func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("user not found"))
 		return
 	}
-	if err := torrent2.NewCreate(x.config, x.identifier, x.repository, x.timer, x.messageSender).
+	if err := torrent.NewCreate(x.config, x.timer, x.publisher(env.QueueMagnetParser)).
 		Create(ctx, user, payload); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
@@ -32,7 +32,7 @@ func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
 
 func (x *Server) GetV1Torrents(w http.ResponseWriter, r *http.Request, params models.GetV1TorrentsParams) {
 	ctx := x.context(r)
-	res, err := torrent2.NewList(x.repository).List(ctx, params)
+	res, err := torrent.NewList(x.repository).List(ctx, params)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusBadRequest, nil, err)
 		return
@@ -48,7 +48,7 @@ func (x *Server) GetV1TorrentsStatuses(w http.ResponseWriter, r *http.Request) {
 
 func (x *Server) GetV1TorrentsId(w http.ResponseWriter, r *http.Request, id string) {
 	ctx := x.context(r)
-	res, err := torrent2.NewLoad(x.repository).Load(ctx, id)
+	res, err := torrent.NewLoad(x.repository).Load(ctx, id)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
 		return

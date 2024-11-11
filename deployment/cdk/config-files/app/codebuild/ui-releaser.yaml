@@ -33,7 +33,7 @@ ManagedPolicies:
 Name: ui-releaser
 Privileged: true
 Source:
-  CodebuildScriptPath: ui/codebuild/release.yaml
+  CodebuildScriptPath: codebuild/ui-release.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: tag-release

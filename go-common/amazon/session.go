@@ -3,7 +3,7 @@ package amazon
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 )
 
 type AWSSession struct {
@@ -69,7 +69,7 @@ func (x *AWSSession) Session() *session.Session {
 // If no credentials are found, they will be used from the ecs task role.
 // This function works also for local development as is.
 func NewAWSSessionFromEnvironment() *AWSSession {
-	c := environment.New().AWS
+	c := env.New().AWS
 	return NewAWSSession().
 		WithCredential(MustAWSCredentialFromConfiguration(c)).
 		WithEndpoint(c.AWSEndpoint).

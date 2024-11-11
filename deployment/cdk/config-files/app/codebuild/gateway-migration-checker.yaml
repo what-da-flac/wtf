@@ -22,7 +22,7 @@ InlinePolicies:
       - "*"
 Name: gateway-migration-checker
 Source:
-  CodebuildScriptPath: services/gateway/codebuild/migration-checker.yaml
+  CodebuildScriptPath: codebuild/migration-checker.yaml
   Repo: wtf
   Owner: what-da-flac
   Filter: pull-request

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/what-da-flac/wtf/go-common/environment"
+	"github.com/what-da-flac/wtf/go-common/env"
 )
 
 const (
@@ -14,25 +14,21 @@ const (
 )
 
 type Config struct {
-	environment.Config
+	env.Config
 
 	APIUrlPrefix          string
 	CorsAllowedHeaders    string
 	ForceProfileCompleted bool
-	Gateways              Gateways
 	HeaderTimeout         time.Duration
 	SourceURL             string
-	SQS                   SQS
 }
 
 func New() *Config {
-	globalConfig := environment.New()
+	globalConfig := env.New()
 	return &Config{
 		APIUrlPrefix:       viper.GetString(envVarAPIUrlPrefix),
 		CorsAllowedHeaders: viper.GetString(envVarCorsAllowedHeaders),
 		Config:             *globalConfig,
-		Gateways:           newGateways(),
 		HeaderTimeout:      viper.GetDuration(envVarHeaderTimeout),
-		SQS:                newSQS(),
 	}
 }

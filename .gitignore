@@ -12,3 +12,6 @@ __pycache__
 
 # mocked files
 mocks
+
+# bundled files
+service

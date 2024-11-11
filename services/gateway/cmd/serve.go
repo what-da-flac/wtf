@@ -5,25 +5,23 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
-	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
-	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-	"github.com/what-da-flac/wtf/services/gateway/internal/repositories"
-	"github.com/what-da-flac/wtf/services/gateway/internal/rest"
-	"github.com/what-da-flac/wtf/services/gateway/internal/senders"
-	stores2 "github.com/what-da-flac/wtf/services/gateway/internal/stores"
-
 	"github.com/jinzhu/copier"
 	"github.com/spf13/cobra"
-	"github.com/what-da-flac/wtf/go-common/amazon"
+	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
 	"github.com/what-da-flac/wtf/go-common/imodel"
-	"github.com/what-da-flac/wtf/go-common/migrations"
 	"github.com/what-da-flac/wtf/go-common/pgpq"
+	"github.com/what-da-flac/wtf/go-common/repositories/pgrepo"
 	"github.com/what-da-flac/wtf/go-common/sso"
 	"github.com/what-da-flac/wtf/go-common/timers"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
+	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
+	"github.com/what-da-flac/wtf/services/gateway/internal/migrations"
+	"github.com/what-da-flac/wtf/services/gateway/internal/rest"
+	stores2 "github.com/what-da-flac/wtf/services/gateway/internal/stores"
 	"go.uber.org/zap"
 )
 
@@ -63,23 +61,20 @@ func serve(zl *zap.Logger, config *environment.Config) error {
 	logger.Info("db migrations applied successfully")
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
-	repository, err := repositories.NewPG(db, connStr)
+	repository, err := pgrepo.NewPgRepo(db, connStr, false)
 	if err != nil {
 		return err
 	}
-	awsSession := amazon.NewAWSSessionFromEnvironment()
-	if err = awsSession.Build(); err != nil {
-		return err
-	}
-	sess := awsSession.Session()
 	identifier := identifiers.NewIdentifier()
-	messageSender := senders.NewMessageSender(sess, logger, identifier)
-	api := rest.New().
+	api := rest.New(logger, config.RabbitMQ.URL).
 		WithConfig(config).
 		WithTimer(timers.New()).
 		WithIdentifier(identifier).
 		WithRepository(repository).
-		WithMessageSender(messageSender)
+		AddPublisher(env.QueueMagnetParser).
+		AddPublisher(env.QueueTorrentParser).
+		AddPublisher(env.QueueTorrentInfo).
+		AddPublisher(env.QueueTorrentDownload)
 	mux := http.NewServeMux()
 	handler := models.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
 	middlewares, err := configureMiddlewares(config, repository)
