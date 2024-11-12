@@ -17,9 +17,12 @@ phases:
       # Force Git to use SSH instead of HTTPS
       - git config --global url."git@github.com:".insteadOf "https://github.com/"
       # Fetch all tags
-      - git fetch --tags
-      - export GIT_TAG=$(git describe --tags --abbrev=0 --always)
+#      - git fetch --tags
+#      - export GIT_TAG=$(git describe --tags --abbrev=0 --always)
+      # figuring it out env var for git tag
+      - echo dumping environment
+      - 'env | sort'
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
-      - cd services && make build-all
-      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
-      - make tag-all push-all
+#      - cd services && make build-all
+#      - aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-2.amazonaws.com
+#      - make tag-all push-all
