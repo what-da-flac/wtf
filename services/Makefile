@@ -21,7 +21,7 @@ ci-%: mock-% test-%
 	go test -cover  ./$*/...
 
 build-%:
-	docker build --progress=auto  \
+	docker build --progress=plain --no-cache \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$* \
@@ -33,7 +33,7 @@ build-%:
 
 build-all:
 	@$(foreach service, $(SERVICES), \
-		docker build --progress plain --no-cache \
+		docker build --progress=auto --no-cache \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$(service) \

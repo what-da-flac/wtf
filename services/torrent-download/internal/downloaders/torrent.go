@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"os"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -18,8 +19,9 @@ type TorrentLine struct {
 }
 
 type TorrentDownloader struct {
-	logger  ifaces.Logger
-	timeout time.Duration
+	logger        ifaces.Logger
+	timeout       time.Duration
+	daemonProcess *os.Process
 }
 
 func NewTorrentDownloader(logger ifaces.Logger, timeout time.Duration) *TorrentDownloader {
@@ -36,7 +38,15 @@ func (x *TorrentDownloader) Start() error {
 	if err := cmd.Start(); err != nil {
 		return err
 	}
+	x.daemonProcess = cmd.Process
 	return x.waitForStart(x.timeout)
+}
+
+func (x *TorrentDownloader) Stop() error {
+	if x.daemonProcess == nil {
+		return fmt.Errorf("torrent daemon is already stopped or hasn't started yet")
+	}
+	return x.daemonProcess.Kill()
 }
 
 func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
@@ -67,9 +77,9 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 			x.logger.Error(err)
 			return err
 		case <-ticker.C:
-			x.logger.Info("waiting for torrent download, elapsed: %v", time.Since(start))
+			x.logger.Infof("waiting for torrent daemon, elapsed: %v", time.Since(start))
 			if checkFn() {
-				x.logger.Info("torrent download completed")
+				x.logger.Info("torrent daemon is running")
 				return nil
 			}
 		}
@@ -169,7 +179,21 @@ func (x *TorrentDownloader) WaitForDownload(wait, interval time.Duration) bool {
 	}
 }
 
-func (x *TorrentDownloader) ClearAll() error {
+// ClearTorrents removes all torrents from daemon, but keeps downloaded files.
+func (x *TorrentDownloader) ClearTorrents() error {
+	x.logger.Info("clearing pending torrents and related files")
+	cmd := exec.Command("transmission-remote", "-t", "all", "--remove")
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		x.logger.Errorf("failed to clear torrents: %v", err)
+		x.logger.Debugf("command output: %s", output)
+		return err
+	}
+	return nil
+}
+
+// RemoveAll removes all torrents from daemon, but keeps downloaded files.
+func (x *TorrentDownloader) RemoveAll() error {
 	x.logger.Info("clearing pending torrents and related files")
 	cmd := exec.Command("transmission-remote", "-t", "all", "--remove-and-delete")
 	output, err := cmd.CombinedOutput()

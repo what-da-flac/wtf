@@ -14,6 +14,7 @@ const (
 type Config struct {
 	AWS         AWS
 	DB          DB
+	Downloads   Downloads
 	Env         string
 	Google      Google
 	LogLevel    string
@@ -30,6 +31,7 @@ func New() *Config {
 	c := &Config{
 		AWS:         newAWS(),
 		DB:          newDB(),
+		Downloads:   newDownloads(),
 		Env:         viper.GetString(envVarEnv),
 		Google:      newGoogle(),
 		LogLevel:    viper.GetString(envLogLevel),

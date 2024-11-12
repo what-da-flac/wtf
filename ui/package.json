@@ -45,7 +45,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "REACT_APP_TAG_NAME=$(git describe --tags) react-scripts start",
+    "start": "REACT_APP_TAG_NAME=local-dev.0.0.1 react-scripts start",
     "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test-watch": "react-scripts test",
     "test": "react-scripts test --watchAll=false",
