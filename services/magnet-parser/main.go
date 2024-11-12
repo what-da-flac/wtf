@@ -13,9 +13,7 @@ import (
 	"github.com/what-da-flac/wtf/services/magnet-parser/internal/processors"
 )
 
-var (
-	Version string
-)
+var Version string
 
 func main() {
 	logger := loggers.MustNewDevelopmentLogger()
