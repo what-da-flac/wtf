@@ -20,7 +20,7 @@ phases:
 #      - git fetch --tags
 #      - export GIT_TAG=$(git describe --tags --abbrev=0 --always)
       # figuring it out env var for git tag
-      - echo dumping environment
+      - export GIT_TAG=${CODEBUILD_WEBHOOK_HEAD_REF#refs/tags/}
       - 'env | sort'
       - export ACCOUNT_ID=$(echo $CODEBUILD_BUILD_ARN | cut -d':' -f5)
 #      - cd services && make build-all
