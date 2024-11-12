@@ -25,3 +25,10 @@ Receives a torrent object and tries to create/update its information in db. No f
 ## torrent-parser
 
 Receives a torrent object with a reference to s3 object. Downloads the actual torrent file, extracts its information, and sends it to `torrent-info` queue, so it can be updated in db.
+
+
+## Volumes
+
+Data is stored in volumes, which end up being docker volumes mapped to a local path.
+
+`MEDIA_PATH` is the name of the environment variable. Default value can be overridden using `.env.credentials` file.
