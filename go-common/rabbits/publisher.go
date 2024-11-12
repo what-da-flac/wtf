@@ -20,7 +20,7 @@ type Publisher struct {
 	queue *amqp091.Queue
 }
 
-func NewPublisher(logger ifaces.Logger, name env.QueueName, uri string) *Publisher {
+func NewPublisher(logger ifaces.Logger, name env.Names, uri string) *Publisher {
 	return &Publisher{
 		built:  false,
 		logger: logger,

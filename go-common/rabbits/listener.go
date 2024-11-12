@@ -10,7 +10,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 )
 
-// Listener implements ifaces.Listener interface using RabbitMQ as message broker.
+// Listener implements Listener interface using RabbitMQ as message broker.
 type Listener struct {
 	interval time.Duration
 	logger   ifaces.Logger
@@ -25,7 +25,7 @@ type Listener struct {
 // name: unique name of queue.
 // uri: fully qualified rabbitMQ url to connect at.
 // interval: the amount of time listener waits for next message.
-func NewListener(logger ifaces.Logger, name env.QueueName, uri string, interval time.Duration) *Listener {
+func NewListener(logger ifaces.Logger, name env.Names, uri string, interval time.Duration) *Listener {
 	return &Listener{
 		logger:   logger,
 		name:     name.String(),
