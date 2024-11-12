@@ -18,9 +18,11 @@ import (
 	"golang.org/x/net/context"
 )
 
+var Version string
+
 func main() {
 	logger := loggers.MustNewDevelopmentLogger()
-	logger.Info("starting torrent-info")
+	logger.Info("starting torrent-info:", Version)
 	config := env.New()
 	l := rabbits.NewListener(logger, env.QueueTorrentInfo, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()

@@ -13,9 +13,7 @@ import (
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/processors"
 )
 
-var (
-	Version string
-)
+var Version string
 
 func main() {
 	if err := run(); err != nil {

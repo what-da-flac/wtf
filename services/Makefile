@@ -8,7 +8,8 @@ SHELL := /bin/bash
 SERVICES=gateway magnet-parser torrent-download torrent-info torrent-parser
 BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
 BASE_GO_VERSION=1.23
-GIT_TAG=$(shell git describe --tags --abbrev=0 --always)
+GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
+GO_ROOT_PACKAGE=github.com/what-da-flac/wtf/services
 
 $(shell touch .env .env.credentials)
 include .env .env.credentials
@@ -20,20 +21,24 @@ ci-%: mock-% test-%
 	go test -cover  ./$*/...
 
 build-%:
-	docker build \
+	docker build --progress=auto  \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$* \
+		--build-arg GIT_TAG=$(GIT_TAG) \
+		--build-arg GO_ROOT_PACKAGE=$(GO_ROOT_PACKAGE) \
 		-t $*:$(GIT_TAG) \
 		-f $*/Dockerfile \
 		..
 
 build-all:
 	@$(foreach service, $(SERVICES), \
-		docker build --progress plain \
+		docker build --progress plain --no-cache \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$(service) \
+		--build-arg GIT_TAG=$(GIT_TAG) \
+		--build-arg GO_ROOT_PACKAGE=$(GO_ROOT_PACKAGE) \
 		-t $(service):$(GIT_TAG) \
 		-f $(service)/Dockerfile \
 		.. ; \

@@ -28,7 +28,6 @@ const envVarNames = [
   'REACT_APP_GOOGLE_CLIENT_ID',
   'REACT_APP_GOOGLE_CLIENT_SECRET',
   'REACT_APP_TAG_NAME',
-  'REACT_APP_GIT_COMMIT',
   'REACT_APP_GOOGLE_API_KEY',
 ];
 const errors = [];
@@ -44,14 +43,10 @@ const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 // display git info
 const gitTag = process.env.REACT_APP_TAG_NAME;
-const gitCommit = process.env.REACT_APP_GIT_COMMIT;
 
-if (gitTag && gitCommit) {
-  console.table({
-    tag: gitTag,
-    hash: gitCommit,
-  });
-}
+console.table({
+  tag: gitTag,
+});
 
 const theme = createTheme({
   cursorType: 'pointer',

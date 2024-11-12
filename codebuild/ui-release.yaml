@@ -8,8 +8,7 @@ phases:
   build:
     commands:
       - echo build started on `date`
-      - export TAG_NAME=$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed 's|refs/tags/||')
-      - export REACT_APP_TAG_NAME=$TAG_NAME
-      - export REACT_APP_GIT_COMMIT=$(git log -1 --format=%H)
+      - export GIT_TAG=${CODEBUILD_WEBHOOK_HEAD_REF#refs/tags/}
+      - export REACT_APP_TAG_NAME=$GIT_TAG
       - npm run build
-      - aws s3 sync --delete build/ s3://wtf-ui.what-da-flac.com/$TAG_NAME
+      - aws s3 sync build/ s3://wtf-ui.what-da-flac.com/$GIT_TAG
