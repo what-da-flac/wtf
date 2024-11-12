@@ -11,4 +11,4 @@ phases:
       - export GIT_TAG=${CODEBUILD_WEBHOOK_HEAD_REF#refs/tags/}
       - export REACT_APP_TAG_NAME=$GIT_TAG
       - npm run build
-      - aws s3 sync --delete build/ s3://wtf-ui.what-da-flac.com/$GIT_TAG
+      - aws s3 sync build/ s3://wtf-ui.what-da-flac.com/$GIT_TAG
