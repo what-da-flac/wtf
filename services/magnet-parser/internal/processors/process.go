@@ -33,7 +33,7 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 		logger.Errorf("could not stat torrent file: %s", torrentFile)
 		return err
 	}
-	logger.Infof("torrent file size: %s", info.Size())
+	logger.Infof("torrent file size: %v", info.Size())
 	defer func() { _ = os.RemoveAll(torrentFile) }()
 	// save torrent file in s3
 	key := filepath.Base(torrentFile)

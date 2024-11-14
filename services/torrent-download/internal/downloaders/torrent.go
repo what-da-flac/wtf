@@ -46,6 +46,7 @@ func (x *TorrentDownloader) Stop() error {
 	if x.daemonProcess == nil {
 		return fmt.Errorf("torrent daemon is already stopped or hasn't started yet")
 	}
+	defer func() { x.daemonProcess = nil }()
 	return x.daemonProcess.Kill()
 }
 
@@ -194,7 +195,7 @@ func (x *TorrentDownloader) ClearTorrents() error {
 
 // RemoveAll removes all torrents from daemon, but keeps downloaded files.
 func (x *TorrentDownloader) RemoveAll() error {
-	x.logger.Info("clearing pending torrents and related files")
+	x.logger.Info("clearing pending torrents")
 	cmd := exec.Command("transmission-remote", "-t", "all", "--remove-and-delete")
 	output, err := cmd.CombinedOutput()
 	if err != nil {

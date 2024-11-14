@@ -77,15 +77,17 @@ func downloadTorrentContents(logger ifaces.Logger, timeout time.Duration,
 	}
 	// clean up resources for next execution
 	defer func() {
-		_ = downloader.ClearTorrents()
 		_ = downloader.Stop()
 	}()
 	if err := downloader.AddTorrent(targetDir, torrentFilename); err != nil {
 		return err
 	}
-	if downloader.WaitForDownload(timeout, interval) {
+	if !downloader.WaitForDownload(timeout, interval) {
 		// if download was not successful, remove all files and torrents
 		return downloader.RemoveAll()
+	}
+	if err := downloader.ClearTorrents(); err != nil {
+		return err
 	}
 	return fmt.Errorf("could not complete torrent download before timeout")
 }
