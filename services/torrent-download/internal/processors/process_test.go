@@ -3,6 +3,7 @@ package processors
 import (
 	"fmt"
 	"io"
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
@@ -11,7 +12,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/mocks"
+	"github.com/what-da-flac/wtf/services/torrent-download/mocks"
 )
 
 func TestProcess_RemoveDownloadedFiles(t *testing.T) {
@@ -54,9 +55,13 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 		Id:       "123",
 		Filename: "123.torrent",
 	}
-	config := env.New()
+	config := &env.Config{
+		Volumes: env.Volumes{
+			Downloads: env.Names(filepath.Join(os.TempDir(), "downloads")),
+		},
+	}
 	config.Downloads.Timeout = time.Minute * 30
-	elapsed, err := Process(logger, torrentDownloader, s3Downloader, torrent, config)
+	elapsed, err := Process(logger, torrentDownloader, s3Downloader, torrent, config, os.TempDir())
 	assert.Error(t, err)
 	assert.Empty(t, elapsed)
 	assert.True(t, removeAllCalled, "expected to call removeAll")

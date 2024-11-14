@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 	"time"
 
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
@@ -58,7 +59,7 @@ func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) 
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		elapsed, err := processors.Process(logger, torrentDownloader, s3Downloader, torrent, config)
+		elapsed, err := processors.Process(logger, torrentDownloader, s3Downloader, torrent, config, os.TempDir())
 		if err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil

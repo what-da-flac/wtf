@@ -12,18 +12,17 @@ import (
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 )
 
-func Process(logger ifaces.Logger,
-	torrentDownloader interfaces.TorrentDownloader, s3Downloader interfaces.S3Downloader,
-	torrent *models.Torrent, config *env.Config) (*time.Duration, error) {
+func Process(
+	logger ifaces.Logger, torrentDownloader interfaces.TorrentDownloader,
+	s3Downloader interfaces.S3Downloader, torrent *models.Torrent,
+	config *env.Config, workingDir string) (*time.Duration, error) {
 	// validate incoming torrent
 	if err := validateTorrent(torrent); err != nil {
 		return nil, err
 	}
 	start := time.Now()
-	// setting working directory
-	tmpDir := os.TempDir()
 	// download torrent from s3
-	torrentDir := filepath.Join(tmpDir, "torrents")
+	torrentDir := filepath.Join(workingDir, "torrents")
 	if err := os.MkdirAll(torrentDir, 0700); err != nil {
 		return nil, err
 	}

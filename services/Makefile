@@ -94,7 +94,9 @@ tag-all:
 	)
 
 test-all: mock-all
-	go test  -short -cover  ./...
+	@$(foreach service, $(SERVICES), \
+		cd $(service) && go test -short -cover ./... && cd ..; \
+	)
 
 test-%: mock-%
 	go test -short ./$*/...
