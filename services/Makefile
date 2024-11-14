@@ -1,5 +1,5 @@
 .PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
-.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull
+.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull mock-all
 .PHONY: sql-assign-roles
 
 # AWS account
@@ -72,6 +72,7 @@ mock-all:
 	@$(foreach service, $(SERVICES), \
 		cd $(service) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
 	)
+	$(MAKE) -C ../go-common mock-gen
 
 mock-%:
 	cd $* && rm -rf mocks && mkdir -p mocks && go generate ./...
@@ -93,7 +94,7 @@ tag-all:
 	)
 
 test-all: mock-all
-	go test -cover  ./...
+	go test  -short -cover  ./...
 
-test-%:
-	go test ./$*/...
+test-%: mock-%
+	go test -short ./$*/...

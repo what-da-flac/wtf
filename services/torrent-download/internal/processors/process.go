@@ -6,15 +6,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 )
 
-func Process(sess *session.Session, logger ifaces.Logger,
+func Process(logger ifaces.Logger,
+	torrentDownloader interfaces.TorrentDownloader, s3Downloader interfaces.S3Downloader,
 	torrent *models.Torrent, config *env.Config) (*time.Duration, error) {
 	// validate incoming torrent
 	if err := validateTorrent(torrent); err != nil {
@@ -30,7 +29,7 @@ func Process(sess *session.Session, logger ifaces.Logger,
 	}
 	// clean up resources for next  execution
 	defer func() { _ = os.RemoveAll(torrentDir) }()
-	torrentFilename, err := downloadTorrentFromS3(logger, sess, torrent, torrentDir)
+	torrentFilename, err := downloadTorrentFromS3(logger, s3Downloader, torrent, torrentDir)
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +41,14 @@ func Process(sess *session.Session, logger ifaces.Logger,
 	defer func() { _ = os.RemoveAll(targetDir) }()
 
 	// download torrent contents
-	if err = downloadTorrentContents(logger, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
+	if err = downloadTorrentContents(logger, torrentDownloader, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
 	return &elapsed, nil
 }
 
-func downloadTorrentFromS3(logger ifaces.Logger, sess *session.Session,
+func downloadTorrentFromS3(logger ifaces.Logger, downloader interfaces.S3Downloader,
 	torrent *models.Torrent, targetDir string) (*string, error) {
 	// torrent file from s3 is downloaded to /tmp/current.torrent
 	filename := filepath.Join(targetDir, torrent.Filename)
@@ -60,18 +59,16 @@ func downloadTorrentFromS3(logger ifaces.Logger, sess *session.Session,
 	}
 	defer func() { _ = file.Close() }()
 	logger.Infof("starting downloading torrent from s3: %s", torrent.Filename)
-	if err := amazon.Download(sess, file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
+	if err := downloader.Download(file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
 		logger.Errorf("failed to download torrent from s3: %s", torrent.Filename)
 		return nil, err
 	}
 	return &filename, nil
 }
 
-func downloadTorrentContents(logger ifaces.Logger, timeout time.Duration,
+func downloadTorrentContents(logger ifaces.Logger, downloader interfaces.TorrentDownloader, timeout time.Duration,
 	targetDir, torrentFilename string) error {
 	interval := time.Second * 5
-	daemonTimeout := time.Second * 10
-	downloader := downloaders.NewTorrentDownloader(logger, daemonTimeout)
 	if err := downloader.Start(); err != nil {
 		return err
 	}
@@ -84,7 +81,10 @@ func downloadTorrentContents(logger ifaces.Logger, timeout time.Duration,
 	}
 	if !downloader.WaitForDownload(timeout, interval) {
 		// if download was not successful, remove all files and torrents
-		return downloader.RemoveAll()
+		if err := downloader.RemoveAll(); err != nil {
+			return err
+		}
+		return fmt.Errorf("torrent download timed out after: %v", timeout)
 	}
 	if err := downloader.ClearTorrents(); err != nil {
 		return err

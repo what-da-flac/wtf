@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
+
 	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
@@ -47,6 +49,8 @@ func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) 
 		return nil, err
 	}
 	sess := awsSession.Session()
+	s3Downloader := amazon.NewDownloader(sess)
+	torrentDownloader := downloaders.NewTorrentDownloader(logger, config.Downloads.Timeout)
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
@@ -54,7 +58,7 @@ func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) 
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		elapsed, err := processors.Process(sess, logger, torrent, config)
+		elapsed, err := processors.Process(logger, torrentDownloader, s3Downloader, torrent, config)
 		if err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
