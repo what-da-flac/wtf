@@ -2,7 +2,10 @@ package main
 
 import (
 	"encoding/json"
+	"os"
 	"time"
+
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
 
 	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/env"
@@ -42,13 +45,13 @@ func run() error {
 }
 
 func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
-	// maximum time it can take to download all torrent files
-	downloadTimeout := time.Minute * 15
 	awsSession := amazon.NewAWSSessionFromEnvironment()
 	if err := awsSession.Build(); err != nil {
 		return nil, err
 	}
 	sess := awsSession.Session()
+	s3Downloader := amazon.NewDownloader(sess)
+	torrentDownloader := downloaders.NewTorrentDownloader(logger, config.Downloads.Timeout)
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
@@ -56,10 +59,12 @@ func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) 
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		if err := processors.Process(sess, logger, downloadTimeout, torrent); err != nil {
+		elapsed, err := processors.Process(logger, torrentDownloader, s3Downloader, torrent, config, os.TempDir())
+		if err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}
+		logger.Infof("downloaded torrent, time elapsed: %v", elapsed)
 		return ifaces.MessageAcknowledge, nil
 	}, nil
 }

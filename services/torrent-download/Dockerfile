@@ -14,7 +14,7 @@ RUN cd services/${SERVICE_NAME} && \
 FROM public.ecr.aws/docker/library/alpine:3.16
 ARG SERVICE_NAME=""
 RUN apk update && \
-    apk add ca-certificates libc6-compat transmission-cli && \
+    apk add ca-certificates libc6-compat transmission-cli transmission-daemon && \
     rm -rf /var/cache/apk/*
 WORKDIR /app
 

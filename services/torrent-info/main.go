@@ -67,6 +67,9 @@ func upsertTorrent(ctx context.Context, repo interfaces.Repository, identifier i
 	if t == nil || t.Id == "" {
 		return fmt.Errorf("missing id in torrent, cannot process in db")
 	}
+	if t.User == nil || t.User.Id == "" {
+		return fmt.Errorf("missing user in torrent, cannot process in db")
+	}
 	if _, err := repo.SelectTorrent(ctx, t.Id); err != nil {
 		if err = repo.InsertTorrent(ctx, t); err != nil {
 			return err

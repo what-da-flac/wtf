@@ -3,9 +3,8 @@ package downloaders
 import (
 	"testing"
 
-	"github.com/what-da-flac/wtf/go-common/loggers"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/what-da-flac/wtf/go-common/loggers"
 )
 
 func TestTorrentDownloader_checkLine(t *testing.T) {

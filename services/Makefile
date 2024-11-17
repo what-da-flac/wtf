@@ -1,5 +1,5 @@
 .PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
-.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull
+.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull mock-all
 .PHONY: sql-assign-roles
 
 # AWS account
@@ -21,7 +21,7 @@ ci-%: mock-% test-%
 	go test -cover  ./$*/...
 
 build-%:
-	docker build --progress=auto  \
+	docker build --progress=plain --no-cache \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$* \
@@ -33,7 +33,7 @@ build-%:
 
 build-all:
 	@$(foreach service, $(SERVICES), \
-		docker build --progress plain --no-cache \
+		docker build --progress=auto --no-cache \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$(service) \
@@ -72,6 +72,7 @@ mock-all:
 	@$(foreach service, $(SERVICES), \
 		cd $(service) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
 	)
+	$(MAKE) -C ../go-common mock-gen
 
 mock-%:
 	cd $* && rm -rf mocks && mkdir -p mocks && go generate ./...
@@ -93,7 +94,9 @@ tag-all:
 	)
 
 test-all: mock-all
-	go test -cover  ./...
+	@$(foreach service, $(SERVICES), \
+		cd $(service) && go test -short -cover ./... && cd ..; \
+	)
 
-test-%:
-	go test ./$*/...
+test-%: mock-%
+	go test -short ./$*/...

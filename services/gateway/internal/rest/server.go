@@ -20,7 +20,7 @@ type Server struct {
 	logger     ifaces.Logger
 	repository interfaces2.Repository
 	timer      ifaces.Timer
-	publishers map[env.QueueName]ifaces.Publisher
+	publishers map[env.Names]ifaces.Publisher
 
 	rabbitURL string
 }
@@ -28,7 +28,7 @@ type Server struct {
 func New(logger ifaces.Logger, rabbitURL string) *Server {
 	return &Server{
 		logger:     logger,
-		publishers: make(map[env.QueueName]ifaces.Publisher),
+		publishers: make(map[env.Names]ifaces.Publisher),
 		rabbitURL:  rabbitURL,
 	}
 }
@@ -53,7 +53,7 @@ func (x *Server) WithTimer(timer ifaces.Timer) *Server {
 	return x
 }
 
-func (x *Server) AddPublisher(key env.QueueName) *Server {
+func (x *Server) AddPublisher(key env.Names) *Server {
 	p := rabbits.NewPublisher(x.logger, key, x.rabbitURL)
 	if err := p.Build(); err != nil {
 		panic(err)
@@ -62,7 +62,7 @@ func (x *Server) AddPublisher(key env.QueueName) *Server {
 	return x
 }
 
-func (x *Server) publisher(key env.QueueName) ifaces.Publisher {
+func (x *Server) publisher(key env.Names) ifaces.Publisher {
 	return x.publishers[key]
 }
 

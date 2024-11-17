@@ -59,7 +59,7 @@ services:
       - .env
       - .env.credentials
     volumes:
-      - ${MEDIA_PATH}:/media
+      - ${MEDIA_PATH}:${VOLUME_MEDIA_PATH}
     environment:
       DB_URL: ${DB_URL_USER}
       PORT: ${GATEWAY_PORT}
@@ -86,6 +86,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    volumes:
+      - ${DOWNLOADS_PATH}:${VOLUME_DOWNLOADS_PATH}
     env_file:
       - .env
       - .env.credentials

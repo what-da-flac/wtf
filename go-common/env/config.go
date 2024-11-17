@@ -14,6 +14,7 @@ const (
 type Config struct {
 	AWS         AWS
 	DB          DB
+	Downloads   Downloads
 	Env         string
 	Google      Google
 	LogLevel    string
@@ -21,6 +22,7 @@ type Config struct {
 	RabbitMQ    RabbitMQ
 	Sentry      Sentry
 	ServiceName string
+	Volumes     Volumes
 }
 
 func New() *Config {
@@ -29,6 +31,7 @@ func New() *Config {
 	c := &Config{
 		AWS:         newAWS(),
 		DB:          newDB(),
+		Downloads:   newDownloads(),
 		Env:         viper.GetString(envVarEnv),
 		Google:      newGoogle(),
 		LogLevel:    viper.GetString(envLogLevel),
@@ -36,6 +39,7 @@ func New() *Config {
 		RabbitMQ:    newRabbitMQ(),
 		Sentry:      newSentry(),
 		ServiceName: viper.GetString(envVarServiceName),
+		Volumes:     newVolumes(),
 	}
 	if c.LogLevel == "" {
 		c.LogLevel = defaultLogLevel
