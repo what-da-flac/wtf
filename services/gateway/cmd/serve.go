@@ -45,11 +45,13 @@ func init() {
 func serve(zl *zap.Logger, config *environment.Config) error {
 	logger := zl.Sugar()
 	connStr := config.DB.URL
+	logger.Infof("trying to connect to postgres at url: %s", config.DB.URL)
 	db, err := pgpq.New(connStr)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = db.Close() }()
+	logger.Info("TODO: connect to rabbitmq")
 	logger.Info("connected to db")
 	if err = migrations.MigrateFS(
 		assets.MigrationFiles(),

@@ -5,14 +5,13 @@ import (
 	"os"
 	"time"
 
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
-
 	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/processors"
 )
 
@@ -28,6 +27,7 @@ func run() error {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting torrent-parser version:", Version)
 	config := env.New()
+	logger.Infof("trying to connect to rabbitmq at url: %s", config.RabbitMQ.URL)
 	l := rabbits.NewListener(logger, env.QueueTorrentDownload, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	publisher := rabbits.NewPublisher(logger, env.QueueTorrentInfo, config.RabbitMQ.URL)
