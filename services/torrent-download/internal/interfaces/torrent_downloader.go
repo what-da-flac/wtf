@@ -8,11 +8,11 @@ type TorrentDownloader interface {
 	// AddTorrent appends a torrent to the queue and starts downloading its files.
 	AddTorrent(targetDir, torrentFileName string) error
 
-	// ClearTorrents clears torrents but keeps files.
-	ClearTorrents() error
+	// RemoveTorrentsLeaveFiles clears torrents but keeps files.
+	RemoveTorrentsLeaveFiles() error
 
-	// RemoveAll clears torrents and files.
-	RemoveAll() error
+	// RemoveTorrentsAndFiles clears torrents and files.
+	RemoveTorrentsAndFiles() error
 
 	// Start runs background processes.
 	Start() error

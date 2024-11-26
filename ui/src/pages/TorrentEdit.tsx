@@ -43,7 +43,7 @@ export function TorrentEdit() {
       <TorrentEditForm
         form={form}
         torrent={torrent}
-        canEdit={true}
+        canEdit={torrent.status === 'pending'}
         onDelete={() => alert('TODO: delete')}
         onSubmit={() => alert('TODO: submit')}
       />

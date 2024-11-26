@@ -82,22 +82,22 @@ export default function TorrentEditForm({
             {...form.getInputProps('magnet_link')}
           />
           <br />
-          {canEdit && (
-            <Group>
+          <Group>
+            {canEdit && (
               <Button type="submit" variant="outline">
-                Save
+                Download
               </Button>
-              {torrent?.id && (
-                <Group>
-                  {torrent.id && (
-                    <Button type="button" variant="outline" onClick={onDelete}>
-                      Delete
-                    </Button>
-                  )}
-                </Group>
-              )}
-            </Group>
-          )}
+            )}
+            {torrent?.id && (
+              <Group>
+                {torrent.id && (
+                  <Button type="button" variant="outline" onClick={onDelete}>
+                    Delete
+                  </Button>
+                )}
+              </Group>
+            )}
+          </Group>
         </Box>
       </form>
     </>

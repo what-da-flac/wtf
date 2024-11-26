@@ -35,7 +35,7 @@ func run() error {
 		logger.Fatal(err)
 	}
 	defer func() { _ = publisher.Close() }()
-	fn, err := processMessage(logger, config)
+	fn, err := processMessage(logger, config, publisher)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -44,7 +44,7 @@ func run() error {
 
 }
 
-func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+func processMessage(logger ifaces.Logger, config *env.Config, publisher ifaces.Publisher) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	awsSession := amazon.NewAWSSessionFromEnvironment()
 	if err := awsSession.Build(); err != nil {
 		return nil, err
@@ -65,6 +65,16 @@ func processMessage(logger ifaces.Logger, config *env.Config) (func(msg []byte) 
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("downloaded torrent, time elapsed: %v", elapsed)
+		torrent.Status = models.Saved
+		data, err := json.Marshal(torrent)
+		if err != nil {
+			logger.Errorf("marshaling torrent error: %v", err)
+			return ifaces.MessageReject, nil
+		}
+		if err = publisher.Publish(data); err != nil {
+			logger.Errorf("publishing torrent info error: %v", err)
+			return ifaces.MessageReject, nil
+		}
 		return ifaces.MessageAcknowledge, nil
 	}, nil
 }
