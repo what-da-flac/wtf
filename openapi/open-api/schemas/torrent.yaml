@@ -48,7 +48,8 @@ properties:
     enum:
       - parsed
       - pending
-      - saved
+      - downloaded
+      - downloading
   filename:
     type: string
   last_error:

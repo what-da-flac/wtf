@@ -28,8 +28,8 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 			filename = torrentFileName
 			return nil
 		},
-		ClearTorrentsFunc: func() error { return nil },
-		RemoveAllFunc: func() error {
+		RemoveTorrentsLeaveFilesFunc: func() error { return nil },
+		RemoveTorrentsAndFilesFunc: func() error {
 			removeAllCalled = true
 			return nil
 		},

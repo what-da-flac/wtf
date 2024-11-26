@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from '@mantine/form';
 import PreLoader from '../components/PreLoader';
 import { Torrent, toTorrent } from '../models/torrent';
 import { TorrentFile } from '../models/torrent_file';
 import TorrentEditForm from '../components/TorrentEditForm';
-import { ApiTorrentLoad } from '../helpers/api';
+import { ApiTorrentDownload, ApiTorrentLoad } from '../helpers/api';
 import { TorrentFilesTable } from '../components/TorrentFilesTable';
 
 export function TorrentEdit() {
@@ -16,6 +16,7 @@ export function TorrentEdit() {
   const form = useForm<Torrent>({
     initialValues: torrent,
   });
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadTorrent(id);
@@ -35,6 +36,11 @@ export function TorrentEdit() {
     }
   }
 
+  async function downloadTorrent(id: string) {
+    await ApiTorrentDownload(id)
+    navigate("/torrents")
+  }
+
   return isLoading ? (
     <PreLoader />
   ) : (
@@ -43,9 +49,9 @@ export function TorrentEdit() {
       <TorrentEditForm
         form={form}
         torrent={torrent}
-        canEdit={true}
+        canEdit={torrent.status === 'pending'}
         onDelete={() => alert('TODO: delete')}
-        onSubmit={() => alert('TODO: submit')}
+        onSubmit={() => downloadTorrent(id)}
       />
       <hr />
       <h3>Files</h3>

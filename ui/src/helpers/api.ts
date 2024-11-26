@@ -99,6 +99,11 @@ async function ApiTorrentPost(data: any) {
   return res.data;
 }
 
+async function ApiTorrentDownload(id: string) {
+  const res = await instance.post(`/v1/torrents/${id}/download`, {});
+  return res.data;
+}
+
 async function ApiTorrentStatuses() {
   const res = await instance.get(`/v1/torrents/statuses`);
   return res.data;
@@ -199,6 +204,7 @@ async function UserLoad(id: string) {
 
 export {
   ApiMovieList,
+  ApiTorrentDownload,
   ApiTorrentList,
   ApiTorrentLoad,
   ApiTorrentPost,

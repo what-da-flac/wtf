@@ -19,6 +19,7 @@ func main() {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting magnet-parser version:", Version)
 	config := env.New()
+	logger.Infof("trying to connect to rabbitmq at url: %s", config.RabbitMQ.URL)
 	l := rabbits.NewListener(logger, env.QueueMagnetParser, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	publisher := rabbits.NewPublisher(logger, env.QueueTorrentParser, config.RabbitMQ.URL)

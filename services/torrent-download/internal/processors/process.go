@@ -33,14 +33,12 @@ func Process(
 		return nil, err
 	}
 	targetDir := filepath.Join(config.Volumes.Downloads.String(), torrent.Id)
-	if err := os.MkdirAll(targetDir, 0755); err != nil {
+	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
 		return nil, err
 	}
-	// clean up resources for next lambda execution
-	defer func() { _ = os.RemoveAll(targetDir) }()
 
 	// download torrent contents
-	if err = downloadTorrentContents(logger, torrentDownloader, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
+	if err = downloadTorrentContents(torrentDownloader, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
@@ -65,7 +63,7 @@ func downloadTorrentFromS3(logger ifaces.Logger, downloader interfaces.S3Downloa
 	return &filename, nil
 }
 
-func downloadTorrentContents(logger ifaces.Logger, downloader interfaces.TorrentDownloader, timeout time.Duration,
+func downloadTorrentContents(downloader interfaces.TorrentDownloader, timeout time.Duration,
 	targetDir, torrentFilename string) error {
 	interval := time.Second * 5
 	if err := downloader.Start(); err != nil {
@@ -80,15 +78,15 @@ func downloadTorrentContents(logger ifaces.Logger, downloader interfaces.Torrent
 	}
 	if !downloader.WaitForDownload(timeout, interval) {
 		// if download was not successful, remove all files and torrents
-		if err := downloader.RemoveAll(); err != nil {
+		if err := downloader.RemoveTorrentsAndFiles(); err != nil {
 			return err
 		}
 		return fmt.Errorf("torrent download timed out after: %v", timeout)
 	}
-	if err := downloader.ClearTorrents(); err != nil {
+	if err := downloader.RemoveTorrentsLeaveFiles(); err != nil {
 		return err
 	}
-	return fmt.Errorf("could not complete torrent download before timeout")
+	return nil
 }
 
 func validateTorrent(torrent *models.Torrent) error {

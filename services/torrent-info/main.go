@@ -24,6 +24,7 @@ func main() {
 	logger := loggers.MustNewDevelopmentLogger()
 	logger.Info("starting torrent-info:", Version)
 	config := env.New()
+	logger.Infof("trying to connect to rabbitmq at url: %s", config.RabbitMQ.URL)
 	l := rabbits.NewListener(logger, env.QueueTorrentInfo, config.RabbitMQ.URL, time.Second)
 	defer func() { _ = l.Close() }()
 	dbUri := config.DB.URL
