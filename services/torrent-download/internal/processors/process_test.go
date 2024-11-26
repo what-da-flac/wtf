@@ -46,7 +46,7 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 		},
 	}
 	s3Downloader := &mocks.S3DownloaderMock{
-		DownloadFunc: func(w io.WriterAt, bucket string, key string) error {
+		DownloadFunc: func(w io.Writer, bucket string, key string) error {
 			assert.Equal(t, env.BucketTorrentParsed.String(), bucket)
 			return nil
 		},

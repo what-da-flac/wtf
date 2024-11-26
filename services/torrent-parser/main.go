@@ -39,7 +39,8 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *en
 	if err := awsSession.Build(); err != nil {
 		return nil, err
 	}
-	sess := awsSession.Session()
+	cfg := awsSession.Session()
+	downloader := amazon.NewS3(cfg)
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
@@ -47,7 +48,7 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *en
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		if err := processors.Process(publisher, logger, sess, config, torrent); err != nil {
+		if err := processors.Process(publisher, downloader, torrent); err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}

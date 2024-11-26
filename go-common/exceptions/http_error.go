@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 type HTTPError struct {

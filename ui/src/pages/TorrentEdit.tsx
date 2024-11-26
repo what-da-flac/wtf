@@ -37,8 +37,8 @@ export function TorrentEdit() {
   }
 
   async function downloadTorrent(id: string) {
-    await ApiTorrentDownload(id)
-    navigate("/torrents")
+    await ApiTorrentDownload(id);
+    navigate('/torrents');
   }
 
   return isLoading ? (

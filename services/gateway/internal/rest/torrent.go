@@ -59,8 +59,14 @@ func (x *Server) GetV1TorrentsId(w http.ResponseWriter, r *http.Request, id stri
 
 func (x *Server) PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request, id string) {
 	queue := env.QueueTorrentDownload
-	p := x.publishers[queue]
-	if p == nil {
+	pubDownload := x.publishers[queue]
+	if pubDownload == nil {
+		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("no publisher found for: %s", queue))
+		return
+	}
+	queue = env.QueueTorrentInfo
+	pubInfo := x.publishers[queue]
+	if pubInfo == nil {
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("no publisher found for: %s", queue))
 		return
 	}
@@ -70,12 +76,17 @@ func (x *Server) PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
 		return
 	}
+	t.Status = models.Queued
 	data, err := json.Marshal(t)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}
-	if err = p.Publish(data); err != nil {
+	if err = pubInfo.Publish(data); err != nil {
+		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
+		return
+	}
+	if err = pubDownload.Publish(data); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}

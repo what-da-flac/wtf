@@ -53,7 +53,11 @@ func (x *PgRepo) ListTorrents(ctx context.Context, params models.GetV1TorrentsPa
 
 func (x *PgRepo) ListTorrentStatuses(ctx context.Context) []string {
 	return []string{
+		string(models.Downloaded),
+		string(models.Downloading),
+		string(models.Queued),
 		string(models.Parsed),
+		string(models.Pending),
 	}
 }
 
