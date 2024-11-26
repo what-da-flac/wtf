@@ -5,18 +5,18 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/what-da-flac/wtf/go-common/amazon"
+	"github.com/what-da-flac/wtf/services/torrent-parser/internal/interfaces"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
 	"github.com/what-da-flac/wtf/services/torrent-parser/internal/parsing"
 )
 
-func Process(publisher ifaces.Publisher, logger ifaces.Logger,
-	sess *session.Session,
-	config *env.Config, torrent *models.Torrent) error {
+func Process(
+	publisher ifaces.Publisher, downloader interfaces.S3Downloader,
+	torrent *models.Torrent) error {
 	// base dir must be /tmp since lambdas cannot write anywhere else
 	// download torrent from s3
 	file, err := os.CreateTemp(os.TempDir(), "_torrent")
@@ -24,7 +24,7 @@ func Process(publisher ifaces.Publisher, logger ifaces.Logger,
 		return err
 	}
 	defer func() { _ = os.RemoveAll(file.Name()) }()
-	if err = amazon.Download(sess, file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
+	if err = downloader.Download(file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
 		return err
 	}
 	if err = file.Close(); err != nil {

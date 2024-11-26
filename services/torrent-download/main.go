@@ -49,8 +49,8 @@ func processMessage(logger ifaces.Logger, config *env.Config, publisher ifaces.P
 	if err := awsSession.Build(); err != nil {
 		return nil, err
 	}
-	sess := awsSession.Session()
-	s3Downloader := amazon.NewDownloader(sess)
+	cfg := awsSession.Session()
+	s3Downloader := amazon.NewS3(cfg)
 	torrentDownloader := downloaders.NewTorrentDownloader(logger, config.Downloads.Timeout)
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}

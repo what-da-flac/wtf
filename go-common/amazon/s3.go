@@ -4,54 +4,99 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"os"
+	"strings"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"golang.org/x/net/context"
 )
 
-type S3 struct {
-	bucket string
-	sess   *session.Session
+type Content struct {
+	ContentDisposition string
+	ContentEncoding    string
+	ContentLanguage    string
+	ContentLength      int64
+	ContentType        string
 }
 
-func NewS3(sess *session.Session, bucket string) *S3 {
+type S3 struct {
+	client *s3.Client
+}
+
+func NewS3(cfg *aws.Config) *S3 {
 	return &S3{
-		bucket: bucket,
-		sess:   sess,
+		client: s3.NewFromConfig(*cfg),
 	}
 }
 
-func (x *S3) Bucket() string { return x.bucket }
-
-func (x *S3) Download(file *os.File, key string) error {
-	return Download(x.sess, file, x.Bucket(), key)
+func (x *S3) Download(w io.Writer, bucket, key string) error {
+	input := &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+	res, err := x.client.GetObject(context.TODO(), input)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = res.Body.Close() }()
+	_, err = io.Copy(w, res.Body)
+	return err
 }
 
-func (x *S3) DownloadWithBucket(file *os.File, bucket, key string) error {
-	return Download(x.sess, file, bucket, key)
+func (x *S3) Upload(r io.Reader, bucket, key string, content Content) error {
+	length := content.ContentLength
+	if length == 0 {
+		return fmt.Errorf("missing contentLength")
+	}
+	input := &s3.PutObjectInput{
+		Bucket:        aws.String(bucket),
+		Key:           aws.String(key),
+		Body:          r,
+		ContentLength: aws.Int64(length),
+	}
+	if content.ContentType != "" {
+		input.ContentType = aws.String(content.ContentType)
+	}
+	if content.ContentDisposition != "" {
+		input.ContentDisposition = aws.String(content.ContentDisposition)
+	}
+	if content.ContentEncoding != "" {
+		input.ContentEncoding = aws.String(content.ContentEncoding)
+	}
+	if content.ContentLanguage != "" {
+		input.ContentLanguage = aws.String(content.ContentLanguage)
+	}
+	_, err := x.client.PutObject(context.TODO(), input)
+	return err
 }
 
-func (x *S3) Upload(file *os.File, key string, content Content) error {
-	return Upload(x.sess, file, x.Bucket(), key, content)
+func (x *S3) PreSignDownload(bucket, key string, expiration time.Duration) (*string, error) {
+	client := s3.NewPresignClient(x.client)
+	url, err := client.PresignGetObject(context.TODO(), &s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}, func(o *s3.PresignOptions) {
+		o.Expires = expiration
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &url.URL, nil
 }
 
-func (x *S3) UploadWithBucket(file *os.File, bucket, key string, content Content) error {
-	return Upload(x.sess, file, bucket, key, content)
+func (x *S3) Info(bucket, key string) (*s3.HeadObjectOutput, error) {
+	input := &s3.HeadObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+	return x.client.HeadObject(context.TODO(), input)
 }
 
-func (x *S3) PreSignDownload(key string, expiration time.Duration) (*string, error) {
-	return PreSignDownload(x.sess, x.Bucket(), key, expiration)
-}
-
-func (x *S3) Info(bucket, key string) (*S3FileInfo, error) {
-	return Info(x.sess, bucket, key)
-}
-
-func (x *S3) DownloadPreSignedURL(w io.Writer, presignedUrl string) error {
+func (x *S3) DownloadPreSignedURL(w io.Writer, url string) error {
 	// intentionally no timeout is being set
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, presignedUrl, nil)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
@@ -72,9 +117,21 @@ func (x *S3) DownloadPreSignedURL(w io.Writer, presignedUrl string) error {
 }
 
 func (x *S3) Copy(srcBucket, srcKey, dstBucket, dstKey string) error {
-	return Copy(x.sess, srcBucket, srcKey, dstBucket, dstKey)
+	srcBucket = strings.TrimPrefix(srcBucket, "/")
+	input := &s3.CopyObjectInput{
+		Bucket:     aws.String(dstBucket),
+		CopySource: aws.String(srcBucket + "/" + srcKey),
+		Key:        aws.String(dstKey),
+	}
+	_, err := x.client.CopyObject(context.TODO(), input)
+	return err
 }
 
 func (x *S3) Remove(bucket, key string) error {
-	return Remove(x.sess, bucket, key)
+	input := &s3.DeleteObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	}
+	_, err := x.client.DeleteObject(context.TODO(), input)
+	return err
 }

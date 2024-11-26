@@ -27,7 +27,7 @@ func main() {
 		logger.Fatal(err)
 	}
 	defer func() { _ = publisher.Close() }()
-	fn, err := processMessage(publisher, logger, config)
+	fn, err := processMessage(publisher, logger)
 	if err != nil {
 		logger.Fatal(err)
 	}
@@ -35,12 +35,12 @@ func main() {
 	select {}
 }
 
-func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *env.Config) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+func processMessage(publisher ifaces.Publisher, logger ifaces.Logger) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	awsSession := amazon.NewAWSSessionFromEnvironment()
 	if err := awsSession.Build(); err != nil {
 		return nil, err
 	}
-	sess := awsSession.Session()
+	cfg := awsSession.Session()
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
@@ -48,7 +48,7 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger, config *en
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with magnet link: %s", torrent.MagnetLink)
-		if err := processors.Process(publisher, logger, sess, config, torrent); err != nil {
+		if err := processors.Process(publisher, logger, cfg, torrent); err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}
