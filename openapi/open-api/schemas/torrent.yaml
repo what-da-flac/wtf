@@ -50,6 +50,7 @@ properties:
       - pending
       - downloaded
       - downloading
+      - queued
   filename:
     type: string
   last_error:
