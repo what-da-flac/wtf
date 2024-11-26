@@ -25,9 +25,10 @@ const (
 
 // Defines values for TorrentStatus.
 const (
-	Parsed  TorrentStatus = "parsed"
-	Pending TorrentStatus = "pending"
-	Saved   TorrentStatus = "saved"
+	Downloaded  TorrentStatus = "downloaded"
+	Downloading TorrentStatus = "downloading"
+	Parsed      TorrentStatus = "parsed"
+	Pending     TorrentStatus = "pending"
 )
 
 // Health defines model for health.
@@ -284,6 +285,9 @@ type ClientInterface interface {
 	// GetV1TorrentsId request
 	GetV1TorrentsId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PostV1TorrentsIdDownload request
+	PostV1TorrentsIdDownload(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1UserListWithBody request with any body
 	PostV1UserListWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -499,6 +503,18 @@ func (c *Client) GetV1TorrentsStatuses(ctx context.Context, reqEditors ...Reques
 
 func (c *Client) GetV1TorrentsId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV1TorrentsIdRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PostV1TorrentsIdDownload(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPostV1TorrentsIdDownloadRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1156,6 +1172,40 @@ func NewGetV1TorrentsIdRequest(server string, id string) (*http.Request, error) 
 	return req, nil
 }
 
+// NewPostV1TorrentsIdDownloadRequest generates requests for PostV1TorrentsIdDownload
+func NewPostV1TorrentsIdDownloadRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/torrents/%s/download", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1UserListRequest calls the generic PostV1UserList builder with application/json body
 func NewPostV1UserListRequest(server string, body PostV1UserListJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -1540,6 +1590,9 @@ type ClientWithResponsesInterface interface {
 	// GetV1TorrentsIdWithResponse request
 	GetV1TorrentsIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetV1TorrentsIdResponse, error)
 
+	// PostV1TorrentsIdDownloadWithResponse request
+	PostV1TorrentsIdDownloadWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostV1TorrentsIdDownloadResponse, error)
+
 	// PostV1UserListWithBodyWithResponse request with any body
 	PostV1UserListWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1UserListResponse, error)
 
@@ -1853,6 +1906,28 @@ func (r GetV1TorrentsIdResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetV1TorrentsIdResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type PostV1TorrentsIdDownloadResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Torrent
+}
+
+// Status returns HTTPResponse.Status
+func (r PostV1TorrentsIdDownloadResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PostV1TorrentsIdDownloadResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2174,6 +2249,15 @@ func (c *ClientWithResponses) GetV1TorrentsIdWithResponse(ctx context.Context, i
 		return nil, err
 	}
 	return ParseGetV1TorrentsIdResponse(rsp)
+}
+
+// PostV1TorrentsIdDownloadWithResponse request returning *PostV1TorrentsIdDownloadResponse
+func (c *ClientWithResponses) PostV1TorrentsIdDownloadWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostV1TorrentsIdDownloadResponse, error) {
+	rsp, err := c.PostV1TorrentsIdDownload(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePostV1TorrentsIdDownloadResponse(rsp)
 }
 
 // PostV1UserListWithBodyWithResponse request with arbitrary body returning *PostV1UserListResponse
@@ -2618,6 +2702,32 @@ func ParseGetV1TorrentsIdResponse(rsp *http.Response) (*GetV1TorrentsIdResponse,
 	return response, nil
 }
 
+// ParsePostV1TorrentsIdDownloadResponse parses an HTTP response from a PostV1TorrentsIdDownloadWithResponse call
+func ParsePostV1TorrentsIdDownloadResponse(rsp *http.Response) (*PostV1TorrentsIdDownloadResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV1TorrentsIdDownloadResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Torrent
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostV1UserListResponse parses an HTTP response from a PostV1UserListWithResponse call
 func ParsePostV1UserListResponse(rsp *http.Response) (*PostV1UserListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -2867,6 +2977,9 @@ type ServerInterface interface {
 	// returns torrent information and the files it contains
 	// (GET /v1/torrents/{id})
 	GetV1TorrentsId(w http.ResponseWriter, r *http.Request, id string)
+	// starts downloading a torrent
+	// (POST /v1/torrents/{id}/download)
+	PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request, id string)
 	// returns a list of users
 	// (POST /v1/user-list)
 	PostV1UserList(w http.ResponseWriter, r *http.Request)
@@ -3254,6 +3367,34 @@ func (siw *ServerInterfaceWrapper) GetV1TorrentsId(w http.ResponseWriter, r *htt
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// PostV1TorrentsIdDownload operation middleware
+func (siw *ServerInterfaceWrapper) PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PostV1TorrentsIdDownload(w, r, id)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // PostV1UserList operation middleware
 func (siw *ServerInterfaceWrapper) PostV1UserList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3561,6 +3702,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("POST "+options.BaseURL+"/v1/torrents/magnets", wrapper.PostV1TorrentsMagnets)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/statuses", wrapper.GetV1TorrentsStatuses)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/{id}", wrapper.GetV1TorrentsId)
+	m.HandleFunc("POST "+options.BaseURL+"/v1/torrents/{id}/download", wrapper.PostV1TorrentsIdDownload)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/user-list", wrapper.PostV1UserList)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/users", wrapper.PostV1Users)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/users/login", wrapper.PostV1UsersLogin)

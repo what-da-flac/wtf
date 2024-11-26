@@ -40,6 +40,8 @@ paths:
     $ref: './resources/torrents_status.yaml'
   /v1/torrents/{id}:
     $ref: './resources/torrent.yaml'
+  /v1/torrents/{id}/download:
+    $ref: './resources/torrent_download.yaml'
 
   /v1/users:
     $ref: './resources/users.yaml'

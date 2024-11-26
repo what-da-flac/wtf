@@ -59,14 +59,24 @@ func processMessage(logger ifaces.Logger, config *env.Config, publisher ifaces.P
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
+		torrent.Status = models.Downloading
+		data, err := json.Marshal(torrent)
+		if err != nil {
+			logger.Errorf("marshaling torrent error: %v", err)
+			return ifaces.MessageReject, nil
+		}
+		if err = publisher.Publish(data); err != nil {
+			logger.Errorf("publishing torrent info error: %v", err)
+			return ifaces.MessageReject, nil
+		}
 		elapsed, err := processors.Process(logger, torrentDownloader, s3Downloader, torrent, config, os.TempDir())
 		if err != nil {
 			logger.Errorf("processing torrent error: %v", err)
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("downloaded torrent, time elapsed: %v", elapsed)
-		torrent.Status = models.Saved
-		data, err := json.Marshal(torrent)
+		torrent.Status = models.Downloaded
+		data, err = json.Marshal(torrent)
 		if err != nil {
 			logger.Errorf("marshaling torrent error: %v", err)
 			return ifaces.MessageReject, nil
