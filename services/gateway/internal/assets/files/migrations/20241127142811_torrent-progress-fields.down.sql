@@ -1,0 +1,1 @@
+ALTER TABLE torrent DROP COLUMN percent;

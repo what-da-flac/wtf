@@ -23,6 +23,7 @@ type TorrentDto struct {
 	TotalSize  string
 	Updated    *time.Time
 	UserId     string
+	Percent    *float64
 }
 
 func (x *TorrentDto) TableName() string { return "torrent" }

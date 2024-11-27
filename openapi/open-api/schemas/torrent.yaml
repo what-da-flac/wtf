@@ -55,3 +55,6 @@ properties:
     type: string
   last_error:
     type: string
+  percent:
+    type: number
+    format: double

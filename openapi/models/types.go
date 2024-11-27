@@ -67,6 +67,7 @@ type Torrent struct {
 	LastError  string        `json:"last_error"`
 	MagnetLink string        `json:"magnet_link"`
 	Name       string        `json:"name"`
+	Percent    *float64      `json:"percent,omitempty"`
 	PieceCount int           `json:"piece_count"`
 	PieceSize  string        `json:"piece_size"`
 	Privacy    string        `json:"privacy"`

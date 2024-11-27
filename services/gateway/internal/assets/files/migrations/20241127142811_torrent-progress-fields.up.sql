@@ -1,0 +1,1 @@
+ALTER TABLE torrent ADD percent NUMERIC(5,2) NULL;
