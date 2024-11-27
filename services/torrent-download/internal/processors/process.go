@@ -10,7 +10,10 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/models"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
 )
+
+// TODO: make this a struct and share dependencies across functions
 
 func Process(
 	logger ifaces.Logger, torrentDownloader interfaces.TorrentDownloader,
@@ -38,7 +41,7 @@ func Process(
 	}
 
 	// download torrent contents
-	if err = downloadTorrentContents(torrentDownloader, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
+	if err = downloadTorrentContents(logger, torrentDownloader, config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
@@ -63,8 +66,11 @@ func downloadTorrentFromS3(logger ifaces.Logger, downloader interfaces.S3Downloa
 	return &filename, nil
 }
 
-func downloadTorrentContents(downloader interfaces.TorrentDownloader, timeout time.Duration,
+func downloadTorrentContents(
+	logger ifaces.Logger,
+	downloader interfaces.TorrentDownloader, timeout time.Duration,
 	targetDir, torrentFilename string) error {
+	var lastProgress float64
 	interval := time.Second * 5
 	if err := downloader.Start(); err != nil {
 		return err
@@ -73,17 +79,25 @@ func downloadTorrentContents(downloader interfaces.TorrentDownloader, timeout ti
 	defer func() {
 		_ = downloader.Stop()
 	}()
-	if err := downloader.AddTorrent(targetDir, torrentFilename); err != nil {
+	if err := downloader.AddTorrent(targetDir, torrentFilename,
+		func(line *model.TorrentLine) {
+			if line.Percent != lastProgress {
+				// TODO: publish to torrent-info
+				lastProgress = line.Percent
+				logger.Info("download ", line.String())
+			}
+		},
+	); err != nil {
 		return err
 	}
 	if !downloader.WaitForDownload(timeout, interval) {
 		// if download was not successful, remove all files and torrents
-		if err := downloader.RemoveTorrentsAndFiles(); err != nil {
+		if err := downloader.RemoveAll(); err != nil {
 			return err
 		}
 		return fmt.Errorf("torrent download timed out after: %v", timeout)
 	}
-	if err := downloader.RemoveTorrentsLeaveFiles(); err != nil {
+	if err := downloader.ClearTorrents(); err != nil {
 		return err
 	}
 	return nil

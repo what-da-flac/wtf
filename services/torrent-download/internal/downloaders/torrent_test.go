@@ -3,6 +3,8 @@ package downloaders
 import (
 	"testing"
 
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,7 +15,7 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *TorrentLine
+		want *model.TorrentLine
 	}{
 		{
 			name: "header",
@@ -27,8 +29,9 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 			args: args{
 				line: `     1    65%   644.3 MB  8 sec        0.0  43245.0   0.00  Downloading  The Cure - Songs Of A Lost World (2024) [24Bit-96kHz] FLAC [PMEDIA]`,
 			},
-			want: &TorrentLine{
-				ID: "1",
+			want: &model.TorrentLine{
+				ID:      "1",
+				Percent: 0.65,
 			},
 		},
 		{
@@ -36,8 +39,9 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 			args: args{
 				line: `2     1%    1.56 MB  18 min       3.0   245.0   0.00  Up & Down    Drum Samples`,
 			},
-			want: &TorrentLine{
-				ID: "2",
+			want: &model.TorrentLine{
+				ID:      "2",
+				Percent: 0.01,
 			},
 		},
 		{
@@ -45,8 +49,9 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 			args: args{
 				line: `101     0%       None  Unknown      0.0     0.0   0.00  Idle         The Cure - Songs Of A Lost World (2024) [24Bit-96kHz] FLAC [PMEDIA] ⭐️`,
 			},
-			want: &TorrentLine{
-				ID: "101",
+			want: &model.TorrentLine{
+				ID:      "101",
+				Percent: 0,
 			},
 		},
 	}

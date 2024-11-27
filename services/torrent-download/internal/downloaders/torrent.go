@@ -1,6 +1,8 @@
 package downloaders
 
 import (
+	"bufio"
+	"bytes"
 	"fmt"
 	"io/fs"
 	"os"
@@ -11,21 +13,21 @@ import (
 	"time"
 
 	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
 )
-
-// TorrentLine represents one torrent in the list
-type TorrentLine struct {
-	ID string
-}
 
 type TorrentDownloader struct {
 	logger        ifaces.Logger
 	timeout       time.Duration
 	daemonProcess *os.Process
 	targetDir     string
+	progressFn    interfaces.ProgressFn
 }
 
-func NewTorrentDownloader(logger ifaces.Logger, timeout time.Duration) *TorrentDownloader {
+func NewTorrentDownloader(
+	logger ifaces.Logger, timeout time.Duration,
+) *TorrentDownloader {
 	return &TorrentDownloader{
 		logger:  logger,
 		timeout: timeout,
@@ -89,8 +91,12 @@ func (x *TorrentDownloader) waitForStart(wait time.Duration) error {
 }
 
 // AddTorrent adds a torrent file to download stack.
-func (x *TorrentDownloader) AddTorrent(targetDir, torrentFileName string) error {
+func (x *TorrentDownloader) AddTorrent(
+	targetDir, torrentFileName string,
+	progressFn interfaces.ProgressFn,
+) error {
 	x.logger.Infof("adding torrent: %s", torrentFileName)
+	x.progressFn = progressFn
 	cmd := exec.Command(
 		"transmission-remote",
 		"--download-dir", targetDir,
@@ -113,6 +119,9 @@ func (x *TorrentDownloader) checkCompleted() bool {
 		fileCount int
 		ok        = true
 	)
+	if x.progressFn != nil {
+		x.showProgress()
+	}
 	if err := filepath.WalkDir(x.targetDir, func(path string, d fs.DirEntry, err error) error {
 		if d.IsDir() {
 			return nil
@@ -129,9 +138,25 @@ func (x *TorrentDownloader) checkCompleted() bool {
 	return ok && fileCount != 0
 }
 
-func (x *TorrentDownloader) readTorrentLine(line string) *TorrentLine {
-	const sep = "\t"
-	res := &TorrentLine{}
+func (x *TorrentDownloader) showProgress() {
+	cmd := exec.Command("transmission-remote", "--list")
+	data, err := cmd.CombinedOutput()
+	if err != nil {
+		x.logger.Error(err)
+	}
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if tl := x.readTorrentLine(line); tl != nil {
+			x.progressFn(tl)
+		}
+	}
+}
+
+func (x *TorrentDownloader) readTorrentLine(line string) *model.TorrentLine {
+	const percent = "%"
+
+	res := &model.TorrentLine{}
 	values := strings.Fields(line)
 	for i, v := range values {
 		if i == 0 {
@@ -143,6 +168,12 @@ func (x *TorrentDownloader) readTorrentLine(line string) *TorrentLine {
 		switch i {
 		case 0:
 			res.ID = strings.TrimSpace(v)
+		case 1:
+			val, err := strconv.ParseFloat(strings.TrimSuffix(v, percent), 64)
+			if err != nil {
+				continue
+			}
+			res.Percent = val / 100
 		default:
 			continue
 		}
@@ -172,8 +203,8 @@ func (x *TorrentDownloader) WaitForDownload(wait, interval time.Duration) bool {
 	}
 }
 
-// RemoveTorrentsLeaveFiles removes all torrents from daemon, but keeps downloaded files.
-func (x *TorrentDownloader) RemoveTorrentsLeaveFiles() error {
+// ClearTorrents removes all torrents from daemon, but keeps downloaded files.
+func (x *TorrentDownloader) ClearTorrents() error {
 	x.logger.Info("clearing pending torrents")
 	cmd := exec.Command("transmission-remote", "-t", "all", "--remove")
 	output, err := cmd.CombinedOutput()
@@ -185,8 +216,8 @@ func (x *TorrentDownloader) RemoveTorrentsLeaveFiles() error {
 	return nil
 }
 
-// RemoveTorrentsAndFiles removes all torrents from list, and also removes its files.
-func (x *TorrentDownloader) RemoveTorrentsAndFiles() error {
+// RemoveAll removes all torrents from list, and also removes its files.
+func (x *TorrentDownloader) RemoveAll() error {
 	x.logger.Info("clearing pending torrents and related files")
 	cmd := exec.Command("transmission-remote", "-t", "all", "--remove-and-delete")
 	output, err := cmd.CombinedOutput()
