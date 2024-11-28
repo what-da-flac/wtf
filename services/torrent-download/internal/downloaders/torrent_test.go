@@ -3,9 +3,8 @@ package downloaders
 import (
 	"testing"
 
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
 )
 
 func TestTorrentDownloader_readTorrentLine(t *testing.T) {
@@ -30,8 +29,10 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 				line: `     1    65%   644.3 MB  8 sec        0.0  43245.0   0.00  Downloading  The Cure - Songs Of A Lost World (2024) [24Bit-96kHz] FLAC [PMEDIA]`,
 			},
 			want: &model.TorrentLine{
-				ID:      "1",
-				Percent: 0.65,
+				ID:         "1",
+				Downloaded: 43245,
+				Eta:        "8 sec",
+				Percent:    0.65,
 			},
 		},
 		{
@@ -40,8 +41,10 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 				line: `2     1%    1.56 MB  18 min       3.0   245.0   0.00  Up & Down    Drum Samples`,
 			},
 			want: &model.TorrentLine{
-				ID:      "2",
-				Percent: 0.01,
+				ID:         "2",
+				Downloaded: 245,
+				Eta:        "18 min",
+				Percent:    0.01,
 			},
 		},
 		{
@@ -51,6 +54,7 @@ func TestTorrentDownloader_readTorrentLine(t *testing.T) {
 			},
 			want: &model.TorrentLine{
 				ID:      "101",
+				Eta:     "Unknown",
 				Percent: 0,
 			},
 		},

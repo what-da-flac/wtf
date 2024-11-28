@@ -175,6 +175,18 @@ func (x *TorrentDownloader) readTorrentLine(line string) *model.TorrentLine {
 				continue
 			}
 			res.Percent = val / 100
+		case 4:
+			if values[3] == "Unknown" {
+				res.Eta = values[3]
+			} else {
+				res.Eta = v + " " + values[i+1]
+			}
+		case 7:
+			val, err := strconv.ParseFloat(v, 64)
+			if err != nil {
+				continue
+			}
+			res.Downloaded = val
 		default:
 			continue
 		}

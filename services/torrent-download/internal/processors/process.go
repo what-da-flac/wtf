@@ -2,6 +2,7 @@ package processors
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -43,8 +44,14 @@ func (x *Processor) Process(
 	}
 	// clean up resources for next  execution
 	defer func() { _ = os.RemoveAll(torrentDir) }()
-	torrentFilename, err := x.downloadTorrentFromS3(torrent, torrentDir)
+	// create torrent destination file
+	torrentFilename := filepath.Join(torrentDir, torrent.Filename)
+	torrentFile, err := os.Create(torrentFilename)
 	if err != nil {
+		return nil, err
+	}
+	// download torrent file from s3
+	if err = x.downloadTorrentFromS3(torrentFile, torrent); err != nil {
 		return nil, err
 	}
 	targetDir := filepath.Join(config.Volumes.Downloads.String(), torrent.Id)
@@ -53,28 +60,21 @@ func (x *Processor) Process(
 	}
 
 	// download torrent contents
-	if err = x.downloadTorrentContents(config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
+	if err = x.downloadTorrentContents(config.Downloads.Timeout, targetDir, torrentFilename); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
 	return &elapsed, nil
 }
 
-func (x *Processor) downloadTorrentFromS3(torrent *models.Torrent, targetDir string) (*string, error) {
-	// torrent file from s3 is downloaded to /tmp/current.torrent
-	filename := filepath.Join(targetDir, torrent.Filename)
-	file, err := os.Create(filename)
-	if err != nil {
-		x.logger.Errorf("failed to create file: %s", filename)
-		return nil, err
-	}
-	defer func() { _ = file.Close() }()
+func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *models.Torrent) error {
 	x.logger.Infof("starting downloading torrent from s3: %s", torrent.Filename)
-	if err := x.s3Downloader.Download(file, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
+	defer func() { _ = w.Close() }()
+	if err := x.s3Downloader.Download(w, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
 		x.logger.Errorf("failed to download torrent from s3: %s", torrent.Filename)
-		return nil, err
+		return err
 	}
-	return &filename, nil
+	return nil
 }
 
 func (x *Processor) downloadTorrentContents(
@@ -94,7 +94,7 @@ func (x *Processor) downloadTorrentContents(
 			if line.Percent != lastProgress {
 				// TODO: publish to torrent-info
 				lastProgress = line.Percent
-				x.logger.Info("download ", line.String())
+				x.logger.Info(line.String())
 			}
 		},
 	); err != nil {
