@@ -13,6 +13,11 @@ type RowParams = {
 };
 
 function Row({ torrent }: RowParams) {
+  const percentage = new Intl.NumberFormat('default', {
+    style: 'percent',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
   return (
     <Table.Tr key={torrent.id} className="table-row-container">
       <Table.Td>
@@ -24,6 +29,10 @@ function Row({ torrent }: RowParams) {
       <Table.Td>{torrent.total_size}</Table.Td>
       <Avatar src={torrent.user.image} radius="xl" />
       <Table.Td>{torrent.status}</Table.Td>
+      <Table.Td>
+        {torrent.percent ? percentage.format(torrent.percent) : ''}
+      </Table.Td>
+      <Table.Td>{torrent.eta}</Table.Td>
     </Table.Tr>
   );
 }
@@ -62,6 +71,8 @@ export default function TorrentTable({
           <Table.Th>Size</Table.Th>
           <Table.Th>Who</Table.Th>
           <Table.Th>Status</Table.Th>
+          <Table.Th>Percent</Table.Th>
+          <Table.Th>Eta</Table.Th>
           {onDelete && <Table.Th className="content-center">Action</Table.Th>}
         </Table.Tr>
       </Table.Thead>

@@ -1,0 +1,1 @@
+ALTER TABLE torrent ADD eta TEXT NOT NULL DEFAULT ('');

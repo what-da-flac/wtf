@@ -8,22 +8,18 @@ import (
 
 // TorrentLine represents one torrent in the list
 type TorrentLine struct {
-	ID         string
-	Downloaded float64
-	Eta        string
-	Percent    float64
+	ID      string
+	Eta     string
+	Percent float64
 }
 
 func (x *TorrentLine) String() string {
-	return fmt.Sprintf("downloaded Mb: %.1f progress: %.2f%% eta: %s",
-		x.Downloaded,
+	return fmt.Sprintf("progress: %.2f%% eta: %s",
 		x.Percent*100,
 		x.Eta)
 }
 
 func NewTorrentLine(line string) *TorrentLine {
-	const percent = "%"
-
 	res := &TorrentLine{}
 	values := strings.Fields(line)
 	for i, v := range values {
@@ -37,7 +33,7 @@ func NewTorrentLine(line string) *TorrentLine {
 		case 0:
 			res.ID = strings.TrimSpace(v)
 		case 1:
-			val, err := strconv.ParseFloat(strings.TrimSuffix(v, percent), 64)
+			val, err := strconv.ParseFloat(strings.TrimSuffix(v, "%"), 64)
 			if err != nil {
 				continue
 			}
@@ -48,12 +44,6 @@ func NewTorrentLine(line string) *TorrentLine {
 			} else {
 				res.Eta = v + " " + values[i+1]
 			}
-		case 7:
-			val, err := strconv.ParseFloat(v, 64)
-			if err != nil {
-				continue
-			}
-			res.Downloaded = val
 		default:
 			continue
 		}

@@ -11,6 +11,8 @@ export class Torrent {
   filename: string;
   name: string;
   total_size: string;
+  percent: number;
+  eta: string;
 
   constructor() {
     this.id = '';
@@ -22,6 +24,8 @@ export class Torrent {
     this.filename = '';
     this.name = 'New torrent';
     this.total_size = '';
+    this.percent = 0;
+    this.eta = '';
   }
 }
 

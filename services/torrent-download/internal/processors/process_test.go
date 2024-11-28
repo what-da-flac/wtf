@@ -8,12 +8,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 	"github.com/what-da-flac/wtf/services/torrent-download/mocks"
 )
 
@@ -62,8 +61,14 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 			Downloads: env.Names(filepath.Join(os.TempDir(), "downloads")),
 		},
 	}
+	publisher := &mocks.PublisherMock{
+		PublishFunc: func(data []byte) error {
+			t.Log("publishing: ", string(data))
+			return nil
+		},
+	}
 	config.Downloads.Timeout = time.Minute * 30
-	x := NewProcessor(logger, torrentDownloader, s3Downloader)
+	x := NewProcessor(logger, torrentDownloader, s3Downloader, publisher)
 	elapsed, err := x.Process(torrent, config, os.TempDir())
 	assert.Error(t, err)
 	assert.Empty(t, elapsed)

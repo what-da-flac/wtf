@@ -28,10 +28,9 @@ func Test_NewTorrentLine(t *testing.T) {
 				line: `     1    65%   644.3 MB  8 sec        0.0  43245.0   0.00  Downloading  The Cure - Songs Of A Lost World (2024) [24Bit-96kHz] FLAC [PMEDIA]`,
 			},
 			want: &TorrentLine{
-				ID:         "1",
-				Downloaded: 43245,
-				Eta:        "8 sec",
-				Percent:    0.65,
+				ID:      "1",
+				Eta:     "8 sec",
+				Percent: 0.65,
 			},
 		},
 		{
@@ -40,10 +39,9 @@ func Test_NewTorrentLine(t *testing.T) {
 				line: `2     1%    1.56 MB  18 min       3.0   245.0   0.00  Up & Down    Drum Samples`,
 			},
 			want: &TorrentLine{
-				ID:         "2",
-				Downloaded: 245,
-				Eta:        "18 min",
-				Percent:    0.01,
+				ID:      "2",
+				Eta:     "18 min",
+				Percent: 0.01,
 			},
 		},
 		{

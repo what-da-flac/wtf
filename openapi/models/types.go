@@ -60,6 +60,7 @@ type RolePut struct {
 // Torrent a torrent magnet link with a description
 type Torrent struct {
 	Created    time.Time     `json:"created"`
+	Eta        string        `json:"eta"`
 	Filename   string        `json:"filename"`
 	Files      []TorrentFile `json:"files"`
 	Hash       string        `json:"hash"`

@@ -1,6 +1,7 @@
 package processors
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -18,12 +19,14 @@ type Processor struct {
 	logger            ifaces.Logger
 	s3Downloader      interfaces.S3Downloader
 	torrentDownloader interfaces.TorrentDownloader
+	publisher         ifaces.Publisher
 }
 
 func NewProcessor(logger ifaces.Logger, torrentDownloader interfaces.TorrentDownloader,
-	s3Downloader interfaces.S3Downloader) *Processor {
+	s3Downloader interfaces.S3Downloader, publisher ifaces.Publisher) *Processor {
 	return &Processor{
 		logger:            logger,
+		publisher:         publisher,
 		s3Downloader:      s3Downloader,
 		torrentDownloader: torrentDownloader,
 	}
@@ -60,7 +63,7 @@ func (x *Processor) Process(
 	}
 
 	// download torrent contents
-	if err = x.downloadTorrentContents(config.Downloads.Timeout, targetDir, torrentFilename); err != nil {
+	if err = x.downloadTorrentContents(config.Downloads.Timeout, targetDir, torrentFilename, torrent); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
@@ -77,10 +80,30 @@ func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *models.Torr
 	return nil
 }
 
+func (x *Processor) UpdateProgress(torrent *models.Torrent) interfaces.ProgressFn {
+	var lastProgress float64
+	return func(line *model.TorrentLine) {
+		if line.Percent != lastProgress {
+			lastProgress = line.Percent
+			x.logger.Info(line.String())
+			torrent.Eta = line.Eta
+			torrent.Percent = &line.Percent
+			data, err := json.Marshal(torrent)
+			if err != nil {
+				x.logger.Errorf("failed to marshal torrent: %s", err.Error())
+				return
+			}
+			if err = x.publisher.Publish(data); err != nil {
+				x.logger.Error(err)
+			}
+		}
+	}
+}
+
 func (x *Processor) downloadTorrentContents(
 	timeout time.Duration,
-	targetDir, torrentFilename string) error {
-	var lastProgress float64
+	targetDir, torrentFilename string,
+	torrent *models.Torrent) error {
 	interval := time.Second * 5
 	if err := x.torrentDownloader.Start(); err != nil {
 		return err
@@ -89,15 +112,12 @@ func (x *Processor) downloadTorrentContents(
 	defer func() {
 		_ = x.torrentDownloader.Stop()
 	}()
-	if err := x.torrentDownloader.AddTorrent(targetDir, torrentFilename,
-		func(line *model.TorrentLine) {
-			if line.Percent != lastProgress {
-				// TODO: publish to torrent-info
-				lastProgress = line.Percent
-				x.logger.Info(line.String())
-			}
-		},
-	); err != nil {
+	if err := x.torrentDownloader.
+		AddTorrent(
+			targetDir,
+			torrentFilename,
+			x.UpdateProgress(torrent),
+		); err != nil {
 		return err
 	}
 	if !x.torrentDownloader.WaitForDownload(timeout, interval) {
