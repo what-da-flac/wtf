@@ -14,60 +14,55 @@ import (
 )
 
 type Processor struct {
-	config            *env.Config
 	logger            ifaces.Logger
 	s3Downloader      interfaces.S3Downloader
 	torrentDownloader interfaces.TorrentDownloader
-	workingDir        string
 }
 
-func NewProcessor(
-	config *env.Config,
-	logger ifaces.Logger,
-	s3Downloader interfaces.S3Downloader,
-	torrentDownloader interfaces.TorrentDownloader,
-	workingDir string) *Processor {
+func NewProcessor(logger ifaces.Logger, torrentDownloader interfaces.TorrentDownloader,
+	s3Downloader interfaces.S3Downloader) *Processor {
 	return &Processor{
-		config:            config,
 		logger:            logger,
 		s3Downloader:      s3Downloader,
 		torrentDownloader: torrentDownloader,
-		workingDir:        workingDir,
 	}
 }
 
-func (x *Processor) Process(torrent *models.Torrent) (*time.Duration, error) {
+func (x *Processor) Process(
+	torrent *models.Torrent,
+	config *env.Config, workingDir string) (*time.Duration, error) {
 	// validate incoming torrent
 	if err := x.validateTorrent(torrent); err != nil {
 		return nil, err
 	}
 	start := time.Now()
 	// download torrent from s3
-	torrentDir := filepath.Join(x.workingDir, "torrents")
+	torrentDir := filepath.Join(workingDir, "torrents")
 	if err := os.MkdirAll(torrentDir, 0700); err != nil {
 		return nil, err
 	}
 	// clean up resources for next  execution
 	defer func() { _ = os.RemoveAll(torrentDir) }()
-	if _, err := x.downloadTorrentFromS3(torrent); err != nil {
+	torrentFilename, err := x.downloadTorrentFromS3(torrent, torrentDir)
+	if err != nil {
 		return nil, err
 	}
-	targetDir := filepath.Join(x.config.Volumes.Downloads.String(), torrent.Id)
+	targetDir := filepath.Join(config.Volumes.Downloads.String(), torrent.Id)
 	if err := os.MkdirAll(targetDir, os.ModePerm); err != nil {
 		return nil, err
 	}
 
 	// download torrent contents
-	if err := x.downloadTorrentContents(torrent, x.config.Downloads.Timeout); err != nil {
+	if err = x.downloadTorrentContents(config.Downloads.Timeout, targetDir, *torrentFilename); err != nil {
 		return nil, err
 	}
 	elapsed := time.Since(start)
 	return &elapsed, nil
 }
 
-func (x *Processor) downloadTorrentFromS3(torrent *models.Torrent) (*string, error) {
+func (x *Processor) downloadTorrentFromS3(torrent *models.Torrent, targetDir string) (*string, error) {
 	// torrent file from s3 is downloaded to /tmp/current.torrent
-	filename := filepath.Join(x.workingDir, torrent.Filename)
+	filename := filepath.Join(targetDir, torrent.Filename)
 	file, err := os.Create(filename)
 	if err != nil {
 		x.logger.Errorf("failed to create file: %s", filename)
@@ -82,7 +77,9 @@ func (x *Processor) downloadTorrentFromS3(torrent *models.Torrent) (*string, err
 	return &filename, nil
 }
 
-func (x *Processor) downloadTorrentContents(torrent *models.Torrent, timeout time.Duration) error {
+func (x *Processor) downloadTorrentContents(
+	timeout time.Duration,
+	targetDir, torrentFilename string) error {
 	var lastProgress float64
 	interval := time.Second * 5
 	if err := x.torrentDownloader.Start(); err != nil {
@@ -92,7 +89,7 @@ func (x *Processor) downloadTorrentContents(torrent *models.Torrent, timeout tim
 	defer func() {
 		_ = x.torrentDownloader.Stop()
 	}()
-	if err := x.torrentDownloader.AddTorrent(x.workingDir, torrent.Filename,
+	if err := x.torrentDownloader.AddTorrent(targetDir, torrentFilename,
 		func(line *model.TorrentLine) {
 			if line.Percent != lastProgress {
 				// TODO: publish to torrent-info
@@ -116,7 +113,7 @@ func (x *Processor) downloadTorrentContents(torrent *models.Torrent, timeout tim
 	return nil
 }
 
-func (*Processor) validateTorrent(torrent *models.Torrent) error {
+func (x *Processor) validateTorrent(torrent *models.Torrent) error {
 	if torrent == nil {
 		return fmt.Errorf("torrent is nil")
 	}

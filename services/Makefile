@@ -33,15 +33,7 @@ build-%:
 
 build-all:
 	@$(foreach service, $(SERVICES), \
-		docker build --progress=auto --no-cache \
-		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
-		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
-		--build-arg SERVICE_NAME=$(service) \
-		--build-arg GIT_TAG=$(GIT_TAG) \
-		--build-arg GO_ROOT_PACKAGE=$(GO_ROOT_PACKAGE) \
-		-t $(service):$(GIT_TAG) \
-		-f $(service)/Dockerfile \
-		.. ; \
+		$(MAKE) build-$(service) ; \
 	)
 
 golang-imports:
@@ -99,4 +91,4 @@ test-all: mock-all
 	)
 
 test-%: mock-%
-	go test -short ./$*/...
+	go test -short -cover ./$*/...

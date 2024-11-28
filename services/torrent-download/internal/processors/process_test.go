@@ -8,11 +8,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/openapi/models"
-	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 	"github.com/what-da-flac/wtf/services/torrent-download/mocks"
 )
 
@@ -62,8 +63,8 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 		},
 	}
 	config.Downloads.Timeout = time.Minute * 30
-	x := NewProcessor(config, logger, s3Downloader, torrentDownloader, os.TempDir())
-	elapsed, err := x.Process(torrent)
+	x := NewProcessor(logger, torrentDownloader, s3Downloader)
+	elapsed, err := x.Process(torrent, config, os.TempDir())
 	assert.Error(t, err)
 	assert.Empty(t, elapsed)
 	assert.True(t, removeAllCalled, "expected to call removeAll")

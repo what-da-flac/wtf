@@ -50,6 +50,7 @@ func (x *TorrentDownloader) Stop() error {
 		return fmt.Errorf("torrent daemon is already stopped or hasn't started yet")
 	}
 	defer func() { x.daemonProcess = nil }()
+	x.logger.Infof("stopping torrent downloader pid: %v", x.daemonProcess.Pid)
 	return x.daemonProcess.Kill()
 }
 
