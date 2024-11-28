@@ -12,6 +12,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 	"github.com/what-da-flac/wtf/services/torrent-download/mocks"
 )
 
@@ -24,12 +25,12 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 	)
 	logger := loggers.MustNewDevelopmentLogger()
 	torrentDownloader := &mocks.TorrentDownloaderMock{
-		AddTorrentFunc: func(targetDir string, torrentFileName string) error {
+		AddTorrentFunc: func(targetDir, torrentFileName string, fn interfaces.ProgressFn) error {
 			filename = torrentFileName
 			return nil
 		},
-		RemoveTorrentsLeaveFilesFunc: func() error { return nil },
-		RemoveTorrentsAndFilesFunc: func() error {
+		ClearTorrentsFunc: func() error { return nil },
+		RemoveAllFunc: func() error {
 			removeAllCalled = true
 			return nil
 		},
@@ -60,8 +61,15 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 			Downloads: env.Names(filepath.Join(os.TempDir(), "downloads")),
 		},
 	}
+	publisher := &mocks.PublisherMock{
+		PublishFunc: func(data []byte) error {
+			t.Log("publishing: ", string(data))
+			return nil
+		},
+	}
 	config.Downloads.Timeout = time.Minute * 30
-	elapsed, err := Process(logger, torrentDownloader, s3Downloader, torrent, config, os.TempDir())
+	x := NewProcessor(logger, torrentDownloader, s3Downloader, publisher)
+	elapsed, err := x.Process(torrent, config, os.TempDir())
 	assert.Error(t, err)
 	assert.Empty(t, elapsed)
 	assert.True(t, removeAllCalled, "expected to call removeAll")

@@ -44,7 +44,7 @@ export function TorrentFilesTable({ rows }: Params) {
         </Table.Tr>
       </Table.Thead>
       <Table.Tbody>
-        {rows.length > 0 ? (
+        {rows && rows.length > 0 ? (
           <React.Fragment>
             {rows.map((f: TorrentFile) => (
               <Row key={f.id} file={f} />

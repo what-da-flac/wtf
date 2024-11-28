@@ -14,6 +14,7 @@ required:
   - status
   - filename
   - last_error
+  - eta
 properties:
   id:
     type: string
@@ -54,4 +55,9 @@ properties:
   filename:
     type: string
   last_error:
+    type: string
+  percent:
+    type: number
+    format: double
+  eta:
     type: string
