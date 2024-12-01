@@ -139,9 +139,11 @@ type UserPut struct {
 
 // GetV1TorrentsParams defines parameters for GetV1Torrents.
 type GetV1TorrentsParams struct {
-	Limit  int     `form:"limit" json:"limit"`
-	Offset *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	Status *string `form:"status,omitempty" json:"status,omitempty"`
+	Limit         int     `form:"limit" json:"limit"`
+	Offset        *int    `form:"offset,omitempty" json:"offset,omitempty"`
+	Status        *string `form:"status,omitempty" json:"status,omitempty"`
+	SortField     string  `form:"sort_field" json:"sort_field"`
+	SortDirection string  `form:"sort_direction" json:"sort_direction"`
 }
 
 // PostV1TorrentsMagnetsJSONBody defines parameters for PostV1TorrentsMagnets.
@@ -1061,6 +1063,30 @@ func NewGetV1TorrentsRequest(server string, params *GetV1TorrentsParams) (*http.
 				}
 			}
 
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort_field", runtime.ParamLocationQuery, params.SortField); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sort_direction", runtime.ParamLocationQuery, params.SortDirection); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
 		}
 
 		queryURL.RawQuery = queryValues.Encode()
@@ -3294,6 +3320,36 @@ func (siw *ServerInterfaceWrapper) GetV1Torrents(w http.ResponseWriter, r *http.
 	err = runtime.BindQueryParameter("form", true, false, "status", r.URL.Query(), &params.Status)
 	if err != nil {
 		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "sort_field" -------------
+
+	if paramValue := r.URL.Query().Get("sort_field"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "sort_field"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "sort_field", r.URL.Query(), &params.SortField)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sort_field", Err: err})
+		return
+	}
+
+	// ------------- Required query parameter "sort_direction" -------------
+
+	if paramValue := r.URL.Query().Get("sort_direction"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "sort_direction"})
+		return
+	}
+
+	err = runtime.BindQueryParameter("form", true, true, "sort_direction", r.URL.Query(), &params.SortDirection)
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "sort_direction", Err: err})
 		return
 	}
 

@@ -20,6 +20,7 @@ export default function TorrentsList() {
   const [isTableLoading, setIsTableLoading] = useState<boolean>(false);
   const [statusData, setStatusData] = useState<StatusData[]>([]);
   const [status, setStatus] = useState<string>('');
+  const limit = 100
   useEffect(() => {
     loadData(status);
   }, []);
@@ -28,7 +29,7 @@ export default function TorrentsList() {
     try {
       setIsTableLoading(true);
       const st = !s ? null : s;
-      const data = await ApiTorrentList({ limit: 10, status: st });
+      const data = await ApiTorrentList({ limit, status: st });
       setRows(data);
       let stData = await ApiTorrentStatuses();
       stData.sort();

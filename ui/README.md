@@ -1,13 +1,13 @@
-# wtf-ui
+# ui
 
-UI for web app player.
+UI for wtf suite.
 
 ## Local Development
 
-Create a copy of `.env.sample`
+Create a copy of `sample.env`
 
 ```
-cp .env.sample .env
+cp sample.env .env
 ```
 
 ```
@@ -34,4 +34,4 @@ And run this command to actually fix the code
 npm run format
 ```
 
-If your code needs formatting, GitHub checks won't pass.
+If your code needs formatting, checks won't pass.

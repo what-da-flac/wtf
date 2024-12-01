@@ -34,7 +34,9 @@ func (x *PgRepo) ListTorrents(ctx context.Context, params models.GetV1TorrentsPa
 		rows []*TorrentDto
 	)
 	db := x.GORM()
-	db = db.Model(&TorrentDto{}).Limit(params.Limit)
+	db = db.Model(&TorrentDto{}).
+		Limit(params.Limit).
+		Order(params.SortField + " " + params.SortDirection)
 	if val := params.Offset; val != nil {
 		db = db.Offset(*val)
 	}

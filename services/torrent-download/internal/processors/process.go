@@ -81,10 +81,14 @@ func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *models.Torr
 }
 
 func (x *Processor) UpdateProgress(torrent *models.Torrent) interfaces.ProgressFn {
-	var lastProgress float64
+	var (
+		lastProgress float64
+		lastEta      string
+	)
 	return func(line *model.TorrentLine) {
-		if line.Percent != lastProgress {
+		if line.Percent != lastProgress || lastEta != line.Eta {
 			lastProgress = line.Percent
+			lastEta = line.Eta
 			x.logger.Info(line.String())
 			torrent.Eta = line.Eta
 			torrent.Percent = &line.Percent
