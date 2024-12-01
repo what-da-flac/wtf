@@ -29,7 +29,7 @@ export default function TorrentsList() {
     try {
       setIsTableLoading(true);
       const st = !s ? null : s;
-      const data = await ApiTorrentList({ limit, status: st });
+      const data = await ApiTorrentList({ limit, status: st ,sort_field: 'created',sort_direction: 'asc',});
       setRows(data);
       let stData = await ApiTorrentStatuses();
       stData.sort();
