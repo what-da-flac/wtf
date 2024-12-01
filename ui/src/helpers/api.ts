@@ -82,6 +82,8 @@ type TorrentListParams = {
   limit: number;
   offset?: number;
   status?: string;
+  sort_field: string;
+  sort_direction: string;
 };
 
 async function ApiTorrentList(params: TorrentListParams) {

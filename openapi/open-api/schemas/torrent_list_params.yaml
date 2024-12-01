@@ -17,3 +17,13 @@ parameters:
     required: false
     schema:
       type: string
+  - name: sort_field
+    in: query
+    required: true
+    schema:
+      type: string
+  - name: sort_direction
+    in: query
+    required: true
+    schema:
+      type: string

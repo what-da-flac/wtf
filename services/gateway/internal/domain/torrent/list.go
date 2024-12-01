@@ -20,8 +20,24 @@ func NewList(repository interfaces.Repository) *List {
 	}
 }
 
+func (*List) validate(params models.GetV1TorrentsParams) error {
+	if params.Limit < 1 {
+		return fmt.Errorf("limit must be greater than 0")
+	}
+	if params.SortField == "" {
+		return fmt.Errorf("sort field must be set")
+	}
+	if params.SortDirection != "asc" && params.SortDirection != "desc" {
+		return fmt.Errorf("sort direction must be asc or desc")
+	}
+	return nil
+}
+
 func (x *List) List(ctx context.Context, params models.GetV1TorrentsParams) ([]*models.Torrent, error) {
 	var ids []string
+	if err := x.validate(params); err != nil {
+		return nil, err
+	}
 	rows, err := x.repository.ListTorrents(ctx, params)
 	if err != nil {
 		return nil, err

@@ -26,7 +26,7 @@ function Row({ torrent }: RowParams) {
       <Table.Td>
         <Link to={`/torrents/${torrent.id}`}>{torrent.name}</Link>
       </Table.Td>
-      <Table.Td>{torrent.total_size}</Table.Td>
+      <Table.Td style={{ textAlign: 'right' }}>{torrent.total_size}</Table.Td>
       <Avatar src={torrent.user.image} radius="xl" />
       <Table.Td>{torrent.status}</Table.Td>
       <Table.Td>
