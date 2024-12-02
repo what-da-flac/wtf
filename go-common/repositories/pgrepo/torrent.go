@@ -89,3 +89,8 @@ func (x *PgRepo) SelectTorrentFiles(ctx context.Context, id string) ([]*models.T
 	}
 	return res, nil
 }
+
+func (x *PgRepo) DeleteTorrent(ctx context.Context, id string) error {
+	db := x.GORM()
+	return db.Where("id = ?", id).Delete(&TorrentDto{}).Error
+}

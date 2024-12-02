@@ -287,6 +287,9 @@ type ClientInterface interface {
 	// GetV1TorrentsStatuses request
 	GetV1TorrentsStatuses(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// DeleteV1TorrentsId request
+	DeleteV1TorrentsId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV1TorrentsId request
 	GetV1TorrentsId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -499,6 +502,18 @@ func (c *Client) PostV1TorrentsMagnets(ctx context.Context, body PostV1TorrentsM
 
 func (c *Client) GetV1TorrentsStatuses(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV1TorrentsStatusesRequest(c.Server)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteV1TorrentsId(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteV1TorrentsIdRequest(c.Server, id)
 	if err != nil {
 		return nil, err
 	}
@@ -1182,6 +1197,40 @@ func NewGetV1TorrentsStatusesRequest(server string) (*http.Request, error) {
 	return req, nil
 }
 
+// NewDeleteV1TorrentsIdRequest generates requests for DeleteV1TorrentsId
+func NewDeleteV1TorrentsIdRequest(server string, id string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/torrents/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewGetV1TorrentsIdRequest generates requests for GetV1TorrentsId
 func NewGetV1TorrentsIdRequest(server string, id string) (*http.Request, error) {
 	var err error
@@ -1672,6 +1721,9 @@ type ClientWithResponsesInterface interface {
 	// GetV1TorrentsStatusesWithResponse request
 	GetV1TorrentsStatusesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1TorrentsStatusesResponse, error)
 
+	// DeleteV1TorrentsIdWithResponse request
+	DeleteV1TorrentsIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteV1TorrentsIdResponse, error)
+
 	// GetV1TorrentsIdWithResponse request
 	GetV1TorrentsIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetV1TorrentsIdResponse, error)
 
@@ -1972,6 +2024,28 @@ func (r GetV1TorrentsStatusesResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetV1TorrentsStatusesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteV1TorrentsIdResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Torrent
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteV1TorrentsIdResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteV1TorrentsIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -2350,6 +2424,15 @@ func (c *ClientWithResponses) GetV1TorrentsStatusesWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseGetV1TorrentsStatusesResponse(rsp)
+}
+
+// DeleteV1TorrentsIdWithResponse request returning *DeleteV1TorrentsIdResponse
+func (c *ClientWithResponses) DeleteV1TorrentsIdWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteV1TorrentsIdResponse, error) {
+	rsp, err := c.DeleteV1TorrentsId(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteV1TorrentsIdResponse(rsp)
 }
 
 // GetV1TorrentsIdWithResponse request returning *GetV1TorrentsIdResponse
@@ -2795,6 +2878,32 @@ func ParseGetV1TorrentsStatusesResponse(rsp *http.Response) (*GetV1TorrentsStatu
 	return response, nil
 }
 
+// ParseDeleteV1TorrentsIdResponse parses an HTTP response from a DeleteV1TorrentsIdWithResponse call
+func ParseDeleteV1TorrentsIdResponse(rsp *http.Response) (*DeleteV1TorrentsIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteV1TorrentsIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Torrent
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseGetV1TorrentsIdResponse parses an HTTP response from a GetV1TorrentsIdWithResponse call
 func ParseGetV1TorrentsIdResponse(rsp *http.Response) (*GetV1TorrentsIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -3119,6 +3228,9 @@ type ServerInterface interface {
 	// returns a list of possible torrent status
 	// (GET /v1/torrents/statuses)
 	GetV1TorrentsStatuses(w http.ResponseWriter, r *http.Request)
+	// deletes a torrent, and also related data such as files
+	// (DELETE /v1/torrents/{id})
+	DeleteV1TorrentsId(w http.ResponseWriter, r *http.Request, id string)
 	// returns torrent information and the files it contains
 	// (GET /v1/torrents/{id})
 	GetV1TorrentsId(w http.ResponseWriter, r *http.Request, id string)
@@ -3508,6 +3620,34 @@ func (siw *ServerInterfaceWrapper) GetV1TorrentsStatuses(w http.ResponseWriter, 
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetV1TorrentsStatuses(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
+// DeleteV1TorrentsId operation middleware
+func (siw *ServerInterfaceWrapper) DeleteV1TorrentsId(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.DeleteV1TorrentsId(w, r, id)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -3916,6 +4056,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents", wrapper.GetV1Torrents)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/torrents/magnets", wrapper.PostV1TorrentsMagnets)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/statuses", wrapper.GetV1TorrentsStatuses)
+	m.HandleFunc("DELETE "+options.BaseURL+"/v1/torrents/{id}", wrapper.DeleteV1TorrentsId)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/{id}", wrapper.GetV1TorrentsId)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/torrents/{id}/download", wrapper.PostV1TorrentsIdDownload)
 	m.HandleFunc("PUT "+options.BaseURL+"/v1/torrents/{id}/status/{status}", wrapper.PutV1TorrentsIdStatusStatus)

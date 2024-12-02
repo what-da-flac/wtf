@@ -6,6 +6,7 @@ import { Torrent, toTorrent } from '../models/torrent';
 import { TorrentFile } from '../models/torrent_file';
 import TorrentEditForm from '../components/TorrentEditForm';
 import {
+  ApiTorrentDelete,
   ApiTorrentDownload,
   ApiTorrentLoad,
   ApiTorrentUpdateStatus,
@@ -50,6 +51,18 @@ export function TorrentEdit() {
     navigate('/torrents');
   }
 
+  async function onDelete() {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete torrent ${torrent.name}?`
+      )
+    ) {
+      return;
+    }
+    await ApiTorrentDelete(id);
+    navigate('/torrents');
+  }
+
   return isLoading ? (
     <PreLoader />
   ) : (
@@ -59,7 +72,7 @@ export function TorrentEdit() {
         form={form}
         torrent={torrent}
         canEdit={torrent.status === 'pending'}
-        onDelete={() => alert('TODO: delete')}
+        onDelete={() => onDelete()}
         onReset={() => onReset()}
         onSubmit={() => downloadTorrent(id)}
       />

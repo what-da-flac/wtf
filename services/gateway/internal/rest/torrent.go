@@ -123,3 +123,19 @@ func (x *Server) PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Requ
 		return
 	}
 }
+
+func (x *Server) DeleteV1TorrentsId(w http.ResponseWriter, r *http.Request, id string) {
+	ctx := x.context(r)
+	if _, err := x.repository.SelectTorrent(ctx, id); err != nil {
+		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
+		return
+	}
+	if err := x.repository.DeleteTorrentFiles(ctx, id); err != nil {
+		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
+		return
+	}
+	if err := x.repository.DeleteTorrent(ctx, id); err != nil {
+		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
+		return
+	}
+}
