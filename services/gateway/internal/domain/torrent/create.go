@@ -46,8 +46,8 @@ func (x *Create) Create(ctx context.Context, user *models.User, req *models.Post
 	if err := x.validate(req); err != nil {
 		return err
 	}
-	now := x.timer.Now()
 	for _, v := range *req.Urls {
+		now := x.timer.Now()
 		payload := &models.Torrent{
 			Created:    now,
 			MagnetLink: v,

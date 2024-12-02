@@ -41,6 +41,7 @@ type TorrentRepository interface {
 	InsertTorrentFile(ctx context.Context, file *models.TorrentFile) error
 	DeleteTorrentFiles(ctx context.Context, torrentId string) error
 	SelectTorrentFiles(ctx context.Context, id string) ([]*models.TorrentFile, error)
+	DeleteTorrent(ctx context.Context, id string) error
 }
 
 type UserRepository interface {

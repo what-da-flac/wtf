@@ -116,6 +116,11 @@ async function ApiTorrentUpdateStatus(id: string, status: string) {
   return res.data;
 }
 
+async function ApiTorrentDelete(id: string) {
+  const res = await instance.delete(`/v1/torrents/${id}`);
+  return res.data;
+}
+
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -211,6 +216,7 @@ async function UserLoad(id: string) {
 
 export {
   ApiMovieList,
+  ApiTorrentDelete,
   ApiTorrentDownload,
   ApiTorrentList,
   ApiTorrentLoad,
