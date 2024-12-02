@@ -44,7 +44,8 @@ func run() error {
 
 }
 
-func processMessage(logger ifaces.Logger, config *env.Config, publisher ifaces.Publisher) (func(msg []byte) (ack ifaces.AckType, err error), error) {
+func processMessage(logger ifaces.Logger, config *env.Config,
+	publisher ifaces.Publisher) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	awsSession := amazon.NewAWSSessionFromEnvironment()
 	if err := awsSession.Build(); err != nil {
 		return nil, err
@@ -53,6 +54,9 @@ func processMessage(logger ifaces.Logger, config *env.Config, publisher ifaces.P
 	s3Downloader := amazon.NewS3(cfg)
 	torrentDownloader := downloaders.NewTorrentDownloader(logger, config.Downloads.Timeout)
 	processor := processors.NewProcessor(logger, torrentDownloader, s3Downloader, publisher)
+	if err := torrentDownloader.Start(); err != nil {
+		return nil, err
+	}
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		torrent := &models.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
