@@ -92,3 +92,34 @@ func (x *Server) PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request
 	}
 	x.logger.Infof("send t with id: %s to download process", id)
 }
+
+func (x *Server) PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Request, id string, status string) {
+	var ok bool
+	ctx := x.context(r)
+	oldTorrent, err := x.repository.SelectTorrent(ctx, id)
+	if err != nil {
+		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
+		return
+	}
+	statuses := x.repository.ListTorrentStatuses(ctx)
+	for _, st := range statuses {
+		if st != status {
+			continue
+		}
+		ok = true
+		switch models.TorrentStatus(st) {
+		case models.Downloaded:
+			ihandlers.WriteResponse(w, http.StatusBadRequest, nil, fmt.Errorf("oldTorrent %s is downloaded, cannot change status", id))
+			return
+		}
+	}
+	if !ok {
+		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("status %s is not valid", status))
+		return
+	}
+	oldTorrent.Status = models.TorrentStatus(status)
+	if err = x.repository.UpdateTorrent(ctx, oldTorrent); err != nil {
+		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
+		return
+	}
+}

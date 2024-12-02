@@ -293,6 +293,9 @@ type ClientInterface interface {
 	// PostV1TorrentsIdDownload request
 	PostV1TorrentsIdDownload(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// PutV1TorrentsIdStatusStatus request
+	PutV1TorrentsIdStatusStatus(ctx context.Context, id string, status string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// PostV1UserListWithBody request with any body
 	PostV1UserListWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -520,6 +523,18 @@ func (c *Client) GetV1TorrentsId(ctx context.Context, id string, reqEditors ...R
 
 func (c *Client) PostV1TorrentsIdDownload(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV1TorrentsIdDownloadRequest(c.Server, id)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) PutV1TorrentsIdStatusStatus(ctx context.Context, id string, status string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewPutV1TorrentsIdStatusStatusRequest(c.Server, id, status)
 	if err != nil {
 		return nil, err
 	}
@@ -1235,6 +1250,47 @@ func NewPostV1TorrentsIdDownloadRequest(server string, id string) (*http.Request
 	return req, nil
 }
 
+// NewPutV1TorrentsIdStatusStatusRequest generates requests for PutV1TorrentsIdStatusStatus
+func NewPutV1TorrentsIdStatusStatusRequest(server string, id string, status string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "id", runtime.ParamLocationPath, id)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "status", runtime.ParamLocationPath, status)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/torrents/%s/status/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewPostV1UserListRequest calls the generic PostV1UserList builder with application/json body
 func NewPostV1UserListRequest(server string, body PostV1UserListJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
@@ -1622,6 +1678,9 @@ type ClientWithResponsesInterface interface {
 	// PostV1TorrentsIdDownloadWithResponse request
 	PostV1TorrentsIdDownloadWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*PostV1TorrentsIdDownloadResponse, error)
 
+	// PutV1TorrentsIdStatusStatusWithResponse request
+	PutV1TorrentsIdStatusStatusWithResponse(ctx context.Context, id string, status string, reqEditors ...RequestEditorFn) (*PutV1TorrentsIdStatusStatusResponse, error)
+
 	// PostV1UserListWithBodyWithResponse request with any body
 	PostV1UserListWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV1UserListResponse, error)
 
@@ -1963,6 +2022,28 @@ func (r PostV1TorrentsIdDownloadResponse) StatusCode() int {
 	return 0
 }
 
+type PutV1TorrentsIdStatusStatusResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *[]Torrent
+}
+
+// Status returns HTTPResponse.Status
+func (r PutV1TorrentsIdStatusStatusResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r PutV1TorrentsIdStatusStatusResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type PostV1UserListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -2287,6 +2368,15 @@ func (c *ClientWithResponses) PostV1TorrentsIdDownloadWithResponse(ctx context.C
 		return nil, err
 	}
 	return ParsePostV1TorrentsIdDownloadResponse(rsp)
+}
+
+// PutV1TorrentsIdStatusStatusWithResponse request returning *PutV1TorrentsIdStatusStatusResponse
+func (c *ClientWithResponses) PutV1TorrentsIdStatusStatusWithResponse(ctx context.Context, id string, status string, reqEditors ...RequestEditorFn) (*PutV1TorrentsIdStatusStatusResponse, error) {
+	rsp, err := c.PutV1TorrentsIdStatusStatus(ctx, id, status, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParsePutV1TorrentsIdStatusStatusResponse(rsp)
 }
 
 // PostV1UserListWithBodyWithResponse request with arbitrary body returning *PostV1UserListResponse
@@ -2757,6 +2847,32 @@ func ParsePostV1TorrentsIdDownloadResponse(rsp *http.Response) (*PostV1TorrentsI
 	return response, nil
 }
 
+// ParsePutV1TorrentsIdStatusStatusResponse parses an HTTP response from a PutV1TorrentsIdStatusStatusWithResponse call
+func ParsePutV1TorrentsIdStatusStatusResponse(rsp *http.Response) (*PutV1TorrentsIdStatusStatusResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PutV1TorrentsIdStatusStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest []Torrent
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParsePostV1UserListResponse parses an HTTP response from a PostV1UserListWithResponse call
 func ParsePostV1UserListResponse(rsp *http.Response) (*PostV1UserListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -3009,6 +3125,9 @@ type ServerInterface interface {
 	// starts downloading a torrent
 	// (POST /v1/torrents/{id}/download)
 	PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request, id string)
+	// allows to change status under certain conditions
+	// (PUT /v1/torrents/{id}/status/{status})
+	PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Request, id string, status string)
 	// returns a list of users
 	// (POST /v1/user-list)
 	PostV1UserList(w http.ResponseWriter, r *http.Request)
@@ -3454,6 +3573,43 @@ func (siw *ServerInterfaceWrapper) PostV1TorrentsIdDownload(w http.ResponseWrite
 	handler.ServeHTTP(w, r.WithContext(ctx))
 }
 
+// PutV1TorrentsIdStatusStatus operation middleware
+func (siw *ServerInterfaceWrapper) PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	var err error
+
+	// ------------- Path parameter "id" -------------
+	var id string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "id", r.PathValue("id"), &id, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "id", Err: err})
+		return
+	}
+
+	// ------------- Path parameter "status" -------------
+	var status string
+
+	err = runtime.BindStyledParameterWithOptions("simple", "status", r.PathValue("status"), &status, runtime.BindStyledParameterOptions{ParamLocation: runtime.ParamLocationPath, Explode: false, Required: true})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "status", Err: err})
+		return
+	}
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.PutV1TorrentsIdStatusStatus(w, r, id, status)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r.WithContext(ctx))
+}
+
 // PostV1UserList operation middleware
 func (siw *ServerInterfaceWrapper) PostV1UserList(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
@@ -3762,6 +3918,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/statuses", wrapper.GetV1TorrentsStatuses)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/torrents/{id}", wrapper.GetV1TorrentsId)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/torrents/{id}/download", wrapper.PostV1TorrentsIdDownload)
+	m.HandleFunc("PUT "+options.BaseURL+"/v1/torrents/{id}/status/{status}", wrapper.PutV1TorrentsIdStatusStatus)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/user-list", wrapper.PostV1UserList)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/users", wrapper.PostV1Users)
 	m.HandleFunc("POST "+options.BaseURL+"/v1/users/login", wrapper.PostV1UsersLogin)

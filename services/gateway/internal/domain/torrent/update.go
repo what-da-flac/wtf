@@ -3,19 +3,18 @@ package torrent
 import (
 	"context"
 
-	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
 	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
 type Update struct {
-	identifier interfaces2.Identifier
-	repository interfaces2.Repository
-	timer      interfaces2.Timer
+	identifier interfaces.Identifier
+	repository interfaces.Repository
+	timer      interfaces.Timer
 }
 
-func NewUpdate(repository interfaces2.Repository, timer interfaces2.Timer,
-	identifier interfaces2.Identifier) *Update {
+func NewUpdate(repository interfaces.Repository, timer interfaces.Timer,
+	identifier interfaces.Identifier) *Update {
 	return &Update{
 		identifier: identifier,
 		repository: repository,
