@@ -109,13 +109,6 @@ func (x *Processor) downloadTorrentContents(
 	targetDir, torrentFilename string,
 	torrent *models.Torrent) error {
 	interval := time.Second * 5
-	if err := x.torrentDownloader.Start(); err != nil {
-		return err
-	}
-	// clean up resources for next execution
-	defer func() {
-		_ = x.torrentDownloader.Stop()
-	}()
 	if err := x.torrentDownloader.
 		AddTorrent(
 			targetDir,

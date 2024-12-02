@@ -73,8 +73,8 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 	assert.Error(t, err)
 	assert.Empty(t, elapsed)
 	assert.True(t, removeAllCalled, "expected to call removeAll")
-	assert.True(t, startCalled, "expected torrent downloader to start")
-	assert.True(t, stopCalled, "expected torrent downloader to stop")
+	assert.False(t, startCalled, "not expected torrent downloader to start")
+	assert.False(t, stopCalled, "not expected torrent downloader to stop")
 	assert.Equal(t, fmt.Errorf("torrent download timed out after: 30m0s"), err)
 	assert.Equal(t, "123.torrent", filepath.Base(filename))
 }
