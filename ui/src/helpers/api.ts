@@ -111,6 +111,11 @@ async function ApiTorrentStatuses() {
   return res.data;
 }
 
+async function ApiTorrentUpdateStatus(id: string, status: string) {
+  const res = await instance.put(`/v1/torrents/${id}/status/${status}`);
+  return res.data;
+}
+
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -211,6 +216,7 @@ export {
   ApiTorrentLoad,
   ApiTorrentPost,
   ApiTorrentStatuses,
+  ApiTorrentUpdateStatus,
   RoleList,
   RolePut,
   RoleGet,

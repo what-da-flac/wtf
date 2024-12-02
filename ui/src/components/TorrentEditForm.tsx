@@ -5,6 +5,7 @@ import { Torrent } from '../models/torrent';
 import React from 'react';
 
 type params = {
+  onReset: any;
   onSubmit: any;
   onDelete?: any | undefined;
   form: UseFormReturnType<Torrent>;
@@ -16,6 +17,7 @@ export default function TorrentEditForm({
   onSubmit,
   form,
   onDelete,
+  onReset,
   torrent,
   canEdit,
 }: params) {
@@ -93,6 +95,11 @@ export default function TorrentEditForm({
                 {torrent.id && (
                   <Button type="button" variant="outline" onClick={onDelete}>
                     Delete
+                  </Button>
+                )}
+                {torrent.status !== 'downloaded' && (
+                  <Button type="button" variant="outline" onClick={onReset}>
+                    Reset
                   </Button>
                 )}
               </Group>

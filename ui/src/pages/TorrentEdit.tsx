@@ -5,7 +5,11 @@ import PreLoader from '../components/PreLoader';
 import { Torrent, toTorrent } from '../models/torrent';
 import { TorrentFile } from '../models/torrent_file';
 import TorrentEditForm from '../components/TorrentEditForm';
-import { ApiTorrentDownload, ApiTorrentLoad } from '../helpers/api';
+import {
+  ApiTorrentDownload,
+  ApiTorrentLoad,
+  ApiTorrentUpdateStatus,
+} from '../helpers/api';
 import { TorrentFilesTable } from '../components/TorrentFilesTable';
 
 export function TorrentEdit() {
@@ -41,6 +45,11 @@ export function TorrentEdit() {
     navigate('/torrents');
   }
 
+  async function onReset() {
+    await ApiTorrentUpdateStatus(id, 'pending');
+    navigate('/torrents');
+  }
+
   return isLoading ? (
     <PreLoader />
   ) : (
@@ -51,6 +60,7 @@ export function TorrentEdit() {
         torrent={torrent}
         canEdit={torrent.status === 'pending'}
         onDelete={() => alert('TODO: delete')}
+        onReset={() => onReset()}
         onSubmit={() => downloadTorrent(id)}
       />
       <hr />
