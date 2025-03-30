@@ -6,10 +6,11 @@
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
 SERVICES=gateway magnet-parser torrent-download torrent-info torrent-parser
-BASE_GO_BUILD_IMAGE=public.ecr.aws/docker/library/golang
-BASE_GO_VERSION=1.23
+BASE_GO_BUILD_IMAGE=golang
+BASE_GO_VERSION=1.24.1
 GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
 GO_ROOT_PACKAGE=github.com/what-da-flac/wtf/services
+MOCK_VERSION=v0.5.3
 
 $(shell touch .env .env.credentials)
 include .env .env.credentials
@@ -68,6 +69,9 @@ mock-all:
 
 mock-%:
 	cd $* && rm -rf mocks && mkdir -p mocks && go generate ./...
+
+mock-install:
+	go install github.com/matryer/moq@$(MOCK_VERSION)
 
 pull:
 	docker compose pull
