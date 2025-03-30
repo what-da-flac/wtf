@@ -1,11 +1,10 @@
-.PHONY: build ci clean
+.PHONY: build ci
 .PHONY: docker-logs docker-start docker-stop
 .PHONY: golang-imports golang-imports-install
 .PHONY: lint lint-install mock-gen
 .PHONY: protos
 .PHONY: test test-html-output test-no-cache
 
-GEN_DIR := "protos/gen"
 LINT_VERSION=v1.61.0
 SHELL := /bin/sh
 
@@ -18,10 +17,6 @@ build:
 	CGO_ENABLED=0 go build -buildvcs=false
 
 ci: lint test
-
-clean:
-	rm -rf $(GEN_DIR)/*
-	mkdir -p $(GEN_DIR)
 
 docker-logs:
 	docker compose logs -f
