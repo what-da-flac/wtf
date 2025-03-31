@@ -1,6 +1,3 @@
-- Name: infra
-  BaseDir: config-files/infra
-  Description: Generates AWS assets to run other stacks
 - Name: app
   BaseDir: config-files/app
   Description: Generates AWS assets to run wtf applications

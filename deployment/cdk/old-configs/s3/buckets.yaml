@@ -1,7 +1,0 @@
-- Name: wtf.torrent-parsed
-  RemoveOnDestroy: true
-  Versioned: false
-
-- Name: wtf.torrent-downloads
-  RemoveOnDestroy: true
-  Versioned: false

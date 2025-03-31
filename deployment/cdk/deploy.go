@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,6 +27,7 @@ func Deploy(stack awscdk.Stack, baseDir string) {
 		var res []string
 		files, err := os.ReadDir(dirname)
 		if err != nil {
+			log.Println("error reading directory", dirname, err.Error())
 			panic(err)
 		}
 		for _, file := range files {
