@@ -1,24 +1,4 @@
-- Name: magnet-parser
-  EmptyOnDelete: true
-  Mutable: true
-  RemoveOnDestroy: true
-
 - Name: gateway
-  EmptyOnDelete: true
-  Mutable: true
-  RemoveOnDestroy: true
-
-- Name: torrent-download
-  EmptyOnDelete: true
-  Mutable: true
-  RemoveOnDestroy: true
-
-- Name: torrent-info
-  EmptyOnDelete: true
-  Mutable: true
-  RemoveOnDestroy: true
-
-- Name: torrent-parser
   EmptyOnDelete: true
   Mutable: true
   RemoveOnDestroy: true
