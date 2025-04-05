@@ -7,12 +7,12 @@ import (
 
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/domain/torrent"
 )
 
 func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
-	payload := &models.PostV1TorrentsMagnetsJSONRequestBody{}
+	payload := &golang.PostV1TorrentsMagnetsJSONRequestBody{}
 	if err := ihandlers.ReadJSON(r.Body, payload); err != nil {
 		ihandlers.WriteResponse(w, http.StatusBadRequest, nil, err)
 		return
@@ -31,7 +31,7 @@ func (x *Server) PostV1TorrentsMagnets(w http.ResponseWriter, r *http.Request) {
 	ihandlers.WriteResponse(w, http.StatusAccepted, nil, nil)
 }
 
-func (x *Server) GetV1Torrents(w http.ResponseWriter, r *http.Request, params models.GetV1TorrentsParams) {
+func (x *Server) GetV1Torrents(w http.ResponseWriter, r *http.Request, params golang.GetV1TorrentsParams) {
 	ctx := x.context(r)
 	res, err := torrent.NewList(x.repository).List(ctx, params)
 	if err != nil {
@@ -76,7 +76,7 @@ func (x *Server) PostV1TorrentsIdDownload(w http.ResponseWriter, r *http.Request
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
 		return
 	}
-	t.Status = models.Queued
+	t.Status = golang.Queued
 	data, err := json.Marshal(t)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
@@ -107,8 +107,8 @@ func (x *Server) PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Requ
 			continue
 		}
 		ok = true
-		switch models.TorrentStatus(st) {
-		case models.Downloaded:
+		switch golang.TorrentStatus(st) {
+		case golang.Downloaded:
 			ihandlers.WriteResponse(w, http.StatusBadRequest, nil, fmt.Errorf("oldTorrent %s is downloaded, cannot change status", id))
 			return
 		}
@@ -117,7 +117,7 @@ func (x *Server) PutV1TorrentsIdStatusStatus(w http.ResponseWriter, r *http.Requ
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, fmt.Errorf("status %s is not valid", status))
 		return
 	}
-	oldTorrent.Status = models.TorrentStatus(status)
+	oldTorrent.Status = golang.TorrentStatus(status)
 	if err = x.repository.UpdateTorrent(ctx, oldTorrent); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return

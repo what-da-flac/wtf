@@ -1,7 +1,7 @@
 package domain
 
 import (
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 // Torrent represents the metadata of a torrent file.
@@ -27,8 +27,8 @@ type File struct {
 	FileSize string `json:"file_size"`
 }
 
-func (x *Torrent) ToDomain() *models.Torrent {
-	res := &models.Torrent{
+func (x *Torrent) ToDomain() *golang.Torrent {
+	res := &golang.Torrent{
 		Name:       x.Name,
 		PieceCount: x.PieceCount,
 		PieceSize:  x.PieceSize,
@@ -36,7 +36,7 @@ func (x *Torrent) ToDomain() *models.Torrent {
 		TotalSize:  x.TotalSize,
 	}
 	for _, file := range x.Files {
-		res.Files = append(res.Files, models.TorrentFile{
+		res.Files = append(res.Files, golang.TorrentFile{
 			FileName: file.FileName,
 			FileSize: file.FileSize,
 		})

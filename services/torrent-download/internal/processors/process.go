@@ -10,7 +10,7 @@ import (
 
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/model"
 )
@@ -33,7 +33,7 @@ func NewProcessor(logger ifaces.Logger, torrentDownloader interfaces.TorrentDown
 }
 
 func (x *Processor) Process(
-	torrent *models.Torrent,
+	torrent *golang.Torrent,
 	config *env.Config, workingDir string) (*time.Duration, error) {
 	// validate incoming torrent
 	if err := x.validateTorrent(torrent); err != nil {
@@ -70,7 +70,7 @@ func (x *Processor) Process(
 	return &elapsed, nil
 }
 
-func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *models.Torrent) error {
+func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *golang.Torrent) error {
 	x.logger.Infof("starting downloading torrent from s3: %s", torrent.Filename)
 	defer func() { _ = w.Close() }()
 	if err := x.s3Downloader.Download(w, env.BucketTorrentParsed.String(), torrent.Filename); err != nil {
@@ -80,7 +80,7 @@ func (x *Processor) downloadTorrentFromS3(w io.WriteCloser, torrent *models.Torr
 	return nil
 }
 
-func (x *Processor) UpdateProgress(torrent *models.Torrent) interfaces.ProgressFn {
+func (x *Processor) UpdateProgress(torrent *golang.Torrent) interfaces.ProgressFn {
 	var (
 		lastProgress float64
 		lastEta      string
@@ -107,7 +107,7 @@ func (x *Processor) UpdateProgress(torrent *models.Torrent) interfaces.ProgressF
 func (x *Processor) downloadTorrentContents(
 	timeout time.Duration,
 	targetDir, torrentFilename string,
-	torrent *models.Torrent) error {
+	torrent *golang.Torrent) error {
 	interval := time.Second * 5
 	if err := x.torrentDownloader.
 		AddTorrent(
@@ -130,7 +130,7 @@ func (x *Processor) downloadTorrentContents(
 	return nil
 }
 
-func (x *Processor) validateTorrent(torrent *models.Torrent) error {
+func (x *Processor) validateTorrent(torrent *golang.Torrent) error {
 	if torrent == nil {
 		return fmt.Errorf("torrent is nil")
 	}

@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
-func ListRolesForUser(ctx context.Context, repository interfaces.Repository, user *models.User) ([]*models.Role, error) {
-	var res []*models.Role
+func ListRolesForUser(ctx context.Context, repository interfaces.Repository, user *golang.User) ([]*golang.Role, error) {
+	var res []*golang.Role
 	userRoles, err := repository.ListRolesForUser(ctx, user)
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func ListRolesForUser(ctx context.Context, repository interfaces.Repository, use
 	if err != nil {
 		return nil, err
 	}
-	keys := make(map[string]*models.Role)
+	keys := make(map[string]*golang.Role)
 	for _, role := range roles {
 		keys[role.Id] = role
 	}
@@ -33,10 +33,10 @@ func ListRolesForUser(ctx context.Context, repository interfaces.Repository, use
 	return res, nil
 }
 
-func ListRoleNamesForUser(ctx context.Context, repository interfaces.Repository, user *models.User) ([]string, error) {
+func ListRoleNamesForUser(ctx context.Context, repository interfaces.Repository, user *golang.User) ([]string, error) {
 	roles, err := ListRolesForUser(ctx, repository, user)
 	if err != nil {
 		return nil, err
 	}
-	return models.Roles(roles).Names(), nil
+	return golang.Roles(roles).Names(), nil
 }

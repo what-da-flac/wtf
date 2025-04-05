@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type ListUsers struct {
@@ -29,10 +29,10 @@ func (x *ListUsers) validate(roleId string) error {
 	return nil
 }
 
-func (x *ListUsers) List(ctx context.Context, roleId string) ([]*models.User, error) {
+func (x *ListUsers) List(ctx context.Context, roleId string) ([]*golang.User, error) {
 	var (
 		ids    []string
-		result []*models.User
+		result []*golang.User
 	)
 	if err := x.validate(roleId); err != nil {
 		return nil, err
@@ -44,13 +44,13 @@ func (x *ListUsers) List(ctx context.Context, roleId string) ([]*models.User, er
 	for _, v := range roleUsers {
 		ids = append(ids, v.Id)
 	}
-	users, err := x.repository.ListUsers(ctx, &models.UserListParams{
+	users, err := x.repository.ListUsers(ctx, &golang.UserListParams{
 		Ids: ids,
 	})
 	if err != nil {
 		return nil, err
 	}
-	keys := make(map[string]*models.User)
+	keys := make(map[string]*golang.User)
 	for _, user := range users {
 		keys[user.Id] = user
 	}

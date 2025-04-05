@@ -15,7 +15,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/repositories/pgrepo"
 	"github.com/what-da-flac/wtf/go-common/sso"
 	"github.com/what-da-flac/wtf/go-common/timers"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
@@ -78,7 +78,7 @@ func serve(zl *zap.Logger, config *environment.Config) error {
 		AddPublisher(env.QueueTorrentInfo).
 		AddPublisher(env.QueueTorrentDownload)
 	mux := http.NewServeMux()
-	handler := models.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
+	handler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
 	middlewares, err := configureMiddlewares(config, repository)
 	if err != nil {
 		return err
@@ -94,8 +94,8 @@ func serve(zl *zap.Logger, config *environment.Config) error {
 	return srv.ListenAndServe()
 }
 
-func configureMiddlewares(config *environment.Config, repository interfaces.Repository) ([]models.MiddlewareFunc, error) {
-	var res []models.MiddlewareFunc
+func configureMiddlewares(config *environment.Config, repository interfaces.Repository) ([]golang.MiddlewareFunc, error) {
+	var res []golang.MiddlewareFunc
 	// TODO: use a cache mechanism
 	roleResolver := stores2.NewRoleStore(repository)
 	userResolver := stores2.NewUserStore()
@@ -138,7 +138,7 @@ func configureMiddlewares(config *environment.Config, repository interfaces.Repo
 }
 
 // applyHTTPMiddleware makes sure middlewares are executed in the order they were provided.
-func applyHTTPMiddleware(h http.Handler, middlewares ...models.MiddlewareFunc) http.Handler {
+func applyHTTPMiddleware(h http.Handler, middlewares ...golang.MiddlewareFunc) http.Handler {
 	chain := h
 	for i := len(middlewares) - 1; i >= 0; i-- {
 		m := middlewares[i]

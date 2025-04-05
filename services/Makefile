@@ -1,6 +1,7 @@
 .PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
-.PHONY: local-build local-logs local-pg local-start local-stop local-pull pull mock-all
-.PHONY: sql-assign-roles
+.PHONY: local-build local-logs local-pg local-start local-stop local-pull
+.PHONY: lint-install pull mock-all mock-install
+.PHONY: sql-assign-roles tools-install
 
 # AWS account
 ACCOUNT_ID=160885250498
@@ -10,6 +11,7 @@ BASE_GO_BUILD_IMAGE=golang
 BASE_GO_VERSION=1.24.1
 GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
 GO_ROOT_PACKAGE=github.com/what-da-flac/wtf/services
+LINT_VERSION=v2.0.2
 MOCK_VERSION=v0.5.3
 
 $(shell touch .env .env.credentials)
@@ -39,6 +41,12 @@ build-all:
 
 golang-imports:
 	goimports -w .
+
+lint:
+	golangci-lint run --config ../golangci.yaml --timeout 10m
+
+lint-install:
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(LINT_VERSION)
 
 local-build:
 	docker compose build
@@ -96,3 +104,5 @@ test-all: mock-all
 
 test-%: mock-%
 	go test -short -cover ./$*/...
+
+tools-install: lint-install mock-install

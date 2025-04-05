@@ -8,7 +8,7 @@ import (
 
 	"github.com/jinzhu/copier"
 	"github.com/what-da-flac/wtf/go-common/imodel"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type RoleStore struct {
@@ -22,7 +22,7 @@ func NewRoleStore(repository interfaces.Repository) *RoleStore {
 }
 
 func (x *RoleStore) Roles(ctx context.Context, user *imodel.User) ([]string, error) {
-	u := &models.User{}
+	u := &golang.User{}
 	if err := copier.Copy(u, user); err != nil {
 		return nil, err
 	}

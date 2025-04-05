@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type RemoveUser struct {
@@ -19,7 +19,7 @@ func NewRemoveUser(repository interfaces.Repository) *RemoveUser {
 	}
 }
 
-func (x *RemoveUser) validate(role *models.Role, user *models.User) error {
+func (x *RemoveUser) validate(role *golang.Role, user *golang.User) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -32,7 +32,7 @@ func (x *RemoveUser) validate(role *models.Role, user *models.User) error {
 	return nil
 }
 
-func (x *RemoveUser) Remove(ctx context.Context, role *models.Role, user *models.User) error {
+func (x *RemoveUser) Remove(ctx context.Context, role *golang.Role, user *golang.User) error {
 	role, err := x.repository.SelectRole(ctx, role.Id)
 	if err != nil {
 		return fmt.Errorf("role %w", err)

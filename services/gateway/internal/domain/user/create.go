@@ -6,7 +6,7 @@ import (
 
 	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Create struct {
@@ -22,7 +22,7 @@ func NewCreate(identifier interfaces2.Identifier, repository interfaces2.Reposit
 	}
 }
 
-func (x *Create) validate(u *models.UserPost) error {
+func (x *Create) validate(u *golang.UserPost) error {
 	if x.identifier == nil {
 		return fmt.Errorf("missing parameter: identifier")
 	}
@@ -44,7 +44,7 @@ func (x *Create) validate(u *models.UserPost) error {
 	return nil
 }
 
-func (x *Create) Save(ctx context.Context, req *models.UserPost) (*models.User, error) {
+func (x *Create) Save(ctx context.Context, req *golang.UserPost) (*golang.User, error) {
 	// validate incoming payload
 	if err := x.validate(req); err != nil {
 		return nil, err
@@ -55,7 +55,7 @@ func (x *Create) Save(ctx context.Context, req *models.UserPost) (*models.User, 
 	}
 	// insert new user
 	now := x.timer.Now()
-	user := &models.User{
+	user := &golang.User{
 		Id:        req.Id,
 		Created:   now,
 		LastLogin: now,

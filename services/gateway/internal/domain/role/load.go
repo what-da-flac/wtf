@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Load struct {
@@ -29,7 +29,7 @@ func (x *Load) validate(id string) error {
 	return nil
 }
 
-func (x *Load) Load(ctx context.Context, id string) (*models.Role, error) {
+func (x *Load) Load(ctx context.Context, id string) (*golang.Role, error) {
 	if err := x.validate(id); err != nil {
 		return nil, err
 	}

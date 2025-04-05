@@ -6,7 +6,7 @@ import (
 
 	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Update struct {
@@ -21,7 +21,7 @@ func NewUpdate(repository interfaces2.Repository, timer interfaces2.Timer) *Upda
 	}
 }
 
-func (x *Update) validate(id string, req *models.UserPut) error {
+func (x *Update) validate(id string, req *golang.UserPut) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -41,12 +41,12 @@ func (x *Update) validate(id string, req *models.UserPut) error {
 	return nil
 }
 
-func (x *Update) Save(ctx context.Context, id string, req *models.UserPut) (*models.User, error) {
+func (x *Update) Save(ctx context.Context, id string, req *golang.UserPut) (*golang.User, error) {
 	// validate incoming payload
 	if err := x.validate(id, req); err != nil {
 		return nil, err
 	}
-	user, err := NewLoad(x.repository).Load(ctx, &models.User{Id: id})
+	user, err := NewLoad(x.repository).Load(ctx, &golang.User{Id: id})
 	if err != nil {
 		return nil, err
 	}

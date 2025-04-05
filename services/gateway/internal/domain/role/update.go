@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Update struct {
@@ -19,7 +19,7 @@ func NewUpdate(repository interfaces.Repository) *Update {
 	}
 }
 
-func (x *Update) validate(id string, role *models.RolePut) error {
+func (x *Update) validate(id string, role *golang.RolePut) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -32,7 +32,7 @@ func (x *Update) validate(id string, role *models.RolePut) error {
 	return nil
 }
 
-func (x *Update) Update(ctx context.Context, id string, role *models.RolePut) error {
+func (x *Update) Update(ctx context.Context, id string, role *golang.RolePut) error {
 	if err := x.validate(id, role); err != nil {
 		return err
 	}

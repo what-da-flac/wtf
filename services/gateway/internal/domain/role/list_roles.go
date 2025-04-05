@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/helpers"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
-	"github.com/what-da-flac/wtf/openapi/models"
 )
 
 type ListRoles struct {
@@ -20,7 +19,7 @@ func NewListRoles(repository interfaces.Repository) *ListRoles {
 	}
 }
 
-func (x *ListRoles) validate(user *models.User) error {
+func (x *ListRoles) validate(user *golang.User) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -30,7 +29,7 @@ func (x *ListRoles) validate(user *models.User) error {
 	return nil
 }
 
-func (x *ListRoles) List(ctx context.Context, user *models.User) ([]*models.Role, error) {
+func (x *ListRoles) List(ctx context.Context, user *golang.User) ([]*golang.Role, error) {
 	if err := x.validate(user); err != nil {
 		return nil, err
 	}

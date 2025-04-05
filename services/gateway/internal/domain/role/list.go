@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type List struct {
@@ -26,7 +26,7 @@ func (x *List) validate() error {
 	return nil
 }
 
-func (x *List) List(ctx context.Context) ([]*models.Role, error) {
+func (x *List) List(ctx context.Context) ([]*golang.Role, error) {
 	if err := x.validate(); err != nil {
 		return nil, err
 	}

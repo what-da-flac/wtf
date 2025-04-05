@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 func TestTorrent_ToDomain(t *testing.T) {
@@ -21,7 +21,7 @@ func TestTorrent_ToDomain(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   models.Torrent
+		want   golang.Torrent
 	}{
 		{
 			name: "happy path",
@@ -67,9 +67,9 @@ func TestTorrent_ToDomain(t *testing.T) {
 					},
 				},
 			},
-			want: models.Torrent{
+			want: golang.Torrent{
 				Filename: "",
-				Files: []models.TorrentFile{
+				Files: []golang.TorrentFile{
 					{
 						FileName: "Alien Romulus (2024) [1080p] [WEBRip] [5.1] [YTS.MX]/Alien.Romulus.2024.1080p.WEBRip.x264.AAC5.1-[YTS.MX].mp4",
 						FileSize: "2.35 GB",

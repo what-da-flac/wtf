@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Delete struct {
@@ -32,7 +32,7 @@ func (x *Delete) Delete(ctx context.Context, id string) error {
 		return err
 	}
 	entity := NewLoad(x.repository)
-	user, err := entity.Load(ctx, &models.User{Id: id})
+	user, err := entity.Load(ctx, &golang.User{Id: id})
 	if err != nil {
 		return err
 	}

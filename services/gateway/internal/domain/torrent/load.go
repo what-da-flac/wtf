@@ -3,9 +3,8 @@ package torrent
 import (
 	"context"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
-	"github.com/what-da-flac/wtf/openapi/models"
 )
 
 type Load struct {
@@ -18,7 +17,7 @@ func NewLoad(repository interfaces.Repository) *Load {
 	}
 }
 
-func (x *Load) Load(ctx context.Context, id string) (*models.Torrent, error) {
+func (x *Load) Load(ctx context.Context, id string) (*golang.Torrent, error) {
 	res, err := x.repository.SelectTorrent(ctx, id)
 	if err != nil {
 		return nil, err

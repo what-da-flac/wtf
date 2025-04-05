@@ -13,7 +13,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/pgpq"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
 	"github.com/what-da-flac/wtf/go-common/repositories/pgrepo"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/torrent-info/internal/interfaces"
 	"golang.org/x/net/context"
 )
@@ -50,7 +50,7 @@ func processMessage(logger ifaces.Logger, repo interfaces.Repository,
 ) (func(msg []byte) (ack ifaces.AckType, err error), error) {
 	return func(msg []byte) (ack ifaces.AckType, err error) {
 		ctx := context.TODO()
-		torrent := &models.Torrent{}
+		torrent := &golang.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
 			logger.Errorf("deserializing payload error: %v", err)
 			return ifaces.MessageReject, nil
@@ -64,7 +64,7 @@ func processMessage(logger ifaces.Logger, repo interfaces.Repository,
 	}, nil
 }
 
-func upsertTorrent(ctx context.Context, repo interfaces.Repository, identifier ifaces.Identifier, t *models.Torrent) error {
+func upsertTorrent(ctx context.Context, repo interfaces.Repository, identifier ifaces.Identifier, t *golang.Torrent) error {
 	if t == nil || t.Id == "" {
 		return fmt.Errorf("missing id in torrent, cannot process in db")
 	}

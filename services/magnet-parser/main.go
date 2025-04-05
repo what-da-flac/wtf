@@ -9,7 +9,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/magnet-parser/internal/processors"
 )
 
@@ -42,7 +42,7 @@ func processMessage(publisher ifaces.Publisher, logger ifaces.Logger) (func(msg 
 	}
 	cfg := awsSession.Session()
 	return func(msg []byte) (ack ifaces.AckType, err error) {
-		torrent := &models.Torrent{}
+		torrent := &golang.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
 			logger.Errorf("deserializing payload error: %v", err)
 			return ifaces.MessageReject, nil
