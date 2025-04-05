@@ -1,1 +1,0 @@
-alter table users add is_deleted boolean not null default(false);

@@ -34,7 +34,7 @@ golang-imports-install:
 	go install golang.org/x/tools/cmd/goimports@latest
 
 lint:
-	golangci-lint run --config golangci.yaml --timeout 10m
+	golangci-lint run --config ../golangci.yaml --timeout 10m
 
 lint-install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(LINT_VERSION)

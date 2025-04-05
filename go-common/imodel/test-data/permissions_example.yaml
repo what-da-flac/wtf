@@ -1,8 +1,0 @@
-- path: /v1/healthz
-  method: get
-  insecure: true
-- path: /v1/answers
-  method: post
-  roles:
-      - administrators
-      - campaign_owners
