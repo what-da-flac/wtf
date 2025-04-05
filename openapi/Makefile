@@ -1,19 +1,9 @@
-.PHONY: ci
 .PHONY: swagger-install swagger-gen swagger-clean swagger-bundle
-.PHONY: test
 
 GO_PACKAGE_NAME=golang
 SRC_DIR_GO:=gen/$(GO_PACKAGE_NAME)
 OPEN_API_VERSION=v2.4.1
 OPEN_API_OUTPUT:=openapi-gen.yaml
-
-build:
-	go build
-
-ci: lint test
-
-lint:
-	golangci-lint run --config ../golangci.yaml --timeout 10m
 
 swagger-bundle:
 	redocly bundle open-api/openapi.yaml --output $(OPEN_API_OUTPUT)
@@ -39,6 +29,3 @@ swagger-install:
 	npm i -g @redocly/cli@latest
 	npm install -g @openapitools/openapi-generator-cli
 	pip install datamodel-code-generator
-
-test:
-	go test -short -cover ./...
