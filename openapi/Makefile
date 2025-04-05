@@ -36,13 +36,13 @@ swagger-gen-node:
 	openapi-generator-cli generate -i $(OPEN_API_OUTPUT) -g typescript-axios -o clients/node
 
 swagger-gen-python:
-	openapi-python-client generate --path $(OPEN_API_OUTPUT) --output-path gen-python
+	datamodel-codegen --input $(OPEN_API_OUTPUT) --input-file-type openapi --output models.py
 
 swagger-install:
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OPEN_API_VERSION)
 	npm i -g @redocly/cli@latest
 	npm install -g @openapitools/openapi-generator-cli
-	pipx install openapi-python-client --include-deps
+	pip install datamodel-code-generator
 
 test:
 	go test -short -cover ./...
