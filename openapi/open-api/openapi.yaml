@@ -23,37 +23,3 @@ paths:
   /v1/healthz:
     $ref: './resources/health.yaml'
 
-  /v1/roles:
-    $ref: './resources/roles.yaml'
-  /v1/roles/{id}:
-    $ref: './resources/role.yaml'
-  /v1/roles/{role_id}/users:
-    $ref: './resources/role-to-users.yaml'
-  /v1/roles/{role_id}/users/{user_id}:
-    $ref: './resources/user-role.yaml'
-
-  /v1/torrents:
-    $ref: './resources/torrents.yaml'
-  /v1/torrents/magnets:
-    $ref: './resources/magnets.yaml'
-  /v1/torrents/statuses:
-    $ref: './resources/torrents_status.yaml'
-  /v1/torrents/{id}:
-    $ref: './resources/torrent.yaml'
-  /v1/torrents/{id}/status/{status}:
-    $ref: './resources/torrent_status_put.yaml'
-  /v1/torrents/{id}/download:
-    $ref: './resources/torrent_download.yaml'
-
-  /v1/users:
-    $ref: './resources/users.yaml'
-  /v1/user-list:
-    $ref: './resources/user_list.yaml'
-  /v1/users/login:
-    $ref: './resources/user-login.yaml'
-  /v1/users/whoami:
-    $ref: './resources/whoami.yaml'
-  /v1/users/{id}:
-    $ref: './resources/user.yaml'
-  /v1/users/{user_id}/roles:
-    $ref: './resources/user-to-role.yaml'

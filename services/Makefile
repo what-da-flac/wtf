@@ -6,7 +6,7 @@
 # AWS account
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
-SERVICES=gateway magnet-parser torrent-download torrent-info torrent-parser
+SERVICES=gateway
 BASE_GO_BUILD_IMAGE=golang
 BASE_GO_VERSION=1.24.1
 GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
@@ -17,8 +17,6 @@ MOCK_VERSION=v0.5.3
 $(shell touch .env .env.credentials)
 include .env .env.credentials
 export
-
-ci: test-all
 
 ci-%: mock-% test-%
 	go test -cover  ./$*/...
@@ -70,10 +68,8 @@ local-pg:
 	docker compose exec -it postgres psql
 
 mock-all:
-	@$(foreach service, $(SERVICES), \
-		cd $(service) && rm -rf mocks && mkdir -p mocks && go generate ./... && cd ..; \
-	)
-	$(MAKE) -C ../go-common mock-gen
+	find . -iname "mocks" -exec rm -rf {} \; || true
+	go generate ./...
 
 mock-%:
 	cd $* && rm -rf mocks && mkdir -p mocks && go generate ./...
@@ -98,9 +94,7 @@ tag-all:
 	)
 
 test-all: mock-all
-	@$(foreach service, $(SERVICES), \
-		cd $(service) && go test -short -cover ./... && cd ..; \
-	)
+	go test -short -cover ./...
 
 test-%: mock-%
 	go test -short -cover ./$*/...
