@@ -4,7 +4,7 @@
 
 
 SRC_DIR:=models
-OPEN_API_VERSION=v2.2.0
+OPEN_API_VERSION=v2.4.1
 OPEN_API_OUTPUT:=openapi-gen.yaml
 
 build:
@@ -27,12 +27,22 @@ swagger-clean:
 	rm -f $(SRC_DIR)/types.go
 	echo 'package models' > $(SRC_DIR)/types.go
 
-swagger-gen: swagger-clean swagger-bundle
+swagger-gen: swagger-clean swagger-bundle swagger-gen-go swagger-gen-node swagger-gen-python
+
+swagger-gen-go:
 	oapi-codegen --package models --generate types,client,std-http $(OPEN_API_OUTPUT) > $(SRC_DIR)/types.go
 
+swagger-gen-node:
+	openapi-generator-cli generate -i $(OPEN_API_OUTPUT) -g typescript-axios -o clients/node
+
+swagger-gen-python:
+	openapi-python-client generate --path $(OPEN_API_OUTPUT) --output-path gen-python
+
 swagger-install:
-	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@$(OPEN_API_VERSION)
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OPEN_API_VERSION)
 	npm i -g @redocly/cli@latest
+	npm install -g @openapitools/openapi-generator-cli
+	pipx install openapi-python-client --include-deps
 
 test:
 	go test -short -cover ./...
