@@ -5,24 +5,23 @@ import (
 	"fmt"
 	"strings"
 
-	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
 type Create struct {
-	repository interfaces2.Repository
-	identifier interfaces2.Identifier
+	repository interfaces.Repository
+	identifier interfaces.Identifier
 }
 
-func NewCreate(identifier interfaces2.Identifier, repository interfaces2.Repository) *Create {
+func NewCreate(identifier interfaces.Identifier, repository interfaces.Repository) *Create {
 	return &Create{
 		identifier: identifier,
 		repository: repository,
 	}
 }
 
-func (x *Create) validate(role *models.PostV1RolesJSONRequestBody) error {
+func (x *Create) validate(role *golang.PostV1RolesJSONRequestBody) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -38,11 +37,11 @@ func (x *Create) validate(role *models.PostV1RolesJSONRequestBody) error {
 	return nil
 }
 
-func (x *Create) Save(ctx context.Context, req *models.PostV1RolesJSONRequestBody) (*models.Role, error) {
+func (x *Create) Save(ctx context.Context, req *golang.PostV1RolesJSONRequestBody) (*golang.Role, error) {
 	if err := x.validate(req); err != nil {
 		return nil, err
 	}
-	res := &models.Role{
+	res := &golang.Role{
 		Id:          x.identifier.UUIDv4(),
 		Name:        strings.ToLower(req.Name),
 		Description: req.Description,

@@ -3,20 +3,20 @@ package pgrepo
 import (
 	"context"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
-func (x *PgRepo) InsertRole(_ context.Context, role *models.Role) error {
+func (x *PgRepo) InsertRole(_ context.Context, role *golang.Role) error {
 	db := x.GORM()
 	return db.Create(roleFromProto(role)).Error
 }
 
-func (x *PgRepo) UpdateRole(_ context.Context, role *models.Role) error {
+func (x *PgRepo) UpdateRole(_ context.Context, role *golang.Role) error {
 	db := x.GORM()
 	return db.Updates(roleFromProto(role)).Error
 }
 
-func (x *PgRepo) SelectRole(_ context.Context, id string) (*models.Role, error) {
+func (x *PgRepo) SelectRole(_ context.Context, id string) (*golang.Role, error) {
 	db := x.GORM()
 	row := &RoleDto{
 		Id: id,
@@ -35,9 +35,9 @@ func (x *PgRepo) DeleteRole(_ context.Context, id string) error {
 	return db.Delete(row).Unscoped().Error
 }
 
-func (x *PgRepo) ListRoles(_ context.Context) ([]*models.Role, error) {
+func (x *PgRepo) ListRoles(_ context.Context) ([]*golang.Role, error) {
 	var (
-		result []*models.Role
+		result []*golang.Role
 		rows   []RoleDto
 	)
 	db := x.GORM()

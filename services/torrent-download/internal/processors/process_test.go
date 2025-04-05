@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/what-da-flac/wtf/go-common/env"
 	"github.com/what-da-flac/wtf/go-common/loggers"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/interfaces"
 	"github.com/what-da-flac/wtf/services/torrent-download/mocks"
 )
@@ -52,7 +52,7 @@ func TestProcess_RemoveDownloadedFiles(t *testing.T) {
 			return nil
 		},
 	}
-	torrent := &models.Torrent{
+	torrent := &golang.Torrent{
 		Id:       "123",
 		Filename: "123.torrent",
 	}

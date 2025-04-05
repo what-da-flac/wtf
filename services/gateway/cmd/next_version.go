@@ -25,7 +25,7 @@ var nextVersionCmd = &cobra.Command{
 		// example
 		// git tag | go run . next-version cdk
 		if len(args) != 1 {
-			return fmt.Errorf("Usage: next-version <type>")
+			return fmt.Errorf("usage: next-version <type>")
 		}
 		versionType := args[0]
 		reader, err := pipes.ReadStdin()

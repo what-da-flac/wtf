@@ -6,7 +6,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type List struct {
@@ -19,7 +19,7 @@ func NewList(repository interfaces.Repository) *List {
 	}
 }
 
-func (x *List) validate(req *models.UserListParams) error {
+func (x *List) validate(req *golang.UserListParams) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -29,7 +29,7 @@ func (x *List) validate(req *models.UserListParams) error {
 	return nil
 }
 
-func (x *List) List(ctx context.Context, req *models.UserListParams) ([]*models.User, error) {
+func (x *List) List(ctx context.Context, req *golang.UserListParams) ([]*golang.User, error) {
 	if err := x.validate(req); err != nil {
 		return nil, err
 	}

@@ -3,14 +3,15 @@ package rest
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/services/gateway/internal/domain/role"
+
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
-	"github.com/what-da-flac/wtf/openapi/models"
-	role2 "github.com/what-da-flac/wtf/services/gateway/internal/domain/role"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 func (x *Server) GetV1Roles(w http.ResponseWriter, r *http.Request) {
 	ctx := x.context(r)
-	res, err := role2.NewList(x.repository).List(ctx)
+	res, err := role.NewList(x.repository).List(ctx)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
@@ -19,13 +20,13 @@ func (x *Server) GetV1Roles(w http.ResponseWriter, r *http.Request) {
 }
 
 func (x *Server) PostV1Roles(w http.ResponseWriter, r *http.Request) {
-	payload := &models.PostV1RolesJSONRequestBody{}
+	payload := &golang.PostV1RolesJSONRequestBody{}
 	if err := ihandlers.ReadJSON(r.Body, payload); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	ctx := x.context(r)
-	res, err := role2.NewCreate(x.identifier, x.repository).Save(ctx, payload)
+	res, err := role.NewCreate(x.identifier, x.repository).Save(ctx, payload)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusBadRequest, nil, err)
 		return
@@ -35,7 +36,7 @@ func (x *Server) PostV1Roles(w http.ResponseWriter, r *http.Request) {
 
 func (x *Server) DeleteV1RolesId(w http.ResponseWriter, r *http.Request, id string) {
 	ctx := x.context(r)
-	if err := role2.NewDelete(x.repository).Delete(ctx, &models.Role{Id: id}); err != nil {
+	if err := role.NewDelete(x.repository).Delete(ctx, &golang.Role{Id: id}); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}
@@ -44,7 +45,7 @@ func (x *Server) DeleteV1RolesId(w http.ResponseWriter, r *http.Request, id stri
 
 func (x *Server) GetV1RolesId(w http.ResponseWriter, r *http.Request, id string) {
 	ctx := x.context(r)
-	res, err := role2.NewLoad(x.repository).Load(ctx, id)
+	res, err := role.NewLoad(x.repository).Load(ctx, id)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusNotFound, nil, err)
 		return
@@ -53,13 +54,13 @@ func (x *Server) GetV1RolesId(w http.ResponseWriter, r *http.Request, id string)
 }
 
 func (x *Server) PutV1RolesId(w http.ResponseWriter, r *http.Request, id string) {
-	payload := &models.RolePut{}
+	payload := &golang.RolePut{}
 	if err := ihandlers.ReadJSON(r.Body, payload); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	ctx := x.context(r)
-	if err := role2.NewUpdate(x.repository).Update(ctx, id, payload); err != nil {
+	if err := role.NewUpdate(x.repository).Update(ctx, id, payload); err != nil {
 		ihandlers.WriteResponse(w, http.StatusBadRequest, nil, err)
 		return
 	}
@@ -68,7 +69,7 @@ func (x *Server) PutV1RolesId(w http.ResponseWriter, r *http.Request, id string)
 
 func (x *Server) GetV1RolesRoleIdUsers(w http.ResponseWriter, r *http.Request, roleId string) {
 	ctx := x.context(r)
-	res, err := role2.NewListUsers(x.repository).List(ctx, roleId)
+	res, err := role.NewListUsers(x.repository).List(ctx, roleId)
 	if err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
@@ -78,10 +79,10 @@ func (x *Server) GetV1RolesRoleIdUsers(w http.ResponseWriter, r *http.Request, r
 
 func (x *Server) DeleteV1RolesRoleIdUsersUserId(w http.ResponseWriter, r *http.Request, roleId string, userId string) {
 	ctx := x.context(r)
-	if err := role2.NewRemoveUser(x.repository).Remove(ctx,
-		&models.Role{
+	if err := role.NewRemoveUser(x.repository).Remove(ctx,
+		&golang.Role{
 			Id: roleId,
-		}, &models.User{Id: userId}); err != nil {
+		}, &golang.User{Id: userId}); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}
@@ -90,9 +91,9 @@ func (x *Server) DeleteV1RolesRoleIdUsersUserId(w http.ResponseWriter, r *http.R
 
 func (x *Server) PutV1RolesRoleIdUsersUserId(w http.ResponseWriter, r *http.Request, roleId string, userId string) {
 	ctx := x.context(r)
-	if err := role2.NewAddUser(x.repository).Add(ctx,
-		&models.Role{Id: roleId},
-		&models.User{Id: userId}); err != nil {
+	if err := role.NewAddUser(x.repository).Add(ctx,
+		&golang.Role{Id: roleId},
+		&golang.User{Id: userId}); err != nil {
 		ihandlers.WriteResponse(w, http.StatusInternalServerError, nil, err)
 		return
 	}

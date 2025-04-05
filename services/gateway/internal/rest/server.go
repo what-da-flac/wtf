@@ -9,7 +9,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/ihandlers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
@@ -70,8 +70,8 @@ func (x *Server) context(r *http.Request) context.Context {
 	return r.Context()
 }
 
-func (x *Server) ReadUserFromContext(ctx context.Context) *models.User {
-	res := &models.User{}
+func (x *Server) ReadUserFromContext(ctx context.Context) *golang.User {
+	res := &golang.User{}
 	if val := ihandlers.UserFromContext(ctx); val != nil {
 		if err := copier.Copy(res, val); err != nil {
 			return nil

@@ -3,22 +3,22 @@ package pgrepo
 import (
 	"context"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
-func (x *PgRepo) InsertTorrent(_ context.Context, torrent *models.Torrent) error {
+func (x *PgRepo) InsertTorrent(_ context.Context, torrent *golang.Torrent) error {
 	db := x.GORM()
 	dto := torrentFromModel(torrent)
 	return db.Create(dto).Error
 }
 
-func (x *PgRepo) UpdateTorrent(ctx context.Context, torrent *models.Torrent) error {
+func (x *PgRepo) UpdateTorrent(ctx context.Context, torrent *golang.Torrent) error {
 	db := x.GORM()
 	dto := torrentFromModel(torrent)
 	return db.Save(dto).Error
 }
 
-func (x *PgRepo) SelectTorrent(_ context.Context, id string) (*models.Torrent, error) {
+func (x *PgRepo) SelectTorrent(_ context.Context, id string) (*golang.Torrent, error) {
 	db := x.GORM()
 	row := &TorrentDto{}
 	if err := db.Model(row).Where("id = ?", id).First(row).Error; err != nil {
@@ -28,9 +28,9 @@ func (x *PgRepo) SelectTorrent(_ context.Context, id string) (*models.Torrent, e
 	return row.toModel(), nil
 }
 
-func (x *PgRepo) ListTorrents(ctx context.Context, params models.GetV1TorrentsParams) ([]*models.Torrent, error) {
+func (x *PgRepo) ListTorrents(ctx context.Context, params golang.GetV1TorrentsParams) ([]*golang.Torrent, error) {
 	var (
-		res  []*models.Torrent
+		res  []*golang.Torrent
 		rows []*TorrentDto
 	)
 	db := x.GORM()
@@ -55,15 +55,15 @@ func (x *PgRepo) ListTorrents(ctx context.Context, params models.GetV1TorrentsPa
 
 func (x *PgRepo) ListTorrentStatuses(ctx context.Context) []string {
 	return []string{
-		string(models.Downloaded),
-		string(models.Downloading),
-		string(models.Queued),
-		string(models.Parsed),
-		string(models.Pending),
+		string(golang.Downloaded),
+		string(golang.Downloading),
+		string(golang.Queued),
+		string(golang.Parsed),
+		string(golang.Pending),
 	}
 }
 
-func (x *PgRepo) InsertTorrentFile(ctx context.Context, file *models.TorrentFile) error {
+func (x *PgRepo) InsertTorrentFile(ctx context.Context, file *golang.TorrentFile) error {
 	db := x.GORM()
 	return db.Create(torrentFileFromModel(file)).Error
 }
@@ -73,9 +73,9 @@ func (x *PgRepo) DeleteTorrentFiles(ctx context.Context, torrentId string) error
 	return db.Where("torrent_id = ?", torrentId).Delete(&TorrentFileDto{}).Error
 }
 
-func (x *PgRepo) SelectTorrentFiles(ctx context.Context, id string) ([]*models.TorrentFile, error) {
+func (x *PgRepo) SelectTorrentFiles(ctx context.Context, id string) ([]*golang.TorrentFile, error) {
 	var (
-		res  []*models.TorrentFile
+		res  []*golang.TorrentFile
 		rows []*TorrentFileDto
 	)
 	db := x.GORM()

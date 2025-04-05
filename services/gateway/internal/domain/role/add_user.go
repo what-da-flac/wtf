@@ -7,7 +7,7 @@ import (
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type AddUser struct {
@@ -20,7 +20,7 @@ func NewAddUser(repository interfaces.Repository) *AddUser {
 	}
 }
 
-func (x *AddUser) validate(role *models.Role, user *models.User) error {
+func (x *AddUser) validate(role *golang.Role, user *golang.User) error {
 	if role == nil || role.Id == "" {
 		return fmt.Errorf("missing parameter: role")
 	}
@@ -30,7 +30,7 @@ func (x *AddUser) validate(role *models.Role, user *models.User) error {
 	return nil
 }
 
-func (x *AddUser) Add(ctx context.Context, role *models.Role, user *models.User) error {
+func (x *AddUser) Add(ctx context.Context, role *golang.Role, user *golang.User) error {
 	const constraintText = "constraint"
 	if err := x.validate(role, user); err != nil {
 		return err

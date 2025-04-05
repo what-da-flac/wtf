@@ -5,19 +5,19 @@ import (
 	"fmt"
 
 	"github.com/what-da-flac/wtf/services/gateway/internal/helpers"
-	interfaces2 "github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
 	"github.com/jinzhu/copier"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Login struct {
-	identifier interfaces2.Identifier
-	repository interfaces2.Repository
-	timer      interfaces2.Timer
+	identifier interfaces.Identifier
+	repository interfaces.Repository
+	timer      interfaces.Timer
 }
 
-func NewLogin(identifier interfaces2.Identifier, repository interfaces2.Repository, timer interfaces2.Timer) *Login {
+func NewLogin(identifier interfaces.Identifier, repository interfaces.Repository, timer interfaces.Timer) *Login {
 	return &Login{
 		repository: repository,
 		identifier: identifier,
@@ -25,7 +25,7 @@ func NewLogin(identifier interfaces2.Identifier, repository interfaces2.Reposito
 	}
 }
 
-func (x *Login) validate(req *models.PostV1UsersLoginJSONRequestBody) error {
+func (x *Login) validate(req *golang.PostV1UsersLoginJSONRequestBody) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -48,12 +48,12 @@ func (x *Login) validate(req *models.PostV1UsersLoginJSONRequestBody) error {
 	return nil
 }
 
-func (x *Login) Login(ctx context.Context, req *models.PostV1UsersLoginJSONRequestBody) (*models.UserLoginResponse, error) {
+func (x *Login) Login(ctx context.Context, req *golang.PostV1UsersLoginJSONRequestBody) (*golang.UserLoginResponse, error) {
 	// validate incoming payload
 	if err := x.validate(req); err != nil {
 		return nil, err
 	}
-	res := &models.UserLoginResponse{}
+	res := &golang.UserLoginResponse{}
 	now := x.timer.Now()
 	// check if user already exists
 	if user, err := x.repository.SelectUser(ctx, &req.Id, &req.Email); err == nil {

@@ -3,13 +3,13 @@ package helpers
 import (
 	"context"
 
-	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
-func UsersToMap(ctx context.Context, repository interfaces.Repository, ids ...string) (map[string]*models.User, error) {
-	params := &models.UserListParams{
+func UsersToMap(ctx context.Context, repository interfaces.Repository, ids ...string) (map[string]*golang.User, error) {
+	params := &golang.UserListParams{
 		Ids:         ids,
 		OnlyDeleted: false,
 	}
@@ -17,5 +17,5 @@ func UsersToMap(ctx context.Context, repository interfaces.Repository, ids ...st
 	if err != nil {
 		return nil, err
 	}
-	return models.Users(rows).ToMap(), nil
+	return golang.Users(rows).ToMap(), nil
 }

@@ -1,4 +1,4 @@
-package models
+package golang
 
 type Users []*User
 

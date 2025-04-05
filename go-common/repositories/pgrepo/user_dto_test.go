@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -24,7 +24,7 @@ func TestUserDto_toProto(t *testing.T) {
 	tests := []struct {
 		name   string
 		fields fields
-		want   *models.User
+		want   *golang.User
 	}{
 		{
 			name: "happy path",
@@ -39,7 +39,7 @@ func TestUserDto_toProto(t *testing.T) {
 				}(),
 				LastLogin: &now,
 			},
-			want: &models.User{
+			want: &golang.User{
 				Id:        "1",
 				Created:   now,
 				Email:     "2@test.com",

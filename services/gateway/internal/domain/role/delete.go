@@ -4,9 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
-
-	"github.com/what-da-flac/wtf/openapi/models"
 )
 
 type Delete struct {
@@ -19,7 +18,7 @@ func NewDelete(repository interfaces.Repository) *Delete {
 	}
 }
 
-func (x *Delete) validate(role *models.Role) error {
+func (x *Delete) validate(role *golang.Role) error {
 	if x.repository == nil {
 		return fmt.Errorf("missing parameter: repository")
 	}
@@ -29,7 +28,7 @@ func (x *Delete) validate(role *models.Role) error {
 	return nil
 }
 
-func (x *Delete) Delete(ctx context.Context, role *models.Role) error {
+func (x *Delete) Delete(ctx context.Context, role *golang.Role) error {
 	if err := x.validate(role); err != nil {
 		return err
 	}

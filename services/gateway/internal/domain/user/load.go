@@ -6,9 +6,9 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 
-	"github.com/what-da-flac/wtf/openapi/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -23,7 +23,7 @@ func NewLoad(repository interfaces.Repository) *Load {
 	}
 }
 
-func (x *Load) validate(req *models.User) error {
+func (x *Load) validate(req *golang.User) error {
 	r := req
 	if r == nil {
 		return fmt.Errorf("missing parameter: req")
@@ -34,7 +34,7 @@ func (x *Load) validate(req *models.User) error {
 	return nil
 }
 
-func (x *Load) Load(ctx context.Context, req *models.User) (*models.User, error) {
+func (x *Load) Load(ctx context.Context, req *golang.User) (*golang.User, error) {
 	var id, email *string
 	// validate incoming payload
 	if err := x.validate(req); err != nil {

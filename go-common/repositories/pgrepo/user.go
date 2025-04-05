@@ -4,22 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
-func (x *PgRepo) InsertUser(_ context.Context, user *models.User) error {
+func (x *PgRepo) InsertUser(_ context.Context, user *golang.User) error {
 	db := x.GORM()
 	row := fromProtoUser(user)
 	return db.Create(row).Error
 }
 
-func (x *PgRepo) UpdateUser(cxt context.Context, user *models.User) error {
+func (x *PgRepo) UpdateUser(cxt context.Context, user *golang.User) error {
 	db := x.GORM()
 	row := fromProtoUser(user)
 	return db.Updates(row).Error
 }
 
-func (x *PgRepo) SelectUser(cxt context.Context, id, email *string) (*models.User, error) {
+func (x *PgRepo) SelectUser(cxt context.Context, id, email *string) (*golang.User, error) {
 	db := x.GORM()
 	row := &UserDto{}
 	where := &UserDto{}
@@ -38,9 +38,9 @@ func (x *PgRepo) SelectUser(cxt context.Context, id, email *string) (*models.Use
 	return row.toProto(), nil
 }
 
-func (x *PgRepo) ListUsers(_ context.Context, req *models.UserListParams) ([]*models.User, error) {
+func (x *PgRepo) ListUsers(_ context.Context, req *golang.UserListParams) ([]*golang.User, error) {
 	var (
-		result []*models.User
+		result []*golang.User
 		rows   []*UserDto
 	)
 	instance := &UserDto{}

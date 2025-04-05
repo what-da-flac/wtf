@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/copier"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type TorrentDto struct {
@@ -29,20 +29,20 @@ type TorrentDto struct {
 
 func (x *TorrentDto) TableName() string { return "torrent" }
 
-func (x *TorrentDto) toModel() *models.Torrent {
-	res := &models.Torrent{}
+func (x *TorrentDto) toModel() *golang.Torrent {
+	res := &golang.Torrent{}
 	if err := copier.Copy(res, x); err != nil {
 		return nil
 	}
 	if val := x.UserId; val != "" {
-		res.User = &models.User{
+		res.User = &golang.User{
 			Id: val,
 		}
 	}
 	return res
 }
 
-func torrentFromModel(r *models.Torrent) *TorrentDto {
+func torrentFromModel(r *golang.Torrent) *TorrentDto {
 	res := &TorrentDto{}
 	if err := copier.Copy(res, r); err != nil {
 		return nil

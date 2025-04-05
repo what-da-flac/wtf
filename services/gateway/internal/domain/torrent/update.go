@@ -3,7 +3,7 @@ package torrent
 import (
 	"context"
 
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
@@ -22,7 +22,7 @@ func NewUpdate(repository interfaces.Repository, timer interfaces.Timer,
 	}
 }
 
-func (x *Update) Save(ctx context.Context, torrent *models.Torrent) error {
+func (x *Update) Save(ctx context.Context, torrent *golang.Torrent) error {
 	old, err := x.repository.SelectTorrent(ctx, torrent.Id)
 	if err != nil {
 		return err

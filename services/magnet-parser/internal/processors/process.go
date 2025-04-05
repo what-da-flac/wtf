@@ -17,12 +17,12 @@ import (
 
 	"github.com/what-da-flac/wtf/go-common/amazon"
 	"github.com/what-da-flac/wtf/go-common/ifaces"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 func Process(
 	publisher ifaces.Publisher, logger ifaces.Logger,
-	cfg *aws.Config, torrent *models.Torrent) error {
+	cfg *aws.Config, torrent *golang.Torrent) error {
 	// base dir must be /tmp since lambdas cannot write anywhere else
 	baseDir := os.TempDir()
 	// create torrent from magnet link

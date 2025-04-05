@@ -10,7 +10,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/go-common/loggers"
 	"github.com/what-da-flac/wtf/go-common/rabbits"
-	"github.com/what-da-flac/wtf/openapi/models"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/downloaders"
 	"github.com/what-da-flac/wtf/services/torrent-download/internal/processors"
 )
@@ -58,13 +58,13 @@ func processMessage(logger ifaces.Logger, config *env.Config,
 		return nil, err
 	}
 	return func(msg []byte) (ack ifaces.AckType, err error) {
-		torrent := &models.Torrent{}
+		torrent := &golang.Torrent{}
 		if err := json.Unmarshal(msg, torrent); err != nil {
 			logger.Errorf("deserializing payload error: %v", err)
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("received torrent with filename: %s", torrent.Filename)
-		torrent.Status = models.Downloading
+		torrent.Status = golang.Downloading
 		data, err := json.Marshal(torrent)
 		if err != nil {
 			logger.Errorf("marshaling torrent error: %v", err)
@@ -80,7 +80,7 @@ func processMessage(logger ifaces.Logger, config *env.Config,
 			return ifaces.MessageReject, nil
 		}
 		logger.Infof("downloaded torrent, time elapsed: %v", elapsed)
-		torrent.Status = models.Downloaded
+		torrent.Status = golang.Downloaded
 		data, err = json.Marshal(torrent)
 		if err != nil {
 			logger.Errorf("marshaling torrent error: %v", err)
