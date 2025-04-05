@@ -32,7 +32,7 @@ func RoleMiddleware(
 			// grab user from context
 			user := UserFromContext(ctx)
 			if user == nil {
-				WriteResponse(w, http.StatusNotImplemented, nil, fmt.Errorf("User not found in context"))
+				WriteResponse(w, http.StatusNotImplemented, nil, fmt.Errorf("user not found in context"))
 				return
 			}
 

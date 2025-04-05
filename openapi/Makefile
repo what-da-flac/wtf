@@ -23,7 +23,7 @@ swagger-clean:
 	rm -f $(SRC_DIR_GO)/types.go
 	echo 'package go' > $(SRC_DIR_GO)/types.go
 
-swagger-gen: swagger-clean swagger-bundle swagger-gen-go swagger-gen-node swagger-gen-python
+swagger-gen: swagger-clean swagger-bundle swagger-gen-go
 
 swagger-gen-go:
 	oapi-codegen --package $(GO_PACKAGE_NAME) --generate types,client,std-http $(OPEN_API_OUTPUT) > "$(SRC_DIR_GO)/types.go"

@@ -19,7 +19,6 @@ type Config struct {
 	Google      Google
 	LogLevel    string
 	Port        string
-	RabbitMQ    RabbitMQ
 	Sentry      Sentry
 	ServiceName string
 	Volumes     Volumes
@@ -36,7 +35,6 @@ func New() *Config {
 		Google:      newGoogle(),
 		LogLevel:    viper.GetString(envLogLevel),
 		Port:        viper.GetString(envVarPort),
-		RabbitMQ:    newRabbitMQ(),
 		Sentry:      newSentry(),
 		ServiceName: viper.GetString(envVarServiceName),
 		Volumes:     newVolumes(),
