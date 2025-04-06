@@ -6,7 +6,7 @@
 # AWS account
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
-SERVICES=gateway
+SERVICES=api gateway
 BASE_GO_BUILD_IMAGE=golang
 BASE_GO_VERSION=1.24.1
 GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
