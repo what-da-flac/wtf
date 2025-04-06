@@ -29,7 +29,7 @@ clean-ts:
 	rm -rf $(DIR_TS)
 	mkdir -p $(DIR_TS)
 
-gen: bundle gen-go gen-node gen-python gen-ts
+gen: bundle gen-go gen-node gen-ts
 
 gen-go: clean-go
 	oapi-codegen --package $(GO_PACKAGE_NAME) --generate types,client,std-http $(OPEN_API_OUTPUT) > "$(DIR_GO)/types.go"
@@ -48,4 +48,4 @@ install:
 	npm i -g @redocly/cli@latest
 	npm i -g @openapitools/openapi-generator-cli
 	npm i -g openapi-typescript-codegen@0.29.0 --force
-	pip install datamodel-code-generator
+	#pip install datamodel-code-generator
