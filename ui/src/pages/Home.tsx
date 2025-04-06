@@ -1,6 +1,6 @@
 export default function(){
     return (
-        <p>
+        <p className="font-bold">
             I am home page
         </p>
     )
