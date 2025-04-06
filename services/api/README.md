@@ -17,7 +17,7 @@ Response
   "ok": true,
   "version": "dev"
 }
-
+```
 
 Using internal NodeJS endpoint.
 
