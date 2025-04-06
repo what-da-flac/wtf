@@ -31,7 +31,9 @@ service
 .DS_Store
 
 # generated files
+openapitools.json
 openapi-gen.yaml
+gen
 
 # environment
  .env.*
