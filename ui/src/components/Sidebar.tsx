@@ -1,36 +1,12 @@
-import React, {useMemo} from "react";
-import {HiHome} from "react-icons/hi";
-import {BiSearch} from "react-icons/bi";
-import {useLocation} from "react-router-dom";
+import {Link} from "react-router-dom";
 
-interface SidebarProps {
-    children: React.ReactNode;
-}
-
-const Sidebar: React.FC<SidebarProps> = ({
-                                             children
-                                         }) => {
-    const location = useLocation();
-    const routes = useMemo(() => [
-        {
-            icon: HiHome,
-            label: "Home",
-            active: location.pathname !== "/search",
-            href: "/",
-        },
-        {
-            icon: BiSearch,
-            label: "Search",
-            active: location.pathname === "/search",
-            href: "/search",
-        }
-    ], [location.pathname]);
+const Sidebar = () => {
     return (
-        <>
-            <div>Sidebar</div>
-            {children}
-        </>
-    )
-}
+        <div>
+            <Link to="/">Home SB</Link>
+            <Link to="/about">About SB</Link>
+        </div>
+    );
+};
 
 export default Sidebar;
