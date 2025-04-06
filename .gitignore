@@ -7,6 +7,9 @@
 # env files
 .env.*
 
+# node stuff
+node_modules
+
 # python stuff
 __pycache__
 

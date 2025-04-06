@@ -4,6 +4,9 @@ deployment/
 mocks/
 ui/
 
+# node stuff
+node_modules
+
 # python stuff
 Pipfile*
 

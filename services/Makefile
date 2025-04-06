@@ -6,7 +6,8 @@
 # AWS account
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
-SERVICES=gateway
+SERVICES=api gateway
+NODE_SERVICES=api
 BASE_GO_BUILD_IMAGE=golang
 BASE_GO_VERSION=1.24.1
 GIT_TAG := $(or $(GIT_TAG), local-dev.0.0.1)
@@ -20,6 +21,8 @@ export
 
 ci-%: mock-% test-%
 	go test -cover  ./$*/...
+
+ci: test-all-go test-all-node
 
 build-%:
 	docker build --progress=plain --no-cache \
@@ -93,8 +96,13 @@ tag-all:
 		docker tag $(service):$(GIT_TAG) $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com/$(service):$(GIT_TAG); \
 	)
 
-test-all: mock-all
+test-all-go: mock-all
 	go test -short -cover ./...
+
+test-all-node:
+	@$(foreach service, $(NODE_SERVICES), \
+		$(MAKE) -C $(service) ci; \
+	)
 
 test-%: mock-%
 	go test -short -cover ./$*/...

@@ -57,5 +57,5 @@ jobs:
 
     - name: Run PR validation
       run: |
-        make -C openapi/ install gen
+        # make -C openapi/ install gen
         make ci 

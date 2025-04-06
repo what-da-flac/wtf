@@ -1,13 +1,8 @@
 .PHONY: ci _next-tag next-tag-cdk next-tag-docker next-tag-service next-tag-ui
 .PHONY: push-tag-service push-tag-cdk push-tag-docker push-tag-ui
 
-ci:
-	@make test-all
+ci: test-all
 	@make -C ui/ install ci
-
-mock-all:
-	find . -iname "mocks" -exec rm -rf {} \; || true
-	go generate ./...
 
 _next-tag:
 	@echo $(shell git tag | go run ./services/gateway next-version $(ARGS))
@@ -36,5 +31,5 @@ push-tag-service:
 push-tag-ui:
 	@TAG_NAME=$(shell $(MAKE) next-tag-ui) && git tag $$TAG_NAME && git push --tags
 
-test-all: mock-all
-	go test -short -cover ./...
+test-all:
+	@make -C services/ ci
