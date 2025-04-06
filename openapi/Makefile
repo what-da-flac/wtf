@@ -48,5 +48,5 @@ install:
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OPEN_API_VERSION)
 	npm i -g @redocly/cli@latest
 	npm i -g @openapitools/openapi-generator-cli
-	npm i -g openapi-typescript-codegen@0.29.0
+	npm i -g openapi-typescript-codegen@0.29.0 --force
 	pip install datamodel-code-generator
