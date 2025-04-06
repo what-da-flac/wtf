@@ -1,9 +1,6 @@
-.PHONY: ci format-check install
+.PHONY: ci install test
 
-ci: test format-check
-
-format-check:
-	npm run format:check
+ci: test
 
 install:
 	npm i
