@@ -41,6 +41,21 @@ jobs:
         make -C services/ mock-install
         echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
+    - name: Install Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+
+    - name: Install Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
     - name: Run PR validation
       run: |
-        make -C services/ test-all 
+        make -C openapi/ install gen
+        make ci 

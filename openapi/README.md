@@ -7,7 +7,7 @@ OpenAPI files to generate stubs and classes for microservices single source of t
 Install required packages:
 
 ```bash
-make swagger-install
+make install
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ make swagger-install
 To generate files in all languages:
 
 ```bash
-make swagger-gen
+make gen
 ```
 
 
