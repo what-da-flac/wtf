@@ -3,7 +3,7 @@
 
 ci:
 	@make test-all
-	@make -C ui/ ci
+	@make -C ui/ install ci
 
 mock-all:
 	find . -iname "mocks" -exec rm -rf {} \; || true
