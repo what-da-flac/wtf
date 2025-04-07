@@ -5,7 +5,7 @@
 
 BASE_BRANCH=$1
 
-MIGRATIONS_DIR=internal/assets/files/migrations/
+MIGRATIONS_DIR=gateway/internal/assets/files/migrations/
 
 OLDEST_NEW_MIGRATION_FILE=$(git diff --name-only "origin/${BASE_BRANCH}" --diff-filter=d | grep -m1 "${MIGRATIONS_DIR}")
 
