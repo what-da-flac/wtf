@@ -13,6 +13,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
 const (
@@ -24,6 +26,15 @@ type Health struct {
 	Ok      bool   `json:"ok"`
 	Version string `json:"version"`
 }
+
+// UploadAudioFileMultipartBody defines parameters for UploadAudioFile.
+type UploadAudioFileMultipartBody struct {
+	// File The audio file to upload (.mp3 or .flac)
+	File openapi_types.File `json:"file"`
+}
+
+// UploadAudioFileMultipartRequestBody defines body for UploadAudioFile for multipart/form-data ContentType.
+type UploadAudioFileMultipartRequestBody UploadAudioFileMultipartBody
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -98,8 +109,23 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// UploadAudioFileWithBody request with any body
+	UploadAudioFileWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// GetV1Healthz request
 	GetV1Healthz(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error)
+}
+
+func (c *Client) UploadAudioFileWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUploadAudioFileRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
 }
 
 func (c *Client) GetV1Healthz(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -112,6 +138,35 @@ func (c *Client) GetV1Healthz(ctx context.Context, reqEditors ...RequestEditorFn
 		return nil, err
 	}
 	return c.Client.Do(req)
+}
+
+// NewUploadAudioFileRequestWithBody generates requests for UploadAudioFile with any type of body
+func NewUploadAudioFileRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/files")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
 }
 
 // NewGetV1HealthzRequest generates requests for GetV1Healthz
@@ -184,8 +239,42 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// UploadAudioFileWithBodyWithResponse request with any body
+	UploadAudioFileWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadAudioFileResponse, error)
+
 	// GetV1HealthzWithResponse request
 	GetV1HealthzWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1HealthzResponse, error)
+}
+
+type UploadAudioFileResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Message        *string                 `json:"message,omitempty"`
+		RemoteResponse *map[string]interface{} `json:"remoteResponse,omitempty"`
+	}
+	JSON400 *struct {
+		Error *string `json:"error,omitempty"`
+	}
+	JSON500 *struct {
+		Error *string `json:"error,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r UploadAudioFileResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UploadAudioFileResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type GetV1HealthzResponse struct {
@@ -210,6 +299,15 @@ func (r GetV1HealthzResponse) StatusCode() int {
 	return 0
 }
 
+// UploadAudioFileWithBodyWithResponse request with arbitrary body returning *UploadAudioFileResponse
+func (c *ClientWithResponses) UploadAudioFileWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UploadAudioFileResponse, error) {
+	rsp, err := c.UploadAudioFileWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUploadAudioFileResponse(rsp)
+}
+
 // GetV1HealthzWithResponse request returning *GetV1HealthzResponse
 func (c *ClientWithResponses) GetV1HealthzWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetV1HealthzResponse, error) {
 	rsp, err := c.GetV1Healthz(ctx, reqEditors...)
@@ -217,6 +315,53 @@ func (c *ClientWithResponses) GetV1HealthzWithResponse(ctx context.Context, reqE
 		return nil, err
 	}
 	return ParseGetV1HealthzResponse(rsp)
+}
+
+// ParseUploadAudioFileResponse parses an HTTP response from a UploadAudioFileWithResponse call
+func ParseUploadAudioFileResponse(rsp *http.Response) (*UploadAudioFileResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UploadAudioFileResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Message        *string                 `json:"message,omitempty"`
+			RemoteResponse *map[string]interface{} `json:"remoteResponse,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 400:
+		var dest struct {
+			Error *string `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON400 = &dest
+
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 500:
+		var dest struct {
+			Error *string `json:"error,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON500 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseGetV1HealthzResponse parses an HTTP response from a GetV1HealthzWithResponse call
@@ -247,6 +392,9 @@ func ParseGetV1HealthzResponse(rsp *http.Response) (*GetV1HealthzResponse, error
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
+	// Upload and forward an audio file
+	// (POST /v1/files)
+	UploadAudioFile(w http.ResponseWriter, r *http.Request)
 	// returns the version and the current status of the rest api
 	// (GET /v1/healthz)
 	GetV1Healthz(w http.ResponseWriter, r *http.Request)
@@ -260,6 +408,26 @@ type ServerInterfaceWrapper struct {
 }
 
 type MiddlewareFunc func(http.Handler) http.Handler
+
+// UploadAudioFile operation middleware
+func (siw *ServerInterfaceWrapper) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	ctx = context.WithValue(ctx, BearerAuthScopes, []string{})
+
+	r = r.WithContext(ctx)
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.UploadAudioFile(w, r)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
 
 // GetV1Healthz operation middleware
 func (siw *ServerInterfaceWrapper) GetV1Healthz(w http.ResponseWriter, r *http.Request) {
@@ -401,6 +569,7 @@ func HandlerWithOptions(si ServerInterface, options StdHTTPServerOptions) http.H
 		ErrorHandlerFunc:   options.ErrorHandlerFunc,
 	}
 
+	m.HandleFunc("POST "+options.BaseURL+"/v1/files", wrapper.UploadAudioFile)
 	m.HandleFunc("GET "+options.BaseURL+"/v1/healthz", wrapper.GetV1Healthz)
 
 	return m

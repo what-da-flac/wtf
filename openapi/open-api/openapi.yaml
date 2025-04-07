@@ -23,3 +23,6 @@ paths:
   /v1/healthz:
     $ref: './resources/health.yaml'
 
+
+  /v1/files:
+    $ref: './resources/file-post.yaml'

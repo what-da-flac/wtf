@@ -1,0 +1,50 @@
+post:
+  summary: Upload and forward an audio file
+  description: Accepts an .mp3 or .flac file and forwards it to an external service.
+  operationId: uploadAudioFile
+  requestBody:
+    required: true
+    content:
+      multipart/form-data:
+        schema:
+          type: object
+          properties:
+            file:
+              type: string
+              format: binary
+              description: The audio file to upload (.mp3 or .flac)
+          required:
+            - file
+  responses:
+    '200':
+      description: File uploaded and forwarded successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: File streamed successfully
+              remoteResponse:
+                type: object
+    '400':
+      description: No file uploaded or unsupported file type
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: No file uploaded
+    '500':
+      description: Internal server error while forwarding file
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: Failed to stream file

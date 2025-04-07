@@ -22,7 +22,6 @@ const FileUpload: React.FC = () => {
     };
 
     const onRemove = (file: File) => {
-        console.log(`removing file: ${file.name}"`)
         let _files = Array.from(files);
         _files = _files.filter((f: File) => f.name !== file.name);
         setFiles(_files);
@@ -54,7 +53,7 @@ const FileUpload: React.FC = () => {
                 results.push(`❌ ${file.name}: upload failed`);
             }
         }
-
+        // setFiles([]);
         setUploadResults(results);
         setUploading(false);
     };
