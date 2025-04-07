@@ -4,7 +4,7 @@ import { TbPlaylist } from "react-icons/tb"
 
 const Library = () => {
     const onClick = () => {
-        // TODO: handle upload later
+        alert("TODO: add media to library")
     }
     return (
         <div className="flex flex-col">
@@ -17,8 +17,8 @@ const Library = () => {
                 </div>
                 <AiOutlinePlus onClick={onClick} size={20} className="text-neutral-400 cursor-pointer hover:text-white transition"/>
             </div>
-            <div className="flex flex-col gap-y-2 mt-4 px-3">
-                List of Songs from library!
+            <div className="flex flex-col mt-4 px-3">
+                This is Library component
             </div>
         </div>
     )

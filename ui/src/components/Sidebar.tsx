@@ -1,7 +1,7 @@
 import {useLocation} from "react-router-dom";
 import {useMemo} from "react";
 import {HiHome} from "react-icons/hi";
-import {BiAlbum, BiSearch} from "react-icons/bi";
+import {BiSearch} from "react-icons/bi";
 import Box from "./Box.tsx";
 import SidebarItem from "./SidebarItem.tsx";
 import Library from "./Library.tsx";
@@ -23,12 +23,6 @@ const Sidebar: React.FC<SidebarProps> = ({
             href: "/",
         },
         {
-            icon: BiAlbum,
-            label: "About",
-            active: location.pathname === "/about",
-            href: "/about",
-        },
-        {
             icon: BiSearch,
             label: "Search",
             active: location.pathname === "/search",
@@ -46,7 +40,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                 </Box>
                 <Box className="overflow-y-auto h-full">
-                    <Library />
+                    <Library/>
                 </Box>
             </div>
             <main className="h-full flex-1/6 overflow-y-auto py-2">
