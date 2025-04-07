@@ -12,6 +12,7 @@ const (
 )
 
 type Config struct {
+	DB          DB
 	Env         string
 	LogLevel    string
 	Port        string
@@ -22,6 +23,7 @@ func New() *Config {
 	const defaultLogLevel = "INFO"
 	viper.AutomaticEnv()
 	c := &Config{
+		DB:          newDB(),
 		Env:         viper.GetString(envVarEnv),
 		LogLevel:    viper.GetString(envLogLevel),
 		Port:        viper.GetString(envVarPort),

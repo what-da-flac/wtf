@@ -44,7 +44,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	// Log or use file metadata
 	fmt.Printf("Filename: %s\n", fileHeader.Filename)
 	fmt.Printf("Size: %d bytes\n", fileHeader.Size)
-	fmt.Printf("MIME type: %s\n", mimeType)
+	fmt.Printf("MIME type: %s\n", fileHeader.Header.Get("Content-Type"))
 
 	// Respond with JSON (or store/save as needed)
 	w.Header().Set("Content-Type", "application/json")

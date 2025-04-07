@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"database/sql"
 	"net/http"
 
 	"github.com/what-da-flac/wtf/go-common/ifaces"
@@ -10,15 +11,19 @@ import (
 )
 
 type Server struct {
+	db         *sql.DB
 	config     *environment.Config
 	identifier interfaces.Identifier
 	logger     ifaces.Logger
+	repository interfaces.Repository
 	timer      ifaces.Timer
 }
 
-func New(logger ifaces.Logger) *Server {
+func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Server {
 	return &Server{
-		logger: logger,
+		db:         db,
+		logger:     logger,
+		repository: repository,
 	}
 }
 

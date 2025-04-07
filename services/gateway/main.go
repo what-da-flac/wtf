@@ -3,7 +3,14 @@ package main
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/go-common/repositories"
+
+	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
+	"github.com/what-da-flac/wtf/services/gateway/internal/migrations"
+
+	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
+	"github.com/what-da-flac/wtf/go-common/pgpq"
 	"github.com/what-da-flac/wtf/go-common/timers"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
@@ -30,11 +37,31 @@ func serve(zl *zap.Logger) error {
 	if err != nil {
 		return err
 	}
+	connStr := config.DB.URL
+	db, err := pgpq.New(connStr)
+	if err != nil {
+		return err
+	}
+	defer func() { _ = db.Close() }()
+	repository, err := repositories.NewPgRepo(db, connStr, false)
+	if err != nil {
+		return err
+	}
+
 	logger := zl.Sugar()
+	if err = migrations.MigrateFS(
+		assets.MigrationFiles(),
+		"files/migrations",
+		config.DB.URL,
+	); err != nil {
+		return err
+	}
+	logger.Info("db migrations applied successfully")
+
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
-	api := rest.New(logger).
+	api := rest.New(db, logger, repository).
 		WithConfig(config).
 		WithTimer(timers.New()).
 		WithIdentifier(identifier)

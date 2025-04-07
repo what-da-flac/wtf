@@ -56,6 +56,10 @@ app.post(
 
         try {
             const form = new FormData();
+            console.log(JSON.stringify({
+                mime_type: fileReq.file.mimetype,
+                original_name: fileReq.file.originalname,
+            }))
             form.append("file", fileReq.file.buffer, {
                 filename: fileReq.file.originalname,
                 contentType: fileReq.file.mimetype,
