@@ -1,7 +1,10 @@
+import FileUpload from "../components/FileUpload.tsx";
+
 export default function LibraryNew() {
     return (
         <>
-            <p>I am new media page</p>
+            <h3>Add files to Library</h3>
+            <FileUpload />
         </>
     )
 
