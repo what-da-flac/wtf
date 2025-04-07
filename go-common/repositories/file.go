@@ -3,7 +3,7 @@ package repositories
 import (
 	"time"
 
-	"github.com/what-da-flac/wtf/openapi/gen/golang"
+	"github.com/what-da-flac/wtf/openapi/domains"
 )
 
 type FileDto struct {
@@ -17,7 +17,7 @@ type FileDto struct {
 
 func (x *FileDto) TableName() string { return "files" }
 
-func (x *PgRepo) InsertFile(file *golang.File) error {
+func (x *PgRepo) InsertFile(file *domains.File) error {
 	db := x.GORM()
 	return db.Create(file).Error
 }
