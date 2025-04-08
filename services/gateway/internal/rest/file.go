@@ -29,6 +29,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	mimeType := fileHeader.Header.Get("Content-Type")
 
 	// TODO: send file content to storage implementation
+	x.logger.Info("TODO: send file content to storage implementation")
 
 	f := &domains.File{
 		Id:          x.identifier.UUIDv4(),
@@ -38,10 +39,12 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		ContentType: mimeType,
 		Status:      domains.FileCreated.String(),
 	}
-	if err = x.repository.InsertFile(f); err != nil {
-		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
-		return
-	}
+	x.logger.Info("TODO: insert file in db")
+	x.logger.Infof("file: %#v", f)
+	//if err = x.repository.InsertFile(f); err != nil {
+	//	http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
+	//	return
+	//}
 
 	// Respond with JSON (or store/save as needed)
 	w.Header().Set("Content-Type", "application/json")
