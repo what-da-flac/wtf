@@ -25,7 +25,7 @@ ci-%: mock-% test-%
 ci: test-all-go test-all-node
 
 build-%:
-	docker build --progress=plain --no-cache \
+	docker build --progress=plain \
 		--build-arg BASE_GO_BUILD_IMAGE=$(BASE_GO_BUILD_IMAGE) \
 		--build-arg BASE_GO_VERSION=$(BASE_GO_VERSION) \
 		--build-arg SERVICE_NAME=$* \
@@ -40,6 +40,24 @@ build-all:
 		$(MAKE) build-$(service) ; \
 	)
 
+docker-build:
+	docker compose build
+
+docker-start:
+	docker compose up -d
+
+docker-stop:
+	docker compose down --remove-orphans
+
+docker-pull: login
+	docker compose pull
+
+docker-logs:
+	docker compose logs -f $(SERVICES)
+
+docker-pg:
+	docker compose exec -it postgres psql
+
 golang-imports:
 	goimports -w .
 
@@ -49,26 +67,8 @@ lint:
 lint-install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(LINT_VERSION)
 
-local-build:
-	docker compose build
-
-local-start:
-	docker compose up -d
-
-local-stop:
-	docker compose down --remove-orphans
-
-local-pull: login
-	docker compose pull
-
 login:
 	aws --profile wtf ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com
-
-local-logs:
-	docker compose logs -f $(SERVICES)
-
-local-pg:
-	docker compose exec -it postgres psql
 
 mock-all:
 	find . -iname "mocks" -exec rm -rf {} \; || true

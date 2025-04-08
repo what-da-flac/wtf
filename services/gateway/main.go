@@ -3,17 +3,15 @@ package main
 import (
 	"net/http"
 
-	"github.com/what-da-flac/wtf/go-common/repositories"
-
-	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
-	"github.com/what-da-flac/wtf/services/gateway/internal/migrations"
-
 	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
 	"github.com/what-da-flac/wtf/go-common/pgpq"
+	"github.com/what-da-flac/wtf/go-common/repositories"
 	"github.com/what-da-flac/wtf/go-common/timers"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
+	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
+	"github.com/what-da-flac/wtf/services/gateway/internal/migrations"
 	"github.com/what-da-flac/wtf/services/gateway/internal/rest"
 	"go.uber.org/zap"
 )
@@ -33,10 +31,7 @@ func run() error {
 }
 
 func serve(zl *zap.Logger) error {
-	config, err := environment.New()
-	if err != nil {
-		return err
-	}
+	config := environment.New()
 	connStr := config.DB.URL
 	db, err := pgpq.New(connStr)
 	if err != nil {

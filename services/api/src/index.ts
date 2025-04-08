@@ -3,16 +3,21 @@ import {createProxyMiddleware} from 'http-proxy-middleware';
 import multer from "multer";
 import axios from "axios"
 import FormData from "form-data";
-import path from "path";
 import cors from "cors"
 
 const app = express();
+
+// read environment
+const port = process.env.PORT || 3000
+const gatewayUrl = process.env.GATEWAY_URL
+
+console.log(`gatewayUrl: ${gatewayUrl}`)
 
 // enable cors
 app.use(cors())
 
 // Use memoryStorage to avoid writing files to disk
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({storage: multer.memoryStorage()});
 
 // middleware example: log all requests
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -30,7 +35,7 @@ interface MulterRequest extends Request {
 app.use(
     '/system',
     createProxyMiddleware({
-        target: 'http://localhost:8080',
+        target: gatewayUrl,
         changeOrigin: true,
         pathRewrite: {
             '^/system': '',
@@ -64,7 +69,7 @@ app.post(
                 filename: fileReq.file.originalname,
                 contentType: fileReq.file.mimetype,
             })
-            const response = await axios.post("http://localhost:8080/v1/files", form, {
+            const response = await axios.post(`${gatewayUrl}/v1/files`, form, {
                 headers: {
                     ...form.getHeaders(),
                 },
@@ -82,8 +87,7 @@ app.post(
         }
     }
 );
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Gateway listening on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Gateway listening on port ${port}`);
 });

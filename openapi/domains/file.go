@@ -1,6 +1,8 @@
 package domains
 
-import "time"
+import (
+	"time"
+)
 
 type File struct {
 	Id          string    `json:"id"`
