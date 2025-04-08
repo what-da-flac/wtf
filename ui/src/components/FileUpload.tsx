@@ -30,7 +30,6 @@ const FileUpload: React.FC = () => {
     const uploadFiles = async () => {
         setUploading(true);
         const results: string[] = [];
-        console.log(`uploading files: ${files.length}`);
 
         for (const file of files) {
             if (!["audio/mpeg", "audio/flac"].includes(file.type)) {
@@ -47,13 +46,12 @@ const FileUpload: React.FC = () => {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-                results.push(`✅ ${file.name}: uploaded successfully`);
+                results.push(`✅ ${file.name}`);
             } catch(error) {
                 console.error(error);
                 results.push(`❌ ${file.name}: upload failed`);
             }
         }
-        // setFiles([]);
         setUploadResults(results);
         setUploading(false);
     };
