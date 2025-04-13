@@ -41,10 +41,10 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	}
 	x.logger.Info("TODO: insert file in db")
 	x.logger.Infof("file: %#v", f)
-	//if err = x.repository.InsertFile(f); err != nil {
-	//	http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
-	//	return
-	//}
+	if err = x.repository.InsertFile(f); err != nil {
+		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
+		return
+	}
 
 	// Respond with JSON (or store/save as needed)
 	w.Header().Set("Content-Type", "application/json")

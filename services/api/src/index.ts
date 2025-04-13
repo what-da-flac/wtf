@@ -10,6 +10,7 @@ const app = express();
 // read environment
 const port = process.env.PORT || 3000
 const gatewayUrl = process.env.GATEWAY_URL
+const urlPrefix = process.env.API_URL_PREFIX
 
 console.log(`gatewayUrl: ${gatewayUrl}`)
 
@@ -69,7 +70,7 @@ app.post(
                 filename: fileReq.file.originalname,
                 contentType: fileReq.file.mimetype,
             })
-            const response = await axios.post(`${gatewayUrl}/v1/files`, form, {
+            const response = await axios.post(`${gatewayUrl}${urlPrefix}/v1/files`, form, {
                 headers: {
                     ...form.getHeaders(),
                 },

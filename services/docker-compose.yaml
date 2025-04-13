@@ -25,36 +25,36 @@ services:
     ports:
       - "5432:5432"
 
-  api:
-    image: api:${GIT_TAG}
-    container_name: api
-    depends_on:
-      gateway:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
-    environment:
-      PORT: ${API_PORT}
-    ports:
-      - "3000:${API_PORT}"
-
-  gateway:
-    image: gateway:${GIT_TAG}
-    container_name: gateway
-    healthcheck:
-      test: curl http://localhost:$$GATEWAY_PORT/api/v1/healthz
-      interval: 3s
-      timeout: 1s
-      retries: 30
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
-    environment:
-      DB_URL: ${DB_URL}
-      PORT: ${GATEWAY_PORT}
-    ports:
-      - "8080:${GATEWAY_PORT}"
+#  api:
+#    image: api:${GIT_TAG}
+#    container_name: api
+#    depends_on:
+#      gateway:
+#        condition: service_healthy
+#    env_file:
+#      - .env
+#      - .env.credentials
+#    environment:
+#      PORT: ${API_PORT}
+#    ports:
+#      - "3000:${API_PORT}"
+#
+#  gateway:
+#    image: gateway:${GIT_TAG}
+#    container_name: gateway
+#    healthcheck:
+#      test: curl http://localhost:$$GATEWAY_PORT/api/v1/healthz
+#      interval: 3s
+#      timeout: 1s
+#      retries: 30
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    env_file:
+#      - .env
+#      - .env.credentials
+#    environment:
+#      DB_URL: ${DB_URL}
+#      PORT: ${GATEWAY_PORT}
+#    ports:
+#      - "8080:${GATEWAY_PORT}"
