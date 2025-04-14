@@ -73,6 +73,6 @@ func serve(zl *zap.Logger) error {
 	}
 	defer func() { _ = srv.Close() }()
 
-	logger.Infof("starting rest api at port: %s", port)
+	logger.Infof("serving from %s:%s", config.APIUrlPrefix, config.Port)
 	return srv.ListenAndServe()
 }

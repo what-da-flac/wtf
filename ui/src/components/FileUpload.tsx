@@ -1,9 +1,9 @@
 import React, {ChangeEvent, useState} from "react";
 import {TbX} from "react-icons/tb";
 import axios from "axios";
+import environment from "../lib/environment.ts"
 
 const FileUpload: React.FC = () => {
-    const apiURL = import.meta.env.VITE_API_URL
     const [files, setFiles] = useState<File[]>([]);
     const [uploading, setUploading] = useState<boolean>(false);
     const [uploadResults, setUploadResults] = useState<string[]>([]);
@@ -43,7 +43,7 @@ const FileUpload: React.FC = () => {
             formData.append("file", file);
 
             try {
-                await axios.post(`${apiURL}/api/files`, formData, {
+                await axios.post(`${environment.apiURL}/api/files`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },

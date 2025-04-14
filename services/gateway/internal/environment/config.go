@@ -12,6 +12,7 @@ const (
 	envVarCorsAllowedHeaders = "CORS_ALLOWED_HEADERS"
 	envVarHeaderTimeout      = "HEADER_TIMEOUT"
 	envVarPathToSaveFiles    = "PATH_TO_SAVED_FILES"
+	envVarPort               = "GATEWAY_PORT"
 )
 
 type Config struct {
@@ -22,6 +23,7 @@ type Config struct {
 	ForceProfileCompleted bool
 	HeaderTimeout         time.Duration
 	PathToSaveFiles       string
+	Port                  string
 	SourceURL             string
 }
 
@@ -33,6 +35,7 @@ func New() *Config {
 		Config:             *globalConfig,
 		HeaderTimeout:      viper.GetDuration(envVarHeaderTimeout),
 		PathToSaveFiles:    viper.GetString(envVarPathToSaveFiles),
+		Port:               viper.GetString(envVarPort),
 	}
 	return c
 }

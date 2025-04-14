@@ -8,11 +8,13 @@ import cors from "cors"
 const app = express();
 
 // read environment
-const port = process.env.PORT || 3000
-const gatewayUrl = process.env.GATEWAY_URL
-const urlPrefix = process.env.API_URL_PREFIX
+const env = {
+    gatewayUrl : process.env.GATEWAY_URL,
+    port: process.env.PORT || 3000,
+    urlPrefix: process.env.API_URL_PREFIX,
+}
 
-console.log(`gatewayUrl: ${gatewayUrl}`)
+console.log(`environment: ${JSON.stringify(env)}`)
 
 // enable cors
 app.use(cors())
@@ -36,18 +38,13 @@ interface MulterRequest extends Request {
 app.use(
     '/system',
     createProxyMiddleware({
-        target: gatewayUrl,
+        target: env.gatewayUrl,
         changeOrigin: true,
         pathRewrite: {
             '^/system': '',
         },
     })
 );
-
-// example internal route handled by Node.js
-app.get('/hello', (req: Request, res: Response) => {
-    res.json({id: 1, first_name: 'John', last_name: "Doe"});
-});
 
 app.post(
     "/api/files",
@@ -70,7 +67,9 @@ app.post(
                 filename: fileReq.file.originalname,
                 contentType: fileReq.file.mimetype,
             })
-            const response = await axios.post(`${gatewayUrl}${urlPrefix}/v1/files`, form, {
+            const uri = `${env.gatewayUrl}${env.urlPrefix}/v1/files`
+            console.log(`uri: ${uri}`)
+            const response = await axios.post(uri, form, {
                 headers: {
                     ...form.getHeaders(),
                 },
@@ -89,6 +88,6 @@ app.post(
     }
 );
 
-app.listen(port, () => {
-    console.log(`Gateway listening on port ${port}`);
+app.listen(env.port, () => {
+    console.log(`Gateway listening on port ${env.port}`);
 });

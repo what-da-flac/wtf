@@ -15,7 +15,6 @@ type Config struct {
 	DB          DB
 	Env         string
 	LogLevel    string
-	Port        string
 	ServiceName string
 }
 
@@ -26,7 +25,6 @@ func New() *Config {
 		DB:          newDB(),
 		Env:         viper.GetString(envVarEnv),
 		LogLevel:    viper.GetString(envLogLevel),
-		Port:        viper.GetString(envVarPort),
 		ServiceName: viper.GetString(envVarServiceName),
 	}
 	if c.LogLevel == "" {
