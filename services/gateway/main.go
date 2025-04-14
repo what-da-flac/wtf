@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/services/gateway/internal/storages"
+
 	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
 	"github.com/what-da-flac/wtf/go-common/pgpq"
@@ -56,10 +58,12 @@ func serve(zl *zap.Logger) error {
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
+	fileStorage := storages.NewLocal(config.PathToSaveFiles)
 	api := rest.New(db, logger, repository).
 		WithConfig(config).
-		WithTimer(timers.New()).
-		WithIdentifier(identifier)
+		WithFileStorage(fileStorage).
+		WithIdentifier(identifier).
+		WithTimer(timers.New())
 	mux := http.NewServeMux()
 	handler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
 	srv := &http.Server{

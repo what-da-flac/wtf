@@ -11,12 +11,13 @@ import (
 )
 
 type Server struct {
-	db         *sql.DB
-	config     *environment.Config
-	identifier interfaces.Identifier
-	logger     ifaces.Logger
-	repository interfaces.Repository
-	timer      ifaces.Timer
+	db          *sql.DB
+	config      *environment.Config
+	fileStorage interfaces.FileStorage
+	identifier  interfaces.Identifier
+	logger      ifaces.Logger
+	repository  interfaces.Repository
+	timer       ifaces.Timer
 }
 
 func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Server {
@@ -29,6 +30,11 @@ func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Se
 
 func (x *Server) WithConfig(config *environment.Config) *Server {
 	x.config = config
+	return x
+}
+
+func (x *Server) WithFileStorage(fileStorage interfaces.FileStorage) *Server {
+	x.fileStorage = fileStorage
 	return x
 }
 
