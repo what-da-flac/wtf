@@ -28,23 +28,3 @@ post:
                 example: File streamed successfully
               remoteResponse:
                 type: object
-    '400':
-      description: No file uploaded or unsupported file type
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: No file uploaded
-    '500':
-      description: Internal server error while forwarding file
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-                example: Failed to stream file

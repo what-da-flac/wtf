@@ -7,8 +7,8 @@ volumes:
 services:
 
   postgres:
-    image: postgres:14
-    container_name: postgres-user
+    image: postgres:15
+    container_name: postgres
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready" ]
       interval: 1s
@@ -25,93 +25,36 @@ services:
     ports:
       - "5432:5432"
 
-  rabbitmq:
-    image: rabbitmq:3-management
-    container_name: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
-    volumes:
-      - rabbitmq_data:/var/lib/rabbitmq  # Persist RabbitMQ data
-    healthcheck:
-      test: ["CMD-SHELL", "rabbitmqctl status || exit 1"]
-      interval: 5s
-      timeout: 3s
-      retries: 20
-      start_period: 5s
-
-  gateway:
-    image: gateway:${GIT_TAG}
-    container_name: gateway
-    entrypoint: [ "/app/service", "serve" ]
-    healthcheck:
-      test: curl http://localhost:$$GATEWAY_PORT/api/v1/healthz
-      interval: 3s
-      timeout: 1s
-      retries: 30
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
-    volumes:
-      - ${MEDIA_PATH}:${VOLUME_MEDIA_PATH}
-    environment:
-      DB_URL: ${DB_URL}
-      PORT: ${GATEWAY_PORT}
-    ports:
-      - "8000:${GATEWAY_PORT}"
-
-  magnet-parser:
-    image: magnet-parser:${GIT_TAG}
-    container_name: magnet-parser
-    entrypoint: ["/app/service"]
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
-
-  torrent-download:
-    image: torrent-download:${GIT_TAG}
-    container_name: torrent-download
-    entrypoint: ["/app/service"]
-    depends_on:
-      postgres:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    volumes:
-      - ${DOWNLOADS_PATH}:${VOLUME_DOWNLOADS_PATH}
-    env_file:
-      - .env
-      - .env.credentials
-
-  torrent-info:
-    image: torrent-info:${GIT_TAG}
-    container_name: torrent-info
-    entrypoint: ["/app/service"]
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
-
-  torrent-parser:
-    image: torrent-parser:${GIT_TAG}
-    container_name: torrent-parser
-    entrypoint: ["/app/service"]
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    env_file:
-      - .env
-      - .env.credentials
+#  api:
+#    image: api:${GIT_TAG}
+#    container_name: api
+#    depends_on:
+#      gateway:
+#        condition: service_healthy
+#    env_file:
+#      - .env
+#      - .env.credentials
+#    environment:
+#      PORT: ${API_PORT}
+#    ports:
+#      - "3000:${API_PORT}"
+#
+#  gateway:
+#    image: gateway:${GIT_TAG}
+#    container_name: gateway
+#    healthcheck:
+#      test: curl http://localhost:$$GATEWAY_PORT/api/v1/healthz
+#      interval: 3s
+#      timeout: 1s
+#      retries: 30
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    env_file:
+#      - .env
+#      - .env.credentials
+#    environment:
+#      DB_URL: ${DB_URL}
+#      PORT: ${GATEWAY_PORT}
+#    ports:
+#      - "8080:${GATEWAY_PORT}"

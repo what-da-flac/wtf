@@ -1,8 +1,6 @@
 package environment
 
 import (
-	"errors"
-	"strconv"
 	"time"
 
 	"github.com/spf13/viper"
@@ -13,6 +11,8 @@ const (
 	envVarAPIUrlPrefix       = "API_URL_PREFIX"
 	envVarCorsAllowedHeaders = "CORS_ALLOWED_HEADERS"
 	envVarHeaderTimeout      = "HEADER_TIMEOUT"
+	envVarPathToSaveFiles    = "PATH_TO_SAVED_FILES"
+	envVarPort               = "GATEWAY_PORT"
 )
 
 type Config struct {
@@ -22,30 +22,20 @@ type Config struct {
 	CorsAllowedHeaders    string
 	ForceProfileCompleted bool
 	HeaderTimeout         time.Duration
+	PathToSaveFiles       string
 	Port                  string
-	port                  int
 	SourceURL             string
 }
 
-func New() (*Config, error) {
+func New() *Config {
 	globalConfig := env.New()
 	c := &Config{
 		APIUrlPrefix:       viper.GetString(envVarAPIUrlPrefix),
 		CorsAllowedHeaders: viper.GetString(envVarCorsAllowedHeaders),
 		Config:             *globalConfig,
 		HeaderTimeout:      viper.GetDuration(envVarHeaderTimeout),
-		port:               viper.GetInt("PORT"),
+		PathToSaveFiles:    viper.GetString(envVarPathToSaveFiles),
+		Port:               viper.GetString(envVarPort),
 	}
-	if err := c.validate(); err != nil {
-		return nil, err
-	}
-	return c, nil
-}
-
-func (c *Config) validate() error {
-	if c.port == 0 {
-		return errors.New("port must be set")
-	}
-	c.Port = strconv.Itoa(c.port)
-	return nil
+	return c
 }

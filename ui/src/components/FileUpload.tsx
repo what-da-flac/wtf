@@ -1,5 +1,7 @@
 import React, {ChangeEvent, useState} from "react";
+import {TbX} from "react-icons/tb";
 import axios from "axios";
+import environment from "../lib/environment.ts"
 
 const FileUpload: React.FC = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -30,30 +32,29 @@ const FileUpload: React.FC = () => {
     const uploadFiles = async () => {
         setUploading(true);
         const results: string[] = [];
-        console.log(`uploading files: ${files.length}`);
 
         for (const file of files) {
             if (!["audio/mpeg", "audio/flac"].includes(file.type)) {
                 results.push(`❌ ${file.name}: unsupported file type`);
                 continue;
             }
-
+            // TODO: api url should come from environment variables
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-                await axios.post("http://localhost:3000/api/files", formData, {
+                await axios.post(`${environment.apiURL}/api/files`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
                 });
-                results.push(`✅ ${file.name}: uploaded successfully`);
+                results.push(`✅ ${file.name}`);
             } catch(error) {
                 console.error(error);
                 results.push(`❌ ${file.name}: upload failed`);
             }
         }
-        // setFiles([]);
+        // setFiles([])
         setUploadResults(results);
         setUploading(false);
     };
@@ -79,7 +80,6 @@ const FileUpload: React.FC = () => {
             {files.length > 0 && (
                 <div className="mt-6">
                     <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-sm font-medium text-gray-700">Selected Files:</h3>
                         <button
                             onClick={uploadFiles}
                             disabled={uploading}
@@ -87,7 +87,8 @@ const FileUpload: React.FC = () => {
                         >
                             {uploading ? "Uploading..." : "Upload All"}
                         </button>
-                    </div>                    <h3 className="text-sm font-medium text-gray-700 mb-2">File Details:</h3>
+                    </div>
+                    <h3 className="text-sm font-medium text-gray-700 mb-2">File Details:</h3>
                     <div className="overflow-auto">
                         <table className="min-w-full text-sm text-left border border-gray-200 rounded">
                             <thead className="bg-gray-100 text-gray-700">
@@ -104,7 +105,13 @@ const FileUpload: React.FC = () => {
                                     <td className="px-4 py-2 truncate">{file.name}</td>
                                     <td className="px-4 py-2">{formatSize(file.size)}</td>
                                     <td className="px-4 py-2">{file.type || "—"}</td>
-                                    <td onClick={() => onRemove(file)}>Remove</td>
+                                    <td onClick={() => onRemove(file)}>
+                                        <button
+                                            className="bg-red-500 hover:bg-red-700 text-white text-xs px-4 py-2 rounded cursor-pointer"
+                                        >
+                                            <TbX/>
+                                        </button>
+                                    </td>
                                 </tr>
                             ))}
                             </tbody>

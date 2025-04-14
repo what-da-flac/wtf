@@ -3,16 +3,24 @@ import {createProxyMiddleware} from 'http-proxy-middleware';
 import multer from "multer";
 import axios from "axios"
 import FormData from "form-data";
-import path from "path";
 import cors from "cors"
 
 const app = express();
+
+// read environment
+const env = {
+    gatewayUrl : process.env.GATEWAY_URL,
+    port: process.env.PORT || 3000,
+    urlPrefix: process.env.API_URL_PREFIX,
+}
+
+console.log(`environment: ${JSON.stringify(env)}`)
 
 // enable cors
 app.use(cors())
 
 // Use memoryStorage to avoid writing files to disk
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({storage: multer.memoryStorage()});
 
 // middleware example: log all requests
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -30,18 +38,13 @@ interface MulterRequest extends Request {
 app.use(
     '/system',
     createProxyMiddleware({
-        target: 'http://localhost:8080',
+        target: env.gatewayUrl,
         changeOrigin: true,
         pathRewrite: {
             '^/system': '',
         },
     })
 );
-
-// example internal route handled by Node.js
-app.get('/hello', (req: Request, res: Response) => {
-    res.json({id: 1, first_name: 'John', last_name: "Doe"});
-});
 
 app.post(
     "/api/files",
@@ -56,11 +59,17 @@ app.post(
 
         try {
             const form = new FormData();
+            console.log(JSON.stringify({
+                mime_type: fileReq.file.mimetype,
+                original_name: fileReq.file.originalname,
+            }))
             form.append("file", fileReq.file.buffer, {
                 filename: fileReq.file.originalname,
                 contentType: fileReq.file.mimetype,
             })
-            const response = await axios.post("http://localhost:8080/v1/files", form, {
+            const uri = `${env.gatewayUrl}${env.urlPrefix}/v1/files`
+            console.log(`uri: ${uri}`)
+            const response = await axios.post(uri, form, {
                 headers: {
                     ...form.getHeaders(),
                 },
@@ -78,8 +87,7 @@ app.post(
         }
     }
 );
-const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Gateway listening on port ${PORT}`);
+app.listen(env.port, () => {
+    console.log(`Gateway listening on port ${env.port}`);
 });

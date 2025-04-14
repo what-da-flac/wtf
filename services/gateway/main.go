@@ -3,10 +3,17 @@ package main
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/services/gateway/internal/storages"
+
+	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
+	"github.com/what-da-flac/wtf/go-common/pgpq"
+	"github.com/what-da-flac/wtf/go-common/repositories"
 	"github.com/what-da-flac/wtf/go-common/timers"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
+	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
+	"github.com/what-da-flac/wtf/services/gateway/internal/migrations"
 	"github.com/what-da-flac/wtf/services/gateway/internal/rest"
 	"go.uber.org/zap"
 )
@@ -26,18 +33,37 @@ func run() error {
 }
 
 func serve(zl *zap.Logger) error {
-	config, err := environment.New()
+	config := environment.New()
+	connStr := config.DB.URL
+	db, err := pgpq.New(connStr)
 	if err != nil {
 		return err
 	}
+	defer func() { _ = db.Close() }()
+	repository, err := repositories.NewPgRepo(db, connStr, false)
+	if err != nil {
+		return err
+	}
+
 	logger := zl.Sugar()
+	if err = migrations.MigrateFS(
+		assets.MigrationFiles(),
+		"files/migrations",
+		config.DB.URL,
+	); err != nil {
+		return err
+	}
+	logger.Info("db migrations applied successfully")
+
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
-	api := rest.New(logger).
+	fileStorage := storages.NewLocal(config.PathToSaveFiles)
+	api := rest.New(db, logger, repository).
 		WithConfig(config).
-		WithTimer(timers.New()).
-		WithIdentifier(identifier)
+		WithFileStorage(fileStorage).
+		WithIdentifier(identifier).
+		WithTimer(timers.New())
 	mux := http.NewServeMux()
 	handler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
 	srv := &http.Server{
@@ -47,6 +73,6 @@ func serve(zl *zap.Logger) error {
 	}
 	defer func() { _ = srv.Close() }()
 
-	logger.Infof("starting rest api at port: %s", port)
+	logger.Infof("serving from %s:%s", config.APIUrlPrefix, config.Port)
 	return srv.ListenAndServe()
 }
