@@ -9,7 +9,7 @@ import (
 func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	const fileFieldName = "file"
 	// Parse up to 50 MB of incoming data (adjust if needed)
-	err := r.ParseMultipartForm(50 << 20) // 50 MB
+	err := r.ParseMultipartForm(100 << 20) // 100 MB
 	if err != nil {
 		http.Error(w, "unable to parse form", http.StatusBadRequest)
 		return
