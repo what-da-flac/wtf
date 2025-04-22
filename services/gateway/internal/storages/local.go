@@ -18,18 +18,19 @@ func NewLocal(dirPath string) *Local {
 	}
 }
 
-func (x *Local) Save(f *domains.File, file io.Reader) error {
+func (x *Local) Save(f *domains.File, file io.Reader) (string, error) {
 	filename := x.Filename(*f)
 	if err := os.MkdirAll(x.dirPath, os.ModePerm); err != nil {
-		return err
+		return "", err
 	}
-	dst, err := os.Create(filepath.Join(x.dirPath, filename))
+	newFilename := filepath.Join(x.dirPath, filename)
+	dst, err := os.Create(newFilename)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer func() { _ = dst.Close() }()
 	_, err = io.Copy(dst, file)
-	return err
+	return newFilename, err
 }
 
 func (x *Local) Filename(f domains.File) string {

@@ -3,13 +3,14 @@ package rest
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/go-common/commands"
+
 	"github.com/what-da-flac/wtf/openapi/domains"
 )
 
 func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	const fileFieldName = "file"
-	// Parse up to 50 MB of incoming data (adjust if needed)
-	err := r.ParseMultipartForm(100 << 20) // 100 MB
+	err := r.ParseMultipartForm(100 << 20) // limit is 100 MB
 	if err != nil {
 		http.Error(w, "unable to parse form", http.StatusBadRequest)
 		return
@@ -38,10 +39,25 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send file content to storage implementation
-	if err = x.fileStorage.Save(f, file); err != nil {
+	newFilename, err := x.fileStorage.Save(f, file)
+	if err != nil {
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
 	}
+
+	// extract mediainfo
+	infoReader, err := commands.CmdMediaInfo(newFilename)
+	if err != nil {
+		http.Error(w, "unable to save file", http.StatusInternalServerError)
+		return
+	}
+	info := domains.NewMediaInfo(infoReader)
+
+	// convert mediainfo to audio data
+	audio := domains.NewAudio(info)
+
+	_ = audio
+
 	if err = x.repository.InsertFile(f); err != nil {
 		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
 		return
