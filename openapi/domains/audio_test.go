@@ -9,7 +9,7 @@ import (
 
 func TestNewAudio(t *testing.T) {
 	type args struct {
-		info MediaInfo
+		info *MediaInfo
 	}
 	tests := []struct {
 		name string
@@ -19,7 +19,7 @@ func TestNewAudio(t *testing.T) {
 		{
 			name: "new order - crystal",
 			args: args{
-				info: MediaInfo{
+				info: &MediaInfo{
 					CreatingLibrary: CreatingLibrary{
 						Name:    "MediaInfoLib",
 						Version: "25.03",

@@ -68,8 +68,8 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		} else {
 			f.Length = si.Size()
 		}
-		f.Filename = dstFilename
 	}
+	f.Filename = filepath.Base(dstFilename)
 
 	// extract mediainfo
 	infoReader, err := commands.CmdMediaInfo(dstFilename)
@@ -77,7 +77,11 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
 	}
-	info := domains.NewMediaInfo(infoReader)
+	info, err := domains.NewMediaInfo(infoReader)
+	if err != nil {
+		http.Error(w, "unable to get media info file", http.StatusInternalServerError)
+		return
+	}
 
 	// convert mediainfo to audio data
 	audio := domains.NewAudio(info)

@@ -22,7 +22,7 @@ type Audio struct {
 	TotalTrackCount int
 }
 
-func NewAudio(info MediaInfo) Audio {
+func NewAudio(info *MediaInfo) Audio {
 	var r Audio
 	if track := info.Audio(); track != nil {
 		if val, err := strconv.Atoi(track.BitDepth); err == nil {
@@ -44,6 +44,9 @@ func NewAudio(info MediaInfo) Audio {
 		r.Performer = track.Performer
 		if val, err := strconv.Atoi(track.RecordedDate); err == nil {
 			r.RecordedDate = val
+		}
+		if val, err := strconv.Atoi(track.BitDepth); err == nil {
+			r.BitDepth = val
 		}
 		r.Title = track.Title
 		if val, err := strconv.Atoi(track.TrackPosition); err == nil {
