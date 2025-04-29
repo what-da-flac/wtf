@@ -32,4 +32,5 @@ push-tag-ui:
 	@TAG_NAME=$(shell $(MAKE) next-tag-ui) && git tag $$TAG_NAME && git push --tags
 
 test-all:
+	go test -short -cover ./openapi/...
 	@make -C services/ ci

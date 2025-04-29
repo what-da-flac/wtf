@@ -6,5 +6,5 @@ import (
 
 //go:generate moq -out ../../mocks/repository.go -pkg mocks . Repository
 type Repository interface {
-	InsertFile(file *domains.File) error
+	InsertAudioFile(file *domains.AudioFile) error
 }

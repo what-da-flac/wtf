@@ -2,19 +2,23 @@ package rest
 
 import (
 	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
 
+	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/openapi/domains"
 )
 
 func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	const fileFieldName = "file"
-	// Parse up to 50 MB of incoming data (adjust if needed)
-	err := r.ParseMultipartForm(50 << 20) // 50 MB
+	err := r.ParseMultipartForm(500 << 20) // limit is 100 MB
 	if err != nil {
 		http.Error(w, "unable to parse form", http.StatusBadRequest)
 		return
 	}
-
+	start := time.Now()
 	// Get file from the form field named "file"
 	file, fileHeader, err := r.FormFile(fileFieldName)
 	if err != nil {
@@ -38,16 +42,65 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send file content to storage implementation
-	if err = x.fileStorage.Save(f, file); err != nil {
+	srcFilename, err := x.fileStorage.Save(f, file)
+	if err != nil {
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
 	}
-	if err = x.repository.InsertFile(f); err != nil {
+
+	// convert to aac audio format
+	const m4aExt = ".m4a"
+	dstFilename := srcFilename
+	dir := filepath.Dir(srcFilename)
+	if ext := filepath.Ext(srcFilename); ext != m4aExt {
+		base := filepath.Base(srcFilename)
+		dstFilename = strings.TrimSuffix(base, ext)
+		dstFilename = filepath.Join(dir, dstFilename+m4aExt)
+		if err = commands.CmdFFMpegAudio(srcFilename, dstFilename); err != nil {
+			x.logger.Errorf("unable to convert to audio file: %s", err)
+			http.Error(w, "unable to convert to audio file", http.StatusInternalServerError)
+			return
+		}
+		// file size needs to be calculated after conversion
+		if si, err := os.Stat(dstFilename); err != nil {
+			x.logger.Errorf("unable to stat audio file: %s", err)
+			http.Error(w, "file does not exist", http.StatusConflict)
+		} else {
+			f.Length = si.Size()
+		}
+	}
+	f.Filename = filepath.Base(dstFilename)
+
+	// extract mediainfo
+	infoReader, err := commands.CmdMediaInfo(dstFilename)
+	if err != nil {
+		http.Error(w, "unable to save file", http.StatusInternalServerError)
+		return
+	}
+	info, err := domains.NewMediaInfo(infoReader)
+	if err != nil {
+		http.Error(w, "unable to get media info file", http.StatusInternalServerError)
+		return
+	}
+
+	// convert mediainfo to audio data
+	audio := domains.NewAudio(info)
+
+	// save audio file to db
+	audioFile := domains.NewAudioFile(&audio, f)
+
+	if err = x.repository.InsertAudioFile(&audioFile); err != nil {
 		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
 		return
 	}
+	// failed to encode args[14]: unable to encode 1997 into binary format for timestamp (OID 1114): cannot find encode plan
+	// INSERT INTO "audio_files" ("id","filename","created","length","content_type","status","album","bit_depth","compression_mode","duration","file_extension","format","genre","performer","recorded_date","sampling_rate","title","track_number","total_track_count")
+	// VALUES ('1bbbe328-4bd3-4083-9e55-1373c7d405b7','05. You''re Not Alone.flac','2025-04-27 21:52:24.082',32930841,'audio/flac','created','Extra Virgin (Limited Edition)',0,'Lossy',272000000000,'m4a','AAC','Trip-Hop, Breakbeat, Jungle','Olive',1997,44100,'You''re Not Alone',5,0)
 
 	// Respond with JSON (or store/save as needed)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+
+	// TODO: remove logger info below
+	x.logger.Infof("audio file saved in %s", time.Since(start).String())
 }
