@@ -5,20 +5,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/what-da-flac/wtf/go-common/commands"
+	"github.com/what-da-flac/wtf/go-common/http_helpers"
 	"github.com/what-da-flac/wtf/openapi/domains"
 )
 
 func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	const fileFieldName = "file"
-	err := r.ParseMultipartForm(500 << 20) // limit is 100 MB
+	err := r.ParseMultipartForm(500 << 20) // limit is 500 MB
 	if err != nil {
 		http.Error(w, "unable to parse form", http.StatusBadRequest)
 		return
 	}
-	start := time.Now()
 	// Get file from the form field named "file"
 	file, fileHeader, err := r.FormFile(fileFieldName)
 	if err != nil {
@@ -98,9 +97,5 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	// VALUES ('1bbbe328-4bd3-4083-9e55-1373c7d405b7','05. You''re Not Alone.flac','2025-04-27 21:52:24.082',32930841,'audio/flac','created','Extra Virgin (Limited Edition)',0,'Lossy',272000000000,'m4a','AAC','Trip-Hop, Breakbeat, Jungle','Olive',1997,44100,'You''re Not Alone',5,0)
 
 	// Respond with JSON (or store/save as needed)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// TODO: remove logger info below
-	x.logger.Infof("audio file saved in %s", time.Since(start).String())
+	http_helpers.WriteJSON(w, http.StatusOK, audio)
 }

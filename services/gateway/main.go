@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/go-common/http_helpers"
+
 	"github.com/what-da-flac/wtf/services/gateway/internal/storages"
 
 	_ "github.com/lib/pq"
@@ -65,7 +67,8 @@ func serve(zl *zap.Logger) error {
 		WithIdentifier(identifier).
 		WithTimer(timers.New())
 	mux := http.NewServeMux()
-	handler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
+	baseHandler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
+	handler := http_helpers.CORSMiddleware(baseHandler)
 	srv := &http.Server{
 		Addr:              ":" + port,
 		Handler:           handler,

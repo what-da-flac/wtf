@@ -38,12 +38,12 @@ const FileUpload: React.FC = () => {
                 results.push(`❌ ${file.name}: unsupported file type`);
                 continue;
             }
-            // TODO: api url should come from environment variables
+            // TODO: consolidate all api calls into another file
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-                await axios.post(`${environment.apiURL}/api/files`, formData, {
+                await axios.post(`${environment.apiURL}/v1/files`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
