@@ -1,0 +1,62 @@
+title: AudioFile
+type: object
+required:
+  - album
+  - bit_depth
+  - compression_mode
+  - duration
+  - file_extension
+  - format
+  - genre
+  - performer
+  - recorded_date
+  - sampling_rate
+  - title
+  - track_number
+  - total_track_count
+  - id
+  - filename
+  - created
+  - length
+  - content_type
+  - status
+properties:
+  album:
+    type: string
+  bit_depth:
+    type: integer
+  compression_mode:
+    type: string
+  duration:
+    type: integer
+  file_extension:
+    type: string
+  format:
+    type: string
+  genre:
+    type: string
+  performer:
+    type: string
+  recorded_date:
+    type: integer
+  sampling_rate:
+    type: integer
+  title:
+    type: string
+  track_number:
+    type: integer
+  total_track_count:
+    type: integer
+  id:
+    type: string
+  filename:
+    type: string
+  created:
+    type: string
+    format: date-time
+  length:
+    type: integer
+  content_type:
+    type: string
+  status:
+    type: string

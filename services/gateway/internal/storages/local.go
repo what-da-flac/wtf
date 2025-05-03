@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/what-da-flac/wtf/openapi/domains"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type Local struct {
@@ -18,7 +18,7 @@ func NewLocal(dirPath string) *Local {
 	}
 }
 
-func (x *Local) Save(f *domains.File, file io.Reader) (string, error) {
+func (x *Local) Save(f *golang.File, file io.Reader) (string, error) {
 	filename := x.Filename(f)
 	if err := os.MkdirAll(x.dirPath, os.ModePerm); err != nil {
 		return "", err
@@ -33,7 +33,7 @@ func (x *Local) Save(f *domains.File, file io.Reader) (string, error) {
 	return newFilename, err
 }
 
-func (x *Local) Filename(f *domains.File) string {
+func (x *Local) Filename(f *golang.File) string {
 	base := filepath.Base(f.Filename)
 	ext := filepath.Ext(base)
 	return f.Id + ext

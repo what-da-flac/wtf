@@ -3,8 +3,9 @@ package repositories
 import (
 	"time"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
+
 	"github.com/jinzhu/copier"
-	"github.com/what-da-flac/wtf/openapi/domains"
 )
 
 type AudioFileDto struct {
@@ -31,7 +32,7 @@ type AudioFileDto struct {
 
 func (x *AudioFileDto) TableName() string { return "audio_files" }
 
-func fileToDto(file *domains.AudioFile) *AudioFileDto {
+func fileToDto(file *golang.AudioFile) *AudioFileDto {
 	res := &AudioFileDto{}
 	if err := copier.Copy(res, file); err != nil {
 		return nil
@@ -39,8 +40,8 @@ func fileToDto(file *domains.AudioFile) *AudioFileDto {
 	return res
 }
 
-func (x *AudioFileDto) toFile() *domains.File {
-	res := &domains.File{}
+func (x *AudioFileDto) toFile() *golang.File {
+	res := &golang.File{}
 	if err := copier.Copy(res, x); err != nil {
 		return nil
 	}

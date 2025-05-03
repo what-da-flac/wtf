@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
+
 	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/go-common/http_helpers"
 	"github.com/what-da-flac/wtf/openapi/domains"
@@ -31,11 +33,11 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	size := fileHeader.Size
 	mimeType := fileHeader.Header.Get("Content-Type")
 
-	f := &domains.File{
+	f := &golang.File{
 		Id:          x.identifier.UUIDv4(),
 		Filename:    filename,
 		Created:     x.timer.Now(),
-		Length:      size,
+		Length:      int(size),
 		ContentType: mimeType,
 		Status:      domains.FileCreated.String(),
 	}
@@ -65,7 +67,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 			x.logger.Errorf("unable to stat audio file: %s", err)
 			http.Error(w, "file does not exist", http.StatusConflict)
 		} else {
-			f.Length = si.Size()
+			f.Length = int(si.Size())
 		}
 	}
 	f.Filename = filepath.Base(dstFilename)
@@ -92,10 +94,6 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
 		return
 	}
-	// failed to encode args[14]: unable to encode 1997 into binary format for timestamp (OID 1114): cannot find encode plan
-	// INSERT INTO "audio_files" ("id","filename","created","length","content_type","status","album","bit_depth","compression_mode","duration","file_extension","format","genre","performer","recorded_date","sampling_rate","title","track_number","total_track_count")
-	// VALUES ('1bbbe328-4bd3-4083-9e55-1373c7d405b7','05. You''re Not Alone.flac','2025-04-27 21:52:24.082',32930841,'audio/flac','created','Extra Virgin (Limited Edition)',0,'Lossy',272000000000,'m4a','AAC','Trip-Hop, Breakbeat, Jungle','Olive',1997,44100,'You''re Not Alone',5,0)
-
 	// Respond with JSON (or store/save as needed)
 	http_helpers.WriteJSON(w, http.StatusOK, audio)
 }

@@ -1,12 +1,18 @@
+title: File
 type: object
 required:
   - id
+  - created
+  - filename
+  - length
+  - content_type
+  - status
 properties:
   id:
     type: string
   created:
     type: string
-    format: datetime
+    format: date-time
   filename:
     type: string
   length:

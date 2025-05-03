@@ -1,4 +1,4 @@
-.PHONY: install gen clean bundle
+.PHONY: install gen gen-domains gen-go gen-node gen-python clean bundle
 
 GEN_DIR=gen
 GO_PACKAGE_NAME=golang
@@ -6,6 +6,7 @@ DIR_GO:=$(GEN_DIR)/$(GO_PACKAGE_NAME)
 DIR_NODE:=$(GEN_DIR)/node
 DIR_PYTHON:=$(GEN_DIR)/py
 DIR_TS:=$(GEN_DIR)/ts
+GO_JSON_SCHEMA_VERSION=v0.18.0
 OPEN_API_VERSION=v2.4.1
 OPEN_API_OUTPUT:=openapi-gen.yaml
 
@@ -29,7 +30,13 @@ clean-ts:
 	rm -rf $(DIR_TS)
 	mkdir -p $(DIR_TS)
 
-gen: bundle gen-go
+gen: bundle gen-go gen-domains
+
+gen-domains:
+	@for schema in open-api/domains/*.yaml; do \
+		filename=$$(basename $$schema .yaml); \
+		go-jsonschema --only-models --struct-name-from-title -p golang --output=$(DIR_GO)/$$filename.go $$schema; \
+	done
 
 gen-go: clean-go
 	oapi-codegen --package $(GO_PACKAGE_NAME) --generate types,client,std-http $(OPEN_API_OUTPUT) > "$(DIR_GO)/types.go"
@@ -45,6 +52,7 @@ gen-ts: clean-ts
 
 install:
 	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@$(OPEN_API_VERSION)
+	go install github.com/atombender/go-jsonschema@$(GO_JSON_SCHEMA_VERSION)
 	npm i -g @redocly/cli@latest
 #	npm i -g @openapitools/openapi-generator-cli
 #	npm i -g openapi-typescript-codegen@0.29.0 --force
