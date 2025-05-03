@@ -15,7 +15,7 @@ func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
 		Genre:           audio.Genre,
 		Performer:       audio.Performer,
 		RecordedDate:    audio.RecordedDate,
-		SamplingRate:    audio.SamplingRate,
+		SamplingRate:    audio.BitRate,
 		Title:           audio.Title,
 		TrackNumber:     audio.TrackNumber,
 		TotalTrackCount: audio.TotalTrackCount,

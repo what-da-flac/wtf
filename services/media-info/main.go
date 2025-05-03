@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -26,13 +25,13 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	return serve(logger)
+	config := env.New()
+	return listen(logger, config)
 }
 
-func serve(zl *zap.Logger) error {
+func listen(zl *zap.Logger, config *env.Config) error {
 	logger := zl.Sugar()
 	ctx := context.Background()
-	config := env.New()
 	// TODO: set redis connection from environment variables
 	client := brokers.NewClient()
 	queueName := string(golang.QueueNameMediainfo)
@@ -58,16 +57,16 @@ func serve(zl *zap.Logger) error {
 			return true, err
 		}
 		if !HasAudioEnoughQuality(*audio, msg.MinBitrate) {
-			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", audio.SamplingRate, msg.MinBitrate)
+			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", audio.BitRate, msg.MinBitrate)
 			logger.Error(err)
 			return true, err
 		}
 		// TODO: write final audio file to db
-		logger.Infof("audio ready to be processed: %d", audio.SamplingRate)
+		logger.Infof("audio ready to be processed, track name: %s bit rate:%d", audio.Title, audio.BitRate)
 		return true, nil
 	}
 	errFn := func(err error) {
-		log.Fatal(err)
+		logger.Error(err)
 	}
 	zl.Sugar().Infoln("starting subscriber:", queueName)
 	subscriber.Listen(ctx, processMessageFn, errFn)
@@ -75,7 +74,7 @@ func serve(zl *zap.Logger) error {
 }
 
 func HasAudioEnoughQuality(audio golang.Audio, minBitrate int) bool {
-	return audio.SamplingRate >= minBitrate
+	return audio.BitRate >= minBitrate
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {

@@ -75,6 +75,7 @@ func TestNewAudio(t *testing.T) {
 			want: golang.Audio{
 				Album:           "Get Ready",
 				BitDepth:        16,
+				BitRate:         992701,
 				CompressionMode: "Lossless",
 				DurationSeconds: 411,
 				FileExtension:   "flac",
@@ -82,7 +83,6 @@ func TestNewAudio(t *testing.T) {
 				Genre:           "Alternative",
 				Performer:       "New Order",
 				RecordedDate:    2001,
-				SamplingRate:    992701,
 				Title:           "Crystal",
 				TrackNumber:     1,
 				TotalTrackCount: 10,

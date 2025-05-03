@@ -18,7 +18,7 @@ func NewAudio(info *MediaInfo) golang.Audio {
 			r.DurationSeconds = int(math.Floor(val))
 		}
 		if val, err := strconv.Atoi(track.BitRate); err == nil {
-			r.SamplingRate = val
+			r.BitRate = val
 		}
 		r.Format = track.Format
 	}
