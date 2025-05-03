@@ -1,17 +1,18 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-
-	"go.uber.org/zap"
-
-	"golang.org/x/net/context"
+	"os"
+	"path/filepath"
 
 	"github.com/what-da-flac/wtf/go-common/brokers"
+	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/go-common/env"
+	"github.com/what-da-flac/wtf/openapi/domains"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
+	"go.uber.org/zap"
+	"golang.org/x/net/context"
 )
 
 func main() {
@@ -29,10 +30,10 @@ func run() error {
 }
 
 func serve(zl *zap.Logger) error {
+	logger := zl.Sugar()
 	ctx := context.Background()
 	config := env.New()
 	// TODO: set redis connection from environment variables
-	_ = config
 	client := brokers.NewClient()
 	queueName := string(golang.QueueNameMediainfo)
 	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, "media-info")
@@ -40,14 +41,29 @@ func serve(zl *zap.Logger) error {
 		return err
 	}
 	processMessageFn := func(msg golang.MediaInfoInput) (ack bool, err error) {
-		// TODO: read mediainfo
-		// TODO: if audio resolution is below msg.MinBitrate, acknowledge with error
-		// TODO: write final audio file to db
-		data, err := json.Marshal(msg)
-		if err != nil {
-			return false, err
+		pathName := config.Paths.Resolve(msg.PathName)
+		if pathName == "" {
+			err := fmt.Errorf("invalid path name: %s", msg.PathName)
+			logger.Error(err)
+			return true, err
 		}
-		fmt.Println("received message:", string(data))
+		filename := filepath.Join(pathName, msg.Filename)
+		// on any case, original file will be deleted
+		defer func() {
+			_ = os.Remove(filename)
+		}()
+		audio, err := ExtractAudio(filename)
+		if err != nil {
+			logger.Error(err)
+			return true, err
+		}
+		if !HasAudioEnoughQuality(*audio, msg.MinBitrate) {
+			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", audio.SamplingRate, msg.MinBitrate)
+			logger.Error(err)
+			return true, err
+		}
+		// TODO: write final audio file to db
+		logger.Infof("audio ready to be processed: %d", audio.SamplingRate)
 		return true, nil
 	}
 	errFn := func(err error) {
@@ -56,4 +72,22 @@ func serve(zl *zap.Logger) error {
 	zl.Sugar().Infoln("starting subscriber:", queueName)
 	subscriber.Listen(ctx, processMessageFn, errFn)
 	return nil
+}
+
+func HasAudioEnoughQuality(audio golang.Audio, minBitrate int) bool {
+	return audio.SamplingRate >= minBitrate
+}
+
+func ExtractAudio(filename string) (*golang.Audio, error) {
+	// read mediainfo
+	data, err := commands.CmdMediaInfo(filename)
+	if err != nil {
+		return nil, err
+	}
+	info, err := domains.NewMediaInfo(data)
+	if err != nil {
+		return nil, err
+	}
+	audio := domains.NewAudio(info)
+	return &audio, nil
 }

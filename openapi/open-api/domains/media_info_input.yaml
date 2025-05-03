@@ -4,7 +4,7 @@ required:
   - content_type
   - filename
   - original_filename
-  - path
+  - path_name
   - min_bitrate
 properties:
   content_type:
@@ -19,7 +19,7 @@ properties:
     type: string
   original_filename:
     type: string
-  path:
+  path_name:
     type: string
   min_bitrate:
     type: integer

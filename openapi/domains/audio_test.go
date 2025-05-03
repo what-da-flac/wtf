@@ -82,7 +82,7 @@ func TestNewAudio(t *testing.T) {
 				Genre:           "Alternative",
 				Performer:       "New Order",
 				RecordedDate:    2001,
-				SamplingRate:    44100,
+				SamplingRate:    992701,
 				Title:           "Crystal",
 				TrackNumber:     1,
 				TotalTrackCount: 10,

@@ -9,6 +9,6 @@ type PathFinder interface {
 	// Path returns absolute path.
 	Path() string
 
-	// SaveSteam writes reader to filename. Returns resulting path to saved file.
-	SaveSteam(r io.Reader) (string, error)
+	// Save writes reader to file using key as its name.
+	Save(r io.Reader, key string) error
 }

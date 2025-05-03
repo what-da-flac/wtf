@@ -5,36 +5,35 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type PathFinder struct {
-	baseDir    string
-	identifier ifaces.Identifier
+	baseDir  string
+	pathName string
 }
 
-func NewPathFinder(identifier ifaces.Identifier, baseDir string) *PathFinder {
+func NewPathFinder(baseDir string, pathName golang.PathName) *PathFinder {
 	return &PathFinder{
-		identifier: identifier,
-		baseDir:    baseDir,
+		baseDir:  baseDir,
+		pathName: string(pathName),
 	}
 }
 
 func (x *PathFinder) Path() string {
-	return x.baseDir
+	return x.pathName
 }
 
-func (x *PathFinder) SaveSteam(r io.Reader) (string, error) {
+func (x *PathFinder) Save(r io.Reader, key string) error {
 	if err := os.MkdirAll(x.baseDir, os.ModePerm); err != nil {
-		return "", err
+		return err
 	}
-	filename := x.identifier.UUIDv4()
-	filename = filepath.Join(x.baseDir, filename)
+	filename := filepath.Join(x.baseDir, key)
 	dst, err := os.Create(filename)
 	if err != nil {
-		return "", err
+		return err
 	}
 	defer func() { _ = dst.Close() }()
 	_, err = io.Copy(dst, r)
-	return filename, err
+	return err
 }

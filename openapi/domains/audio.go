@@ -17,10 +17,10 @@ func NewAudio(info *MediaInfo) golang.Audio {
 		if val, err := strconv.ParseFloat(track.Duration, 64); err == nil {
 			r.DurationSeconds = int(math.Floor(val))
 		}
-		r.Format = track.Format
-		if val, err := strconv.Atoi(track.SamplingRate); err == nil {
+		if val, err := strconv.Atoi(track.BitRate); err == nil {
 			r.SamplingRate = val
 		}
+		r.Format = track.Format
 	}
 	if track := info.General(); track != nil {
 		r.Album = track.Album

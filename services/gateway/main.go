@@ -58,8 +58,8 @@ func serve(zl *zap.Logger) error {
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
-	storePathFinder := paths.NewPathFinder(identifier, config.Paths.Storage)
-	tempPathFinder := paths.NewPathFinder(identifier, config.Paths.Temp)
+	storePathFinder := paths.NewPathFinder(config.Paths.Storage, golang.PathNameStore)
+	tempPathFinder := paths.NewPathFinder(config.Paths.Temp, golang.PathNameTemp)
 	client := brokers.NewClient()
 	audioFilePublisher := brokers.NewPublisher[golang.MediaInfoInput](client, string(golang.QueueNameMediainfo))
 	api := rest.New(db, logger, repository).
