@@ -1,5 +1,4 @@
 .PHONY: ci build-all golang-imports login mock-all push-all tag-all test-all
-.PHONY: local-build local-logs local-pg local-start local-stop local-pull
 .PHONY: lint-install pull mock-all mock-install
 .PHONY: sql-assign-roles tools-install
 
@@ -40,24 +39,6 @@ build-all:
 		$(MAKE) build-$(service) ; \
 	)
 
-docker-build:
-	docker compose build
-
-docker-start:
-	docker compose up -d
-
-docker-stop:
-	docker compose down --remove-orphans
-
-docker-pull: login
-	docker compose pull
-
-docker-logs:
-	docker compose logs -f $(SERVICES)
-
-docker-pg:
-	docker compose exec -it postgres psql
-
 golang-imports:
 	goimports -w .
 
@@ -66,24 +47,6 @@ lint:
 
 lint-install:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(shell go env GOPATH)/bin $(LINT_VERSION)
-
-local-build:
-	docker compose -f local-docker-compose.yaml build
-
-local-start:
-	docker compose -f local-docker-compose.yaml up -d
-
-local-stop:
-	docker compose -f local-docker-compose.yaml down --remove-orphans
-
-local-pull: login
-	docker compose -f local-docker-compose.yaml pull
-
-local-logs:
-	docker compose -f local-docker-compose.yaml logs -f
-
-login:
-	aws --profile wtf ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $(ACCOUNT_ID).dkr.ecr.us-east-2.amazonaws.com
 
 mock-all:
 	find . -iname "mocks" -exec rm -rf {} \; || true

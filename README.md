@@ -2,24 +2,26 @@
 
 Monorepo for all WTF applications.
 
-## Deployments
+## Local Workflow
 
-All deployments start when you push a git tag. Based on the tag name, actions will be triggered automatically.
+Local is considered for local development, and services are running from and IDE or directly on the terminal.
 
-There are some naming conventions since we are using a monorepo, in order to determine which triggers should be activated during deployments.
+Docker compose only runs the dependent services, such as databases and message brokers.
 
-`docker.*` Deploys docker images used among builds.
-
-`cdk.*` Deploys cdk stacks.
-
-`gateway.*` Deploys `gateway` service.
-
-`lambda.*` Deploys `lambdas` services.
-
-`ui.*` Deploys `ui` application to S3.
-
-You can easily generate next git tag through makefile. In this example we are generating the next git tag for `cdk`.
+Start
 
 ```bash
-make next-tag-cdk
+make local-start
+```
+
+Logs
+
+```bash
+make local-logs
+```
+
+Stop
+
+```bash
+make local-stop
 ```
