@@ -5,20 +5,23 @@ import (
 	"database/sql"
 	"net/http"
 
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
+
 	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )
 
 type Server struct {
-	db              *sql.DB
-	config          *environment.Config
-	storePathFinder interfaces.PathFinder
-	tempPathFinder  interfaces.PathFinder
-	identifier      interfaces.Identifier
-	logger          ifaces.Logger
-	repository      interfaces.Repository
-	timer           ifaces.Timer
+	db                 *sql.DB
+	config             *environment.Config
+	storePathFinder    interfaces.PathFinder
+	tempPathFinder     interfaces.PathFinder
+	identifier         interfaces.Identifier
+	logger             ifaces.Logger
+	mediaInfoPublisher ifaces.Publisher[golang.MediaInfoInput]
+	repository         interfaces.Repository
+	timer              ifaces.Timer
 }
 
 func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Server {
@@ -52,4 +55,9 @@ func (x *Server) WithTimer(timer ifaces.Timer) *Server {
 
 func (x *Server) context(r *http.Request) context.Context {
 	return r.Context()
+}
+
+func (x *Server) WithMediaInfoPublisher(mediaInfoPublisher ifaces.Publisher[golang.MediaInfoInput]) *Server {
+	x.mediaInfoPublisher = mediaInfoPublisher
+	return x
 }

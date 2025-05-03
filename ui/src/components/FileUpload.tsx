@@ -34,7 +34,7 @@ const FileUpload: React.FC = () => {
         const results: string[] = [];
 
         for (const file of files) {
-            if (!["audio/mpeg", "audio/flac"].includes(file.type)) {
+            if (!["audio/flac", "audio/mpeg", "audio/x-m4a"].includes(file.type)) {
                 results.push(`❌ ${file.name}: unsupported file type`);
                 continue;
             }
@@ -49,7 +49,7 @@ const FileUpload: React.FC = () => {
                     },
                 });
                 results.push(`✅ ${file.name}`);
-            } catch(error) {
+            } catch (error) {
                 console.error(error);
                 results.push(`❌ ${file.name}: upload failed`);
             }
@@ -58,7 +58,6 @@ const FileUpload: React.FC = () => {
         setUploadResults(results);
         setUploading(false);
     };
-
     return (
         <div className="max-w-xl mx-auto mt-10 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
             <label
@@ -71,7 +70,7 @@ const FileUpload: React.FC = () => {
                 id="file_input"
                 type="file"
                 multiple
-                accept=".mp3,.flac,audio/mp3,audio/flac"
+                accept=".mp3,.flac,.m4a,audio/m4a,audio/mp3,audio/flac"
                 onChange={handleFileChange}
                 className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
             />

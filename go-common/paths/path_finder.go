@@ -20,6 +20,10 @@ func NewPathFinder(identifier ifaces.Identifier, baseDir string) *PathFinder {
 	}
 }
 
+func (x *PathFinder) Path() string {
+	return x.baseDir
+}
+
 func (x *PathFinder) SaveSteam(r io.Reader) (string, error) {
 	if err := os.MkdirAll(x.baseDir, os.ModePerm); err != nil {
 		return "", err

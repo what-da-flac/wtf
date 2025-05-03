@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"github.com/what-da-flac/wtf/go-common/brokers"
+
 	"github.com/what-da-flac/wtf/go-common/paths"
 
 	"github.com/what-da-flac/wtf/go-common/http_helpers"
@@ -48,11 +50,7 @@ func serve(zl *zap.Logger) error {
 	}
 
 	logger := zl.Sugar()
-	if err = migrations.MigrateFS(
-		assets.MigrationFiles(),
-		"files/migrations",
-		config.DB.URL,
-	); err != nil {
+	if err = migrateDb(config.DB.URL); err != nil {
 		return err
 	}
 	logger.Info("db migrations applied successfully")
@@ -62,11 +60,14 @@ func serve(zl *zap.Logger) error {
 	identifier := identifiers.NewIdentifier()
 	storePathFinder := paths.NewPathFinder(identifier, config.Paths.Storage)
 	tempPathFinder := paths.NewPathFinder(identifier, config.Paths.Temp)
+	client := brokers.NewClient()
+	audioFilePublisher := brokers.NewPublisher[golang.MediaInfoInput](client, string(golang.QueueNameMediainfo))
 	api := rest.New(db, logger, repository).
 		WithConfig(config).
 		WithPathFinders(storePathFinder, tempPathFinder).
 		WithIdentifier(identifier).
-		WithTimer(timers.New())
+		WithTimer(timers.New()).WithMediaInfoPublisher(audioFilePublisher).
+		WithMediaInfoPublisher(audioFilePublisher)
 	mux := http.NewServeMux()
 	baseHandler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
 	handler := http_helpers.CORSMiddleware(baseHandler)
@@ -79,4 +80,12 @@ func serve(zl *zap.Logger) error {
 
 	logger.Infof("serving from %s:%s", config.APIUrlPrefix, config.Port)
 	return srv.ListenAndServe()
+}
+
+func migrateDb(uri string) error {
+	return migrations.MigrateFS(
+		assets.MigrationFiles(),
+		"files/migrations",
+		uri,
+	)
 }

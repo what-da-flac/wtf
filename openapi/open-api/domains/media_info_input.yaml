@@ -1,0 +1,25 @@
+title: MediaInfoInput
+type: object
+required:
+  - content_type
+  - filename
+  - original_filename
+  - path
+  - min_bitrate
+properties:
+  content_type:
+    type: string
+    enum:
+        - audio/flac
+        - audio/mp3
+        - audio/mpeg
+        - audio/x-m4a
+        - invalid
+  filename:
+    type: string
+  original_filename:
+    type: string
+  path:
+    type: string
+  min_bitrate:
+    type: integer

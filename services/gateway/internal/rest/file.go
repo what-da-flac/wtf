@@ -1,10 +1,13 @@
 package rest
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"golang.org/x/net/context"
 
 	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/go-common/http_helpers"
@@ -31,23 +34,41 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	// read file metadata
 	filename := fileHeader.Filename
 	size := fileHeader.Size
-	mimeType := fileHeader.Header.Get("Content-Type")
-
-	f := &golang.File{
-		Id:          x.identifier.UUIDv4(),
-		Filename:    filename,
-		Created:     x.timer.Now(),
-		Length:      int(size),
-		ContentType: mimeType,
-		Status:      domains.FileCreated.String(),
+	contentType := domains.NewContentType(fileHeader.Header.Get("Content-Type"))
+	if contentType == golang.MediaInfoInputContentTypeInvalid {
+		err = fmt.Errorf("unsupported media type %q", fileHeader.Header.Get("Content-Type"))
+		x.logger.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-
 	// send file content to storage implementation
 	srcFilename, err := x.tempPathFinder.SaveSteam(file)
 	if err != nil {
 		x.logger.Errorf("unable to save file: %v", err)
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
+	}
+	ctx := context.Background()
+	if _, err = x.mediaInfoPublisher.PublishMessage(ctx, golang.MediaInfoInput{
+		ContentType:      contentType,
+		Filename:         filepath.Base(srcFilename),
+		OriginalFilename: filename,
+		Path:             x.tempPathFinder.Path(),
+		MinBitrate:       320, // TODO: this should come from somewhere else
+	}); err != nil {
+		x.logger.Errorf("unable to publish audio file: %v", err)
+		http.Error(w, "unable to publish audio file", http.StatusInternalServerError)
+		return
+	}
+	return
+
+	f := &golang.File{
+		Id:          x.identifier.UUIDv4(),
+		Filename:    filename,
+		Created:     x.timer.Now(),
+		Length:      int(size),
+		ContentType: string(contentType),
+		Status:      domains.FileCreated.String(),
 	}
 
 	// convert to aac audio format
