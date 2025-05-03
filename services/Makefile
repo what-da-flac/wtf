@@ -5,7 +5,7 @@
 # AWS account
 ACCOUNT_ID=160885250498
 SHELL := /bin/bash
-SERVICES=gateway media-info
+SERVICES=gateway media-process
 NODE_SERVICES=
 BASE_GO_BUILD_IMAGE=golang
 BASE_GO_VERSION=1.24.1
