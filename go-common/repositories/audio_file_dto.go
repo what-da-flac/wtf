@@ -3,9 +3,8 @@ package repositories
 import (
 	"time"
 
-	"github.com/what-da-flac/wtf/openapi/gen/golang"
-
 	"github.com/jinzhu/copier"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type AudioFileDto struct {
@@ -18,7 +17,7 @@ type AudioFileDto struct {
 	Album           string
 	BitDepth        int
 	CompressionMode string
-	Duration        time.Duration
+	DurationSeconds int
 	FileExtension   string
 	Format          string
 	Genre           string

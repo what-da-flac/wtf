@@ -4,7 +4,7 @@ required:
   - album
   - bit_depth
   - compression_mode
-  - duration
+  - duration_seconds
   - file_extension
   - format
   - genre
@@ -21,7 +21,7 @@ properties:
     type: integer
   compression_mode:
     type: string
-  duration:
+  duration_seconds:
     type: integer
   file_extension:
     type: string

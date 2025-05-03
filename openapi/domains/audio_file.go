@@ -9,7 +9,7 @@ func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
 		Album:           audio.Album,
 		BitDepth:        audio.BitDepth,
 		CompressionMode: audio.CompressionMode,
-		Duration:        audio.Duration,
+		DurationSeconds: audio.DurationSeconds,
 		FileExtension:   audio.FileExtension,
 		Format:          audio.Format,
 		Genre:           audio.Genre,

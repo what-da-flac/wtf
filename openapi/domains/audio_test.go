@@ -76,7 +76,7 @@ func TestNewAudio(t *testing.T) {
 				Album:           "Get Ready",
 				BitDepth:        16,
 				CompressionMode: "Lossless",
-				Duration:        411,
+				DurationSeconds: 411,
 				FileExtension:   "flac",
 				Format:          "FLAC",
 				Genre:           "Alternative",

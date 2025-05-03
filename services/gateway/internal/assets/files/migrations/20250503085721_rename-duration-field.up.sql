@@ -1,0 +1,1 @@
+ALTER TABLE audio_files RENAME duration to duration_seconds;

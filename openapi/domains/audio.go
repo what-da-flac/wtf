@@ -15,7 +15,7 @@ func NewAudio(info *MediaInfo) golang.Audio {
 		}
 		r.CompressionMode = track.CompressionMode
 		if val, err := strconv.ParseFloat(track.Duration, 64); err == nil {
-			r.Duration = int(math.Floor(val))
+			r.DurationSeconds = int(math.Floor(val))
 		}
 		r.Format = track.Format
 		if val, err := strconv.Atoi(track.SamplingRate); err == nil {
