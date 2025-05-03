@@ -14,8 +14,8 @@ bundle:
 	redocly bundle open-api/openapi.yaml --output $(OPEN_API_OUTPUT)
 
 clean-go:
+	rm -rf $(DIR_GO)
 	mkdir -p $(DIR_GO)
-	rm -f $(DIR_GO)/types.go
 	echo 'package go' > $(DIR_GO)/types.go
 
 clean-node:
@@ -30,7 +30,7 @@ clean-ts:
 	rm -rf $(DIR_TS)
 	mkdir -p $(DIR_TS)
 
-gen: bundle gen-go gen-domains
+gen: bundle gen-go
 
 gen-domains:
 	@for schema in open-api/domains/*.yaml; do \
@@ -38,7 +38,7 @@ gen-domains:
 		go-jsonschema --only-models --struct-name-from-title -p golang --output=$(DIR_GO)/$$filename.go $$schema; \
 	done
 
-gen-go: clean-go
+gen-go: clean-go gen-domains
 	oapi-codegen --package $(GO_PACKAGE_NAME) --generate types,client,std-http $(OPEN_API_OUTPUT) > "$(DIR_GO)/types.go"
 
 gen-node: clean-node

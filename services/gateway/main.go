@@ -3,9 +3,9 @@ package main
 import (
 	"net/http"
 
-	"github.com/what-da-flac/wtf/go-common/http_helpers"
+	"github.com/what-da-flac/wtf/go-common/paths"
 
-	"github.com/what-da-flac/wtf/services/gateway/internal/storages"
+	"github.com/what-da-flac/wtf/go-common/http_helpers"
 
 	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
@@ -60,10 +60,11 @@ func serve(zl *zap.Logger) error {
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
-	fileStorage := storages.NewLocal(config.PathToSaveFiles)
+	storePathFinder := paths.NewPathFinder(identifier, config.Paths.Storage)
+	tempPathFinder := paths.NewPathFinder(identifier, config.Paths.Temp)
 	api := rest.New(db, logger, repository).
 		WithConfig(config).
-		WithFileStorage(fileStorage).
+		WithPathFinders(storePathFinder, tempPathFinder).
 		WithIdentifier(identifier).
 		WithTimer(timers.New())
 	mux := http.NewServeMux()

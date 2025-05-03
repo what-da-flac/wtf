@@ -11,7 +11,6 @@ const (
 	envVarAPIUrlPrefix       = "API_URL_PREFIX"
 	envVarCorsAllowedHeaders = "CORS_ALLOWED_HEADERS"
 	envVarHeaderTimeout      = "HEADER_TIMEOUT"
-	envVarPathToSaveFiles    = "PATH_TO_SAVED_FILES"
 	envVarPort               = "GATEWAY_PORT"
 )
 
@@ -22,19 +21,17 @@ type Config struct {
 	CorsAllowedHeaders    string
 	ForceProfileCompleted bool
 	HeaderTimeout         time.Duration
-	PathToSaveFiles       string
 	Port                  string
 	SourceURL             string
 }
 
 func New() *Config {
-	globalConfig := env.New()
+	genv := env.New()
 	c := &Config{
 		APIUrlPrefix:       viper.GetString(envVarAPIUrlPrefix),
 		CorsAllowedHeaders: viper.GetString(envVarCorsAllowedHeaders),
-		Config:             *globalConfig,
+		Config:             *genv,
 		HeaderTimeout:      viper.GetDuration(envVarHeaderTimeout),
-		PathToSaveFiles:    viper.GetString(envVarPathToSaveFiles),
 		Port:               viper.GetString(envVarPort),
 	}
 	return c

@@ -6,11 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/what-da-flac/wtf/openapi/gen/golang"
-
 	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/go-common/http_helpers"
 	"github.com/what-da-flac/wtf/openapi/domains"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +22,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	// Get file from the form field named "file"
 	file, fileHeader, err := r.FormFile(fileFieldName)
 	if err != nil {
+		x.logger.Errorf("unable to get file from form: %v", err)
 		http.Error(w, "file not found in request", http.StatusBadRequest)
 		return
 	}
@@ -43,17 +43,19 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// send file content to storage implementation
-	srcFilename, err := x.fileStorage.Save(f, file)
+	srcFilename, err := x.tempPathFinder.SaveSteam(file)
 	if err != nil {
+		x.logger.Errorf("unable to save file: %v", err)
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
 	}
 
 	// convert to aac audio format
 	const m4aExt = ".m4a"
+	ext := filepath.Ext(filename)
 	dstFilename := srcFilename
 	dir := filepath.Dir(srcFilename)
-	if ext := filepath.Ext(srcFilename); ext != m4aExt {
+	if ext != m4aExt {
 		base := filepath.Base(srcFilename)
 		dstFilename = strings.TrimSuffix(base, ext)
 		dstFilename = filepath.Join(dir, dstFilename+m4aExt)
@@ -75,6 +77,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	// extract mediainfo
 	infoReader, err := commands.CmdMediaInfo(dstFilename)
 	if err != nil {
+		x.logger.Errorf("unable to get media info: %s", err)
 		http.Error(w, "unable to save file", http.StatusInternalServerError)
 		return
 	}
@@ -91,6 +94,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 	audioFile := domains.NewAudioFile(&audio, f)
 
 	if err = x.repository.InsertAudioFile(&audioFile); err != nil {
+		x.logger.Errorf("unable to save audio file: %s", err)
 		http.Error(w, "unable to save file metadata", http.StatusInternalServerError)
 		return
 	}

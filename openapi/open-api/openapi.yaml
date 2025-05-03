@@ -22,4 +22,4 @@ paths:
 
 
   /v1/files:
-    $ref: './resources/file-post.yaml'
+    $ref: './resources/file_post.yaml'

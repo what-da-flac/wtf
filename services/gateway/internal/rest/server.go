@@ -11,13 +11,14 @@ import (
 )
 
 type Server struct {
-	db          *sql.DB
-	config      *environment.Config
-	fileStorage interfaces.FileStorage
-	identifier  interfaces.Identifier
-	logger      ifaces.Logger
-	repository  interfaces.Repository
-	timer       ifaces.Timer
+	db              *sql.DB
+	config          *environment.Config
+	storePathFinder interfaces.PathFinder
+	tempPathFinder  interfaces.PathFinder
+	identifier      interfaces.Identifier
+	logger          ifaces.Logger
+	repository      interfaces.Repository
+	timer           ifaces.Timer
 }
 
 func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Server {
@@ -33,8 +34,9 @@ func (x *Server) WithConfig(config *environment.Config) *Server {
 	return x
 }
 
-func (x *Server) WithFileStorage(fileStorage interfaces.FileStorage) *Server {
-	x.fileStorage = fileStorage
+func (x *Server) WithPathFinders(storeFinder, tempFinder interfaces.PathFinder) *Server {
+	x.storePathFinder = storeFinder
+	x.tempPathFinder = tempFinder
 	return x
 }
 
