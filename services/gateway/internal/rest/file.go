@@ -46,7 +46,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		Filename:               filename,
 		OriginalFilename:       fileHeader.Filename,
 		PathName:               x.tempPathFinder.Path(),
-		MinBitrate:             192 * 1000, // TODO: this should come from somewhere else
+		MinBitrate:             320 * 1000, // TODO: this should come from somewhere else
 		ConvertedBitRate:       320 * 1000, // TODO: this should come from somewhere else
 		DestinationContentType: string(golang.MediaInfoInputContentTypeAudioXM4A),
 	}); err != nil {

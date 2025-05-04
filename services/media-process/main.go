@@ -34,8 +34,8 @@ func listen(config *env.Config, logger ifaces.Logger) error {
 	ctx := context.Background()
 	// TODO: set redis connection from environment variables
 	client := brokers.NewClient()
-	queueName := string(golang.QueueNameMediainfo)
-	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, "media-process")
+	queueName := string(golang.QueueNameMediaProcess)
+	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, queueName)
 	if err != nil {
 		return err
 	}
@@ -67,29 +67,29 @@ func processMessageFn(config *env.Config, logger ifaces.Logger) func(msg golang.
 		}
 		bitRate := audio.BitRate
 		minBitRate := msg.MinBitrate
-		if !HasAudioEnoughQuality(*audio, minBitRate) {
+		if !HasAudioEnoughQuality(bitRate, minBitRate) {
 			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", bitRate, minBitRate)
 			logger.Error(err)
 			return true, err
 		}
 		// determine bitrate and convert audio file to m4a
-		bitRate = CalculateBitrate(*audio, minBitRate)
+		bitRate = CalculateBitrate(bitRate, minBitRate)
 		// TODO: write final audio file to db
 		logger.Infof("ready: %s source bit rate:%d destination bit rate: %d content type: %s",
-			msg.OriginalFilename, audio.BitRate, msg.ConvertedBitRate, msg.DestinationContentType)
+			msg.OriginalFilename, audio.BitRate, bitRate, msg.DestinationContentType)
 		return true, nil
 	}
 }
 
-func HasAudioEnoughQuality(audio golang.Audio, minBitrate int) bool {
-	return audio.BitRate >= minBitrate
+func HasAudioEnoughQuality(bitRate, minBitrate int) bool {
+	return bitRate >= minBitrate
 }
 
-func CalculateBitrate(audio golang.Audio, bitRate int) int {
-	if audio.BitRate < bitRate {
-		return audio.BitRate
+func CalculateBitrate(bitRate, dstBitRate int) int {
+	if bitRate < dstBitRate {
+		return bitRate
 	}
-	return bitRate
+	return dstBitRate
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {

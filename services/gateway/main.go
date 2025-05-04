@@ -61,7 +61,7 @@ func serve(zl *zap.Logger) error {
 	storePathFinder := paths.NewPathFinder(config.Paths.Storage, golang.PathNameStore)
 	tempPathFinder := paths.NewPathFinder(config.Paths.Temp, golang.PathNameTemp)
 	client := brokers.NewClient()
-	audioFilePublisher := brokers.NewPublisher[golang.MediaInfoInput](client, string(golang.QueueNameMediainfo))
+	audioFilePublisher := brokers.NewPublisher[golang.MediaInfoInput](client, string(golang.QueueNameMediaProcess))
 	api := rest.New(db, logger, repository).
 		WithConfig(config).
 		WithPathFinders(storePathFinder, tempPathFinder).
