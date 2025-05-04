@@ -1,4 +1,4 @@
-package interfaces
+package ifaces
 
 import (
 	"github.com/what-da-flac/wtf/openapi/gen/golang"

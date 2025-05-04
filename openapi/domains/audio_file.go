@@ -7,7 +7,6 @@ import (
 func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
 	return golang.AudioFile{
 		Album:           audio.Album,
-		BitDepth:        audio.BitDepth,
 		CompressionMode: audio.CompressionMode,
 		DurationSeconds: audio.DurationSeconds,
 		FileExtension:   audio.FileExtension,
@@ -24,6 +23,5 @@ func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
 		Created:         file.Created,
 		Length:          file.Length,
 		ContentType:     file.ContentType,
-		Status:          file.Status,
 	}
 }

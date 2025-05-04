@@ -20,11 +20,11 @@ type Server struct {
 	identifier         interfaces.Identifier
 	logger             ifaces.Logger
 	mediaInfoPublisher ifaces.Publisher[golang.MediaInfoInput]
-	repository         interfaces.Repository
+	repository         ifaces.Repository
 	timer              ifaces.Timer
 }
 
-func New(db *sql.DB, logger ifaces.Logger, repository interfaces.Repository) *Server {
+func New(db *sql.DB, logger ifaces.Logger, repository ifaces.Repository) *Server {
 	return &Server{
 		db:         db,
 		logger:     logger,

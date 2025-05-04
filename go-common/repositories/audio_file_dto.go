@@ -13,9 +13,7 @@ type AudioFileDto struct {
 	Created         time.Time
 	Length          int64
 	ContentType     string
-	Status          string
 	Album           string
-	BitDepth        int
 	CompressionMode string
 	DurationSeconds int
 	FileExtension   string
