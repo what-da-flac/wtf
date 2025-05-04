@@ -8,6 +8,7 @@ import (
 	"github.com/what-da-flac/wtf/go-common/brokers"
 	"github.com/what-da-flac/wtf/go-common/commands"
 	"github.com/what-da-flac/wtf/go-common/env"
+	"github.com/what-da-flac/wtf/go-common/ifaces"
 	"github.com/what-da-flac/wtf/openapi/domains"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"go.uber.org/zap"
@@ -26,20 +27,28 @@ func run() error {
 		return err
 	}
 	config := env.New()
-	return listen(logger, config)
+	return listen(config, logger.Sugar())
 }
 
-func listen(zl *zap.Logger, config *env.Config) error {
-	logger := zl.Sugar()
+func listen(config *env.Config, logger ifaces.Logger) error {
 	ctx := context.Background()
 	// TODO: set redis connection from environment variables
 	client := brokers.NewClient()
 	queueName := string(golang.QueueNameMediainfo)
-	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, "media-info")
+	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, "media-process")
 	if err != nil {
 		return err
 	}
-	processMessageFn := func(msg golang.MediaInfoInput) (ack bool, err error) {
+	errFn := func(err error) {
+		logger.Error(err)
+	}
+	logger.Info("starting subscriber:", queueName)
+	subscriber.Listen(ctx, processMessageFn(config, logger), errFn)
+	return nil
+}
+
+func processMessageFn(config *env.Config, logger ifaces.Logger) func(msg golang.MediaInfoInput) (ack bool, err error) {
+	return func(msg golang.MediaInfoInput) (ack bool, err error) {
 		pathName := config.Paths.Resolve(msg.PathName)
 		if pathName == "" {
 			err := fmt.Errorf("invalid path name: %s", msg.PathName)
@@ -56,25 +65,31 @@ func listen(zl *zap.Logger, config *env.Config) error {
 			logger.Error(err)
 			return true, err
 		}
-		if !HasAudioEnoughQuality(*audio, msg.MinBitrate) {
-			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", audio.BitRate, msg.MinBitrate)
+		bitRate := audio.BitRate
+		minBitRate := msg.MinBitrate
+		if !HasAudioEnoughQuality(*audio, minBitRate) {
+			err := fmt.Errorf("audio bitdepth: %d is less than minimum: %d", bitRate, minBitRate)
 			logger.Error(err)
 			return true, err
 		}
+		// determine bitrate and convert audio file to m4a
+		bitRate = CalculateBitrate(*audio, minBitRate)
 		// TODO: write final audio file to db
-		logger.Infof("audio ready to be processed, track name: %s bit rate:%d", audio.Title, audio.BitRate)
+		logger.Infof("ready: %s source bit rate:%d destination bit rate: %d content type: %s",
+			msg.OriginalFilename, audio.BitRate, msg.ConvertedBitRate, msg.DestinationContentType)
 		return true, nil
 	}
-	errFn := func(err error) {
-		logger.Error(err)
-	}
-	zl.Sugar().Infoln("starting subscriber:", queueName)
-	subscriber.Listen(ctx, processMessageFn, errFn)
-	return nil
 }
 
 func HasAudioEnoughQuality(audio golang.Audio, minBitrate int) bool {
 	return audio.BitRate >= minBitrate
+}
+
+func CalculateBitrate(audio golang.Audio, bitRate int) int {
+	if audio.BitRate < bitRate {
+		return audio.BitRate
+	}
+	return bitRate
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {

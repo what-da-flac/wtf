@@ -6,6 +6,8 @@ required:
   - original_filename
   - path_name
   - min_bitrate
+  - destination_content_type
+  - converted_bit_rate
 properties:
   content_type:
     type: string
@@ -22,4 +24,8 @@ properties:
   path_name:
     type: string
   min_bitrate:
+    type: integer
+  destination_content_type:
+    type: string
+  converted_bit_rate:
     type: integer

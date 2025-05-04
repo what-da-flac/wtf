@@ -1,0 +1,8 @@
+type: string
+title: ContentType
+enum:
+    - audio/flac
+    - audio/mp3
+    - audio/mpeg
+    - audio/x-m4a
+    - invalid
