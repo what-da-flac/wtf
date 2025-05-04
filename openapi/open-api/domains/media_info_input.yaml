@@ -8,7 +8,7 @@ required:
   - dst_path_name
   - min_bitrate
   - destination_content_type
-  - converted_bit_rate
+  - wanted_bit_rate
 properties:
   content_type:
     $ref: '../domains/content_type.yaml'
@@ -24,5 +24,5 @@ properties:
     type: integer
   destination_content_type:
     $ref: '../domains/content_type.yaml'
-  converted_bit_rate:
+  wanted_bit_rate:
     type: integer

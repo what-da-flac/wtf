@@ -42,8 +42,8 @@ func TestHasAudioEnoughQuality(t *testing.T) {
 
 func TestCalculateNumber(t *testing.T) {
 	type args struct {
-		bitRate    int
-		dstBitRate int
+		currentBitRate int
+		wantedBitRate  int
 	}
 	tests := []struct {
 		name string
@@ -53,31 +53,31 @@ func TestCalculateNumber(t *testing.T) {
 		{
 			name: "192k to 320k",
 			args: args{
-				bitRate:    192000,
-				dstBitRate: 320000,
+				currentBitRate: 192000,
+				wantedBitRate:  320000,
 			},
 			want: 192000,
 		},
 		{
 			name: "320k to 320k",
 			args: args{
-				bitRate:    320000,
-				dstBitRate: 320000,
+				currentBitRate: 320000,
+				wantedBitRate:  320000,
 			},
 			want: 320000,
 		},
 		{
 			name: "880k to 320k",
 			args: args{
-				bitRate:    880000,
-				dstBitRate: 320000,
+				currentBitRate: 880000,
+				wantedBitRate:  320000,
 			},
 			want: 320000,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CalculateNumber(tt.args.bitRate, tt.args.dstBitRate); got != tt.want {
+			if got := CalculateNumber(tt.args.currentBitRate, tt.args.wantedBitRate); got != tt.want {
 				t.Errorf("CalculateNumber() = %v, want %v", got, tt.want)
 			}
 		})
