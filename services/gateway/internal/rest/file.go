@@ -48,7 +48,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		SrcPathName:            x.tempPathFinder.Path(),
 		DstPathName:            x.storePathFinder.Path(),
 		MinBitrate:             192 * 1000, // TODO: this should come from somewhere else
-		ConvertedBitRate:       320 * 1000, // TODO: this should come from somewhere else
+		WantedBitRate:          320 * 1000, // TODO: this should come from somewhere else
 		DestinationContentType: golang.ContentTypeAudioxM4a,
 	}); err != nil {
 		x.logger.Errorf("unable to publish audio file: %v", err)

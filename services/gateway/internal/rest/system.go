@@ -21,4 +21,6 @@ func (x *Server) GetV1Healthz(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(data)
 }
 
-func (x *Server) GetV1Container(w http.ResponseWriter, r *http.Request) {}
+func (x *Server) GetV1Container(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
+}

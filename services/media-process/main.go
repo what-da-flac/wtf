@@ -113,7 +113,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 		}
 
 		// determine bitrate and convert srcAudio file to m4a
-		bitRate = CalculateNumber(bitRate, minBitRate)
+		bitRate = CalculateNumber(bitRate, msg.WantedBitRate)
 
 		// convert file to desired format/resolution
 		if err = commands.CmdFFMpegAudio(src, dst, bitRate); err != nil {
@@ -153,11 +153,13 @@ func HasAudioEnoughQuality(bitRate, minBitrate int) bool {
 	return bitRate >= minBitrate
 }
 
-func CalculateNumber(current, dst int) int {
-	if current < dst {
+// CalculateNumber returns the best match for a quality setting.
+// If current is below setting, that value is used.
+func CalculateNumber(current, wanted int) int {
+	if current < wanted {
 		return current
 	}
-	return dst
+	return wanted
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {
