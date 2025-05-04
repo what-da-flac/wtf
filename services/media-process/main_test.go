@@ -40,7 +40,7 @@ func TestHasAudioEnoughQuality(t *testing.T) {
 	}
 }
 
-func TestCalculateBitrate(t *testing.T) {
+func TestCalculateNumber(t *testing.T) {
 	type args struct {
 		bitRate    int
 		dstBitRate int
@@ -77,8 +77,8 @@ func TestCalculateBitrate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CalculateBitrate(tt.args.bitRate, tt.args.dstBitRate); got != tt.want {
-				t.Errorf("CalculateBitrate() = %v, want %v", got, tt.want)
+			if got := CalculateNumber(tt.args.bitRate, tt.args.dstBitRate); got != tt.want {
+				t.Errorf("CalculateNumber() = %v, want %v", got, tt.want)
 			}
 		})
 	}

@@ -4,7 +4,8 @@ required:
   - content_type
   - filename
   - original_filename
-  - path_name
+  - src_path_name
+  - dst_path_name
   - min_bitrate
   - destination_content_type
   - converted_bit_rate
@@ -15,7 +16,9 @@ properties:
     type: string
   original_filename:
     type: string
-  path_name:
+  src_path_name:
+    $ref: './path_name.yaml'
+  dst_path_name:
     $ref: './path_name.yaml'
   min_bitrate:
     type: integer

@@ -49,18 +49,25 @@ func listen(config *env.Config, logger ifaces.Logger) error {
 
 func processMessageFn(config *env.Config, logger ifaces.Logger) func(msg golang.MediaInfoInput) (ack bool, err error) {
 	return func(msg golang.MediaInfoInput) (ack bool, err error) {
-		pathName := config.Paths.Resolve(msg.PathName)
-		if pathName == "" {
-			err := fmt.Errorf("invalid path name: %s", msg.PathName)
+		srcPathName := config.Paths.Resolve(msg.SrcPathName)
+		if srcPathName == "" {
+			err := fmt.Errorf("invalid path name: %s", msg.SrcPathName)
 			logger.Error(err)
 			return true, err
 		}
-		filename := filepath.Join(pathName, msg.Filename)
+		src := filepath.Join(srcPathName, msg.Filename)
+		dstPathName := config.Paths.Resolve(msg.DstPathName)
+		if dstPathName == "" {
+			err := fmt.Errorf("invalid path name: %s", msg.DstPathName)
+			logger.Error(err)
+			return true, err
+		}
+		dst := filepath.Join(dstPathName, msg.Filename) + ".m4a"
 		// on any case, original file will be deleted
 		defer func() {
-			_ = os.Remove(filename)
+			_ = os.Remove(src)
 		}()
-		audio, err := ExtractAudio(filename)
+		audio, err := ExtractAudio(src)
 		if err != nil {
 			logger.Error(err)
 			return true, err
@@ -73,7 +80,12 @@ func processMessageFn(config *env.Config, logger ifaces.Logger) func(msg golang.
 			return true, err
 		}
 		// determine bitrate and convert audio file to m4a
-		bitRate = CalculateBitrate(bitRate, minBitRate)
+		bitRate = CalculateNumber(bitRate, minBitRate)
+		// convert file to desired format/resolution
+		if err = commands.CmdFFMpegAudio(src, dst, bitRate); err != nil {
+			logger.Error(err)
+			return true, err
+		}
 		// TODO: write final audio file to db
 		logger.Infof("ready: %s source bit rate:%d destination bit rate: %d content type: %s",
 			msg.OriginalFilename, audio.BitRate, bitRate, msg.DestinationContentType)
@@ -85,11 +97,11 @@ func HasAudioEnoughQuality(bitRate, minBitrate int) bool {
 	return bitRate >= minBitrate
 }
 
-func CalculateBitrate(bitRate, dstBitRate int) int {
-	if bitRate < dstBitRate {
-		return bitRate
+func CalculateNumber(current, dst int) int {
+	if current < dst {
+		return current
 	}
-	return dstBitRate
+	return dst
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {
