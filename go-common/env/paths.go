@@ -23,8 +23,8 @@ func NewPathsFromEnvironment() *Path {
 	return p
 }
 
-func (x *Path) Resolve(name string) string {
-	if v, ok := x.keys[golang.PathName(name)]; ok {
+func (x *Path) Resolve(pathName golang.PathName) string {
+	if v, ok := x.keys[pathName]; ok {
 		return v
 	}
 	return ""

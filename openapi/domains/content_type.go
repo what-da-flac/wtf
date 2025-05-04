@@ -4,15 +4,15 @@ import (
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
-func NewContentType(contentType string) golang.MediaInfoInputContentType {
-	v := golang.MediaInfoInputContentType(contentType)
+func NewContentType(contentType string) golang.ContentType {
+	v := golang.ContentType(contentType)
 	switch v {
-	case golang.MediaInfoInputContentTypeAudioFlac,
-		golang.MediaInfoInputContentTypeAudioMp3,
-		golang.MediaInfoInputContentTypeAudioMpeg,
-		golang.MediaInfoInputContentTypeAudioXM4A:
+	case golang.ContentTypeAudioflac,
+		golang.ContentTypeAudiomp3,
+		golang.ContentTypeAudiompeg,
+		golang.ContentTypeAudioxM4a:
 	default:
-		return golang.MediaInfoInputContentTypeInvalid
+		return golang.ContentTypeInvalid
 	}
 	return v
 }

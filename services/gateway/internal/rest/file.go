@@ -27,7 +27,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 
 	// read file metadata
 	contentType := domains.NewContentType(fileHeader.Header.Get("Content-Type"))
-	if contentType == golang.MediaInfoInputContentTypeInvalid {
+	if contentType == golang.ContentTypeInvalid {
 		err = fmt.Errorf("unsupported media type %q", fileHeader.Header.Get("Content-Type"))
 		x.logger.Error(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -48,7 +48,7 @@ func (x *Server) UploadAudioFile(w http.ResponseWriter, r *http.Request) {
 		PathName:               x.tempPathFinder.Path(),
 		MinBitrate:             320 * 1000, // TODO: this should come from somewhere else
 		ConvertedBitRate:       320 * 1000, // TODO: this should come from somewhere else
-		DestinationContentType: string(golang.MediaInfoInputContentTypeAudioXM4A),
+		DestinationContentType: golang.ContentTypeAudioxM4a,
 	}); err != nil {
 		x.logger.Errorf("unable to publish audio file: %v", err)
 		http.Error(w, "unable to publish audio file", http.StatusInternalServerError)

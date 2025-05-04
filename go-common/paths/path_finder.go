@@ -10,17 +10,17 @@ import (
 
 type PathFinder struct {
 	baseDir  string
-	pathName string
+	pathName golang.PathName
 }
 
 func NewPathFinder(baseDir string, pathName golang.PathName) *PathFinder {
 	return &PathFinder{
 		baseDir:  baseDir,
-		pathName: string(pathName),
+		pathName: pathName,
 	}
 }
 
-func (x *PathFinder) Path() string {
+func (x *PathFinder) Path() golang.PathName {
 	return x.pathName
 }
 

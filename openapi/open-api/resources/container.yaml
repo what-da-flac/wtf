@@ -1,0 +1,20 @@
+get:
+  summary: just a container to generate types not associated with endpoints
+  responses:
+    '200':
+      description: successful response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              audio:
+                $ref: '../domains/audio.yaml'
+              audio_file:
+                $ref: '../domains/audio_file.yaml'
+              file:
+                $ref: '../domains/file.yaml'
+              media_info_input:
+                $ref: '../domains/media_info_input.yaml'
+              queue_name:
+                $ref: '../domains/queue_name.yaml'

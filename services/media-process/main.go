@@ -34,7 +34,7 @@ func listen(config *env.Config, logger ifaces.Logger) error {
 	ctx := context.Background()
 	// TODO: set redis connection from environment variables
 	client := brokers.NewClient()
-	queueName := string(golang.QueueNameMediaProcess)
+	queueName := string(golang.MediaProcess)
 	subscriber, err := brokers.NewSubscriber[golang.MediaInfoInput](client, queueName, queueName)
 	if err != nil {
 		return err

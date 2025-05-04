@@ -10,22 +10,16 @@ required:
   - converted_bit_rate
 properties:
   content_type:
-    type: string
-    enum:
-        - audio/flac
-        - audio/mp3
-        - audio/mpeg
-        - audio/x-m4a
-        - invalid
+    $ref: '../domains/content_type.yaml'
   filename:
     type: string
   original_filename:
     type: string
   path_name:
-    type: string
+    $ref: './path_name.yaml'
   min_bitrate:
     type: integer
   destination_content_type:
-    type: string
+    $ref: '../domains/content_type.yaml'
   converted_bit_rate:
     type: integer
