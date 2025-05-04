@@ -1,41 +1,20 @@
 package domains
 
-import "time"
+import (
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
+)
 
-type AudioFile struct {
-	Album           string
-	BitDepth        int
-	CompressionMode string
-	Duration        time.Duration
-	FileExtension   string
-	Format          string
-	Genre           string
-	Performer       string
-	RecordedDate    int
-	SamplingRate    int
-	Title           string
-	TrackNumber     int
-	TotalTrackCount int
-	Id              string
-	Filename        string
-	Created         time.Time
-	Length          int64
-	ContentType     string
-	Status          string
-}
-
-func NewAudioFile(audio *Audio, file *File) AudioFile {
-	return AudioFile{
+func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
+	return golang.AudioFile{
 		Album:           audio.Album,
-		BitDepth:        audio.BitDepth,
 		CompressionMode: audio.CompressionMode,
-		Duration:        audio.Duration,
+		DurationSeconds: audio.DurationSeconds,
 		FileExtension:   audio.FileExtension,
 		Format:          audio.Format,
 		Genre:           audio.Genre,
 		Performer:       audio.Performer,
 		RecordedDate:    audio.RecordedDate,
-		SamplingRate:    audio.SamplingRate,
+		SamplingRate:    audio.BitRate,
 		Title:           audio.Title,
 		TrackNumber:     audio.TrackNumber,
 		TotalTrackCount: audio.TotalTrackCount,
@@ -44,6 +23,5 @@ func NewAudioFile(audio *Audio, file *File) AudioFile {
 		Created:         file.Created,
 		Length:          file.Length,
 		ContentType:     file.ContentType,
-		Status:          file.Status,
 	}
 }

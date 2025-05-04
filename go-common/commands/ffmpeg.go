@@ -1,6 +1,10 @@
 package commands
 
-func CmdFFMpegAudio(input, output string) error {
+import (
+	"fmt"
+)
+
+func CmdFFMpegAudio(input, output string, bitRate int) error {
 	//	ffmpeg -y -i "$input" -map 0:a -c:a aac -b:a 320k "$output"
 	var args = []string{
 		"-y",
@@ -11,7 +15,7 @@ func CmdFFMpegAudio(input, output string) error {
 		"-c:a",
 		"aac",
 		"-b:a",
-		"320k",
+		fmt.Sprintf("%d", bitRate),
 		output,
 	}
 	_, err := runGeneric("", "ffmpeg", args...)

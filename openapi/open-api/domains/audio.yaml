@@ -1,0 +1,43 @@
+title: Audio
+type: object
+required:
+  - album
+  - bit_depth
+  - bit_rate
+  - compression_mode
+  - duration_seconds
+  - file_extension
+  - format
+  - genre
+  - performer
+  - recorded_date
+  - title
+  - track_number
+  - total_track_count
+properties:
+  album:
+    type: string
+  bit_depth:
+    type: integer
+  compression_mode:
+    type: string
+  duration_seconds:
+    type: integer
+  file_extension:
+    type: string
+  format:
+    type: string
+  genre:
+    type: string
+  performer:
+    type: string
+  recorded_date:
+    type: integer
+  bit_rate:
+    type: integer
+  title:
+    type: string
+  track_number:
+    type: integer
+  total_track_count:
+    type: integer

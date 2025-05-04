@@ -17,9 +17,12 @@ security:
   - bearerAuth: [ ]
 paths:
 
+  /v1/container:
+    $ref: './resources/container.yaml'
+
   /v1/healthz:
     $ref: './resources/health.yaml'
 
 
   /v1/files:
-    $ref: './resources/file-post.yaml'
+    $ref: './resources/file_post.yaml'

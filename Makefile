@@ -1,36 +1,23 @@
 .PHONY: ci _next-tag next-tag-cdk next-tag-docker next-tag-service next-tag-ui
+.PHONY: local-build local-logs local-pg local-start local-stop
 .PHONY: push-tag-service push-tag-cdk push-tag-docker push-tag-ui
 
 ci: test-all
 	@make -C ui/ install ci
 
-_next-tag:
-	@echo $(shell git tag | go run ./services/gateway next-version $(ARGS))
+local-build:
+	docker compose build
 
-next-tag-cdk:
-	@$(MAKE) _next-tag ARGS=cdk
+local-start:
+	docker compose up -d
 
-next-tag-docker:
-	@$(MAKE) _next-tag ARGS=docker
+local-stop:
+	docker compose down --remove-orphans
 
-next-tag-service:
-	@$(MAKE) _next-tag ARGS=service
-
-next-tag-ui:
-	@$(MAKE) _next-tag ARGS=ui
-
-push-tag-cdk:
-	@TAG_NAME=$(shell $(MAKE) next-tag-cdk) && git tag $$TAG_NAME && git push --tags
-
-push-tag-docker:
-	@TAG_NAME=$(shell $(MAKE) next-tag-docker) && git tag $$TAG_NAME && git push --tags
-
-push-tag-service:
-	@TAG_NAME=$(shell $(MAKE) next-tag-service) && git tag $$TAG_NAME && git push --tags
-
-push-tag-ui:
-	@TAG_NAME=$(shell $(MAKE) next-tag-ui) && git tag $$TAG_NAME && git push --tags
+local-logs:
+	docker compose logs -f
 
 test-all:
+	go test -short -cover ./go-common/...
 	go test -short -cover ./openapi/...
 	@make -C services/ ci

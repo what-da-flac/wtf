@@ -1,0 +1,5 @@
+type: string
+title: QueueName
+enum:
+  - media-process
+description: Queue names for pub/sub components

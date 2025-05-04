@@ -3,7 +3,11 @@ package main
 import (
 	"net/http"
 
-	"github.com/what-da-flac/wtf/services/gateway/internal/storages"
+	"github.com/what-da-flac/wtf/go-common/brokers"
+
+	"github.com/what-da-flac/wtf/go-common/paths"
+
+	"github.com/what-da-flac/wtf/go-common/http_helpers"
 
 	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/go-common/identifiers"
@@ -46,11 +50,7 @@ func serve(zl *zap.Logger) error {
 	}
 
 	logger := zl.Sugar()
-	if err = migrations.MigrateFS(
-		assets.MigrationFiles(),
-		"files/migrations",
-		config.DB.URL,
-	); err != nil {
+	if err = migrateDb(config.DB.URL); err != nil {
 		return err
 	}
 	logger.Info("db migrations applied successfully")
@@ -58,14 +58,19 @@ func serve(zl *zap.Logger) error {
 	port := config.Port
 	apiURLPrefix := config.APIUrlPrefix
 	identifier := identifiers.NewIdentifier()
-	fileStorage := storages.NewLocal(config.PathToSaveFiles)
+	storePathFinder := paths.NewPathFinder(config.Paths.Storage, golang.PathNameStore)
+	tempPathFinder := paths.NewPathFinder(config.Paths.Temp, golang.PathNameTemp)
+	client := brokers.NewClient()
+	audioFilePublisher := brokers.NewPublisher[golang.MediaInfoInput](client, string(golang.MediaProcess))
 	api := rest.New(db, logger, repository).
 		WithConfig(config).
-		WithFileStorage(fileStorage).
+		WithPathFinders(storePathFinder, tempPathFinder).
 		WithIdentifier(identifier).
-		WithTimer(timers.New())
+		WithTimer(timers.New()).WithMediaInfoPublisher(audioFilePublisher).
+		WithMediaInfoPublisher(audioFilePublisher)
 	mux := http.NewServeMux()
-	handler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
+	baseHandler := golang.HandlerFromMuxWithBaseURL(api, mux, apiURLPrefix)
+	handler := http_helpers.CORSMiddleware(baseHandler)
 	srv := &http.Server{
 		Addr:              ":" + port,
 		Handler:           handler,
@@ -75,4 +80,12 @@ func serve(zl *zap.Logger) error {
 
 	logger.Infof("serving from %s:%s", config.APIUrlPrefix, config.Port)
 	return srv.ListenAndServe()
+}
+
+func migrateDb(uri string) error {
+	return migrations.MigrateFS(
+		assets.MigrationFiles(),
+		"files/migrations",
+		uri,
+	)
 }

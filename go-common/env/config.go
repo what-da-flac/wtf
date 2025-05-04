@@ -15,6 +15,7 @@ type Config struct {
 	DB          DB
 	Env         string
 	LogLevel    string
+	Paths       *Path
 	ServiceName string
 }
 
@@ -25,6 +26,7 @@ func New() *Config {
 		DB:          newDB(),
 		Env:         viper.GetString(envVarEnv),
 		LogLevel:    viper.GetString(envLogLevel),
+		Paths:       NewPathsFromEnvironment(),
 		ServiceName: viper.GetString(envVarServiceName),
 	}
 	if c.LogLevel == "" {

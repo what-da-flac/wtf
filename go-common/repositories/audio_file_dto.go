@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/copier"
-	"github.com/what-da-flac/wtf/openapi/domains"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 type AudioFileDto struct {
@@ -13,11 +13,9 @@ type AudioFileDto struct {
 	Created         time.Time
 	Length          int64
 	ContentType     string
-	Status          string
 	Album           string
-	BitDepth        int
 	CompressionMode string
-	Duration        time.Duration
+	DurationSeconds int
 	FileExtension   string
 	Format          string
 	Genre           string
@@ -31,7 +29,7 @@ type AudioFileDto struct {
 
 func (x *AudioFileDto) TableName() string { return "audio_files" }
 
-func fileToDto(file *domains.AudioFile) *AudioFileDto {
+func fileToDto(file *golang.AudioFile) *AudioFileDto {
 	res := &AudioFileDto{}
 	if err := copier.Copy(res, file); err != nil {
 		return nil
@@ -39,8 +37,8 @@ func fileToDto(file *domains.AudioFile) *AudioFileDto {
 	return res
 }
 
-func (x *AudioFileDto) toFile() *domains.File {
-	res := &domains.File{}
+func (x *AudioFileDto) toFile() *golang.File {
+	res := &golang.File{}
 	if err := copier.Copy(res, x); err != nil {
 		return nil
 	}

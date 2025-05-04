@@ -1,4 +1,4 @@
-.PHONY: install gen clean bundle
+.PHONY: install gen gen-go gen-node gen-python clean bundle
 
 GEN_DIR=gen
 GO_PACKAGE_NAME=golang
@@ -13,8 +13,8 @@ bundle:
 	redocly bundle open-api/openapi.yaml --output $(OPEN_API_OUTPUT)
 
 clean-go:
+	rm -rf $(DIR_GO)
 	mkdir -p $(DIR_GO)
-	rm -f $(DIR_GO)/types.go
 	echo 'package go' > $(DIR_GO)/types.go
 
 clean-node:

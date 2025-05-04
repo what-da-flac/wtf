@@ -2,9 +2,9 @@ package domains
 
 import (
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
 func TestNewAudio(t *testing.T) {
@@ -14,7 +14,7 @@ func TestNewAudio(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want Audio
+		want golang.Audio
 	}{
 		{
 			name: "new order - crystal",
@@ -72,17 +72,17 @@ func TestNewAudio(t *testing.T) {
 					},
 				},
 			},
-			want: Audio{
+			want: golang.Audio{
 				Album:           "Get Ready",
 				BitDepth:        16,
+				BitRate:         992701,
 				CompressionMode: "Lossless",
-				Duration:        time.Second * 411,
+				DurationSeconds: 411,
 				FileExtension:   "flac",
 				Format:          "FLAC",
 				Genre:           "Alternative",
 				Performer:       "New Order",
 				RecordedDate:    2001,
-				SamplingRate:    44100,
 				Title:           "Crystal",
 				TrackNumber:     1,
 				TotalTrackCount: 10,

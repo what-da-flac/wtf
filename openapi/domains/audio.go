@@ -3,39 +3,24 @@ package domains
 import (
 	"math"
 	"strconv"
-	"time"
+
+	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
 
-type Audio struct {
-	Album           string
-	BitDepth        int
-	CompressionMode string
-	Duration        time.Duration
-	FileExtension   string
-	Format          string
-	Genre           string
-	Performer       string
-	RecordedDate    int
-	SamplingRate    int
-	Title           string
-	TrackNumber     int
-	TotalTrackCount int
-}
-
-func NewAudio(info *MediaInfo) Audio {
-	var r Audio
+func NewAudio(info *MediaInfo) golang.Audio {
+	var r golang.Audio
 	if track := info.Audio(); track != nil {
 		if val, err := strconv.Atoi(track.BitDepth); err == nil {
 			r.BitDepth = val
 		}
 		r.CompressionMode = track.CompressionMode
 		if val, err := strconv.ParseFloat(track.Duration, 64); err == nil {
-			r.Duration = time.Second * time.Duration(math.Floor(val))
+			r.DurationSeconds = int(math.Floor(val))
+		}
+		if val, err := strconv.Atoi(track.BitRate); err == nil {
+			r.BitRate = val
 		}
 		r.Format = track.Format
-		if val, err := strconv.Atoi(track.SamplingRate); err == nil {
-			r.SamplingRate = val
-		}
 	}
 	if track := info.General(); track != nil {
 		r.Album = track.Album

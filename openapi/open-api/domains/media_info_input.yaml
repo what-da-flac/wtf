@@ -1,0 +1,28 @@
+title: MediaInfoInput
+type: object
+required:
+  - content_type
+  - filename
+  - original_filename
+  - src_path_name
+  - dst_path_name
+  - min_bitrate
+  - destination_content_type
+  - converted_bit_rate
+properties:
+  content_type:
+    $ref: '../domains/content_type.yaml'
+  filename:
+    type: string
+  original_filename:
+    type: string
+  src_path_name:
+    $ref: './path_name.yaml'
+  dst_path_name:
+    $ref: './path_name.yaml'
+  min_bitrate:
+    type: integer
+  destination_content_type:
+    $ref: '../domains/content_type.yaml'
+  converted_bit_rate:
+    type: integer

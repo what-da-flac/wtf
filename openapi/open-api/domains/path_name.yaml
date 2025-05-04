@@ -1,0 +1,7 @@
+type: string
+title: PathName
+enum:
+  - invalid
+  - store
+  - temp
+description: Path name is a reference to permanent volume
