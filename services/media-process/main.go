@@ -78,6 +78,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 	config := container.config
 	logger := container.logger
 	return func(msg golang.MediaInfoInput) (ack bool, err error) {
+		logger.Infof("received audio file: %v", msg.OriginalFilename)
 		srcPathName := config.Paths.Resolve(msg.SrcPathName)
 		if srcPathName == "" {
 			err := fmt.Errorf("invalid path name: %s", msg.SrcPathName)
@@ -97,7 +98,6 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 			return true, err
 		}
 		dst := filepath.Join(dstPathName, msg.Filename) + ".m4a"
-
 		srcAudio, err := ExtractAudio(src)
 		if err != nil {
 			logger.Error(err)
@@ -114,7 +114,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 
 		// determine bitrate and convert srcAudio file to m4a
 		bitRate = CalculateNumber(bitRate, msg.WantedBitRate)
-
+		logger.Info("converting audio file")
 		// convert file to desired format/resolution
 		if err = commands.CmdFFMpegAudio(src, dst, bitRate); err != nil {
 			logger.Error(err)
@@ -135,6 +135,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 		dstAudio.TotalTrackCount = srcAudio.TotalTrackCount
 
 		// write final srcAudio file to db
+		logger.Info("writing to db")
 		file := &golang.File{
 			ContentType: string(msg.DestinationContentType),
 			Created:     time.Now(),
