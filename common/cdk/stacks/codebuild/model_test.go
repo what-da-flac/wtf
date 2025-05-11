@@ -6,7 +6,7 @@ import (
 
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscodebuild"
 	"github.com/stretchr/testify/assert"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 func TestFromYAML(t *testing.T) {

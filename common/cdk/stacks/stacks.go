@@ -4,12 +4,12 @@ import (
 	"log"
 
 	"github.com/aws/aws-cdk-go/awscdk/v2"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/codebuild"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/ecr"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/i_am"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/lambda"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/s3"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/sqs"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/codebuild"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/ecr"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/i_am"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/lambda"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/s3"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/sqs"
 )
 
 func RunAll(

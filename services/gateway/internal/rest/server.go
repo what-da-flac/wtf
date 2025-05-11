@@ -7,7 +7,7 @@ import (
 
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 
-	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/common/ifaces"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"
 	"github.com/what-da-flac/wtf/services/gateway/internal/interfaces"
 )

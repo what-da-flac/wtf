@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
-	"github.com/what-da-flac/wtf/go-common/env"
+	"github.com/what-da-flac/wtf/common/env"
 )
 
 const (

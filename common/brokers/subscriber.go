@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/redis/go-redis/v9"
-	"github.com/what-da-flac/wtf/go-common/types"
+	"github.com/what-da-flac/wtf/common/types"
 )
 
 const (

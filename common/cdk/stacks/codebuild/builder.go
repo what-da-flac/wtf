@@ -5,7 +5,7 @@ import (
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscodebuild"
 	"github.com/aws/aws-cdk-go/awscdk/v2/awsiam"
 	"github.com/aws/jsii-runtime-go"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 // Build builds a codebuild job based on EC2 engine.

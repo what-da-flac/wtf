@@ -3,7 +3,7 @@ package i_am
 import (
 	"fmt"
 
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 type ModelGroup struct {

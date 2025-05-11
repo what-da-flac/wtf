@@ -1,4 +1,4 @@
-# go-common
+# common
 
 Packages to reuse utilities written in Go.
 

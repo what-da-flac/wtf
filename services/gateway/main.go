@@ -3,17 +3,17 @@ package main
 import (
 	"net/http"
 
-	"github.com/what-da-flac/wtf/go-common/brokers"
+	"github.com/what-da-flac/wtf/common/brokers"
 
-	"github.com/what-da-flac/wtf/go-common/paths"
+	"github.com/what-da-flac/wtf/common/paths"
 
-	"github.com/what-da-flac/wtf/go-common/http_helpers"
+	"github.com/what-da-flac/wtf/common/http_helpers"
 
 	_ "github.com/lib/pq"
-	"github.com/what-da-flac/wtf/go-common/identifiers"
-	"github.com/what-da-flac/wtf/go-common/pgpq"
-	"github.com/what-da-flac/wtf/go-common/repositories"
-	"github.com/what-da-flac/wtf/go-common/timers"
+	"github.com/what-da-flac/wtf/common/identifiers"
+	"github.com/what-da-flac/wtf/common/pgpq"
+	"github.com/what-da-flac/wtf/common/repositories"
+	"github.com/what-da-flac/wtf/common/timers"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"github.com/what-da-flac/wtf/services/gateway/internal/assets"
 	"github.com/what-da-flac/wtf/services/gateway/internal/environment"

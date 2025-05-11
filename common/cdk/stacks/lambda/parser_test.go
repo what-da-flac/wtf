@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 func TestParse(t *testing.T) {
