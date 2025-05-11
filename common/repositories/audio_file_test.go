@@ -3,18 +3,20 @@ package repositories
 import (
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func TestPgRepo_UpdateAudioFile(t *testing.T) {
-	// this unit test doesn't really check anything, just gets the output of generated sql command
-	db, _, err := sqlmock.New()
+	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
 	require.NoError(t, err)
-	defer db.Close()
-	repo, err := NewPgRepo(db, "postgres://", true)
-	assert.NoError(t, err)
+	repo := PgRepo{
+		_db: db,
+	}
+	err = db.AutoMigrate(&AudioFileDto{})
+	require.NoError(t, err)
 
 	dto := AudioFileDto{
 		Id:     "abc-123",
