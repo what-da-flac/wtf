@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestHasAudioEnoughQuality(t *testing.T) {
+func TestHasEnoughQuality(t *testing.T) {
 	type args struct {
 		bitRate    int
 		minBitrate int
@@ -33,14 +33,14 @@ func TestHasAudioEnoughQuality(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := HasAudioEnoughQuality(tt.args.bitRate, tt.args.minBitrate); got != tt.want {
-				t.Errorf("HasAudioEnoughQuality() = %v, want %v", got, tt.want)
+			if got := HasEnoughQuality(tt.args.bitRate, tt.args.minBitrate); got != tt.want {
+				t.Errorf("HasEnoughQuality() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestCalculateNumber(t *testing.T) {
+func TestCalculateMinValue(t *testing.T) {
 	type args struct {
 		currentBitRate int
 		wantedBitRate  int
@@ -77,8 +77,8 @@ func TestCalculateNumber(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := CalculateNumber(tt.args.currentBitRate, tt.args.wantedBitRate); got != tt.want {
-				t.Errorf("CalculateNumber() = %v, want %v", got, tt.want)
+			if got := CalculateMinValue(tt.args.currentBitRate, tt.args.wantedBitRate); got != tt.want {
+				t.Errorf("CalculateMinValue() = %v, want %v", got, tt.want)
 			}
 		})
 	}

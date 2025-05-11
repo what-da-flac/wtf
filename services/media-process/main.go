@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"path/filepath"
 	"time"
@@ -107,14 +108,14 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 		bitRate := srcAudio.BitRate
 		minBitRate := msg.MinBitrate
 
-		if !HasAudioEnoughQuality(bitRate, minBitRate) {
+		if !HasEnoughQuality(bitRate, minBitRate) {
 			err := fmt.Errorf("srcAudio bitdepth: %d is less than minimum: %d", bitRate, minBitRate)
 			logger.Error(err)
 			return true, err
 		}
 
 		// determine bitrate and convert srcAudio file to m4a
-		bitRate = CalculateNumber(bitRate, msg.WantedBitRate)
+		bitRate = CalculateMinValue(bitRate, msg.WantedBitRate)
 		logger.Info("converting audio file")
 		// convert file to desired format/resolution
 		if err = commands.CmdFFMpegAudio(src, dst, bitRate); err != nil {
@@ -152,17 +153,14 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 	}
 }
 
-func HasAudioEnoughQuality(bitRate, minBitrate int) bool {
-	return bitRate >= minBitrate
+func HasEnoughQuality(current, min int) bool {
+	return current >= min
 }
 
-// CalculateNumber returns the best match for a quality setting.
+// CalculateMinValue returns the best match for a quality setting.
 // If current is below setting, that value is used.
-func CalculateNumber(current, wanted int) int {
-	if current < wanted {
-		return current
-	}
-	return wanted
+func CalculateMinValue(current, wanted int) int {
+	return int(math.Min(float64(current), float64(wanted)))
 }
 
 func ExtractAudio(filename string) (*golang.Audio, error) {

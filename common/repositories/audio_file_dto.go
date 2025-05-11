@@ -37,8 +37,8 @@ func fileToDto(file *golang.AudioFile) *AudioFileDto {
 	return res
 }
 
-func (x *AudioFileDto) toFile() *golang.File {
-	res := &golang.File{}
+func (x *AudioFileDto) toFile() *golang.AudioFile {
+	res := &golang.AudioFile{}
 	if err := copier.Copy(res, x); err != nil {
 		return nil
 	}

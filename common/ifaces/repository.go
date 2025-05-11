@@ -7,4 +7,6 @@ import (
 //go:generate moq -out ../../mocks/repository.go -pkg mocks . Repository
 type Repository interface {
 	InsertAudioFile(file *golang.AudioFile) error
+	SelectAudioFile(id string) (*golang.AudioFile, error)
+	UpdateAudioFile(id string, values map[string]any) error
 }
