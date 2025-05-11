@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"path/filepath"
 
 	"github.com/what-da-flac/wtf/common/commands"
 	"github.com/what-da-flac/wtf/common/restful"
@@ -20,7 +21,7 @@ func (x *Server) PatchV1AudioFilesId(w http.ResponseWriter, r *http.Request, id 
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	filename := "TODO"
+	filename := filepath.Join(x.config.Paths.Storage, audioFile.Filename)
 	//  update file tags
 	if err = commands.CmdFFMpegSetTags(x.identifier, filename, payload.Map()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

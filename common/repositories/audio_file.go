@@ -15,7 +15,7 @@ func (x *PgRepo) SelectAudioFile(id string) (*golang.AudioFile, error) {
 	dto := &AudioFileDto{
 		Id: id,
 	}
-	if err := db.Find(dto).Error; err != nil {
+	if err := db.Where("id = ?", id).First(dto).Error; err != nil {
 		return nil, err
 	}
 	return dto.toFile(), nil

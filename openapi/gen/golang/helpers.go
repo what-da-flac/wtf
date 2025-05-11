@@ -47,3 +47,5 @@ func (x PatchV1AudioFilesIdJSONRequestBody) DBMap() map[string]any {
 	}
 	return m
 }
+
+func (x PathName) String() string { return string(x) }
