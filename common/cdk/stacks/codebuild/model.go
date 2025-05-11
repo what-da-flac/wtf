@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-cdk-go/awscdk/v2/awscodebuild"
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 // Model defines codebuild job properties.

@@ -1,7 +1,7 @@
 package s3
 
 import (
-	"github.com/what-da-flac/wtf/go-common/cdk/stacks/common"
+	"github.com/what-da-flac/wtf/common/cdk/stacks/common"
 )
 
 // Model defines operations to configure S3 bucket.

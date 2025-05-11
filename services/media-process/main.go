@@ -7,13 +7,13 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"github.com/what-da-flac/wtf/go-common/brokers"
-	"github.com/what-da-flac/wtf/go-common/commands"
-	"github.com/what-da-flac/wtf/go-common/env"
-	"github.com/what-da-flac/wtf/go-common/identifiers"
-	"github.com/what-da-flac/wtf/go-common/ifaces"
-	"github.com/what-da-flac/wtf/go-common/pgpq"
-	"github.com/what-da-flac/wtf/go-common/repositories"
+	"github.com/what-da-flac/wtf/common/brokers"
+	"github.com/what-da-flac/wtf/common/commands"
+	"github.com/what-da-flac/wtf/common/env"
+	"github.com/what-da-flac/wtf/common/identifiers"
+	"github.com/what-da-flac/wtf/common/ifaces"
+	"github.com/what-da-flac/wtf/common/pgpq"
+	"github.com/what-da-flac/wtf/common/repositories"
 	"github.com/what-da-flac/wtf/openapi/domains"
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 	"go.uber.org/zap"
@@ -103,6 +103,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 			logger.Error(err)
 			return true, err
 		}
+
 		bitRate := srcAudio.BitRate
 		minBitRate := msg.MinBitrate
 
@@ -132,6 +133,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 			logger.Error(err)
 			return true, err
 		}
+		// copy fields from original that won't be present in destination after conversion
 		dstAudio.TotalTrackCount = srcAudio.TotalTrackCount
 
 		// write final srcAudio file to db

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/what-da-flac/wtf/go-common/identifiers"
+	"github.com/what-da-flac/wtf/common/identifiers"
 )
 
 type Policy struct {

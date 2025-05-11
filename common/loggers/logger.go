@@ -1,7 +1,7 @@
 package loggers
 
 import (
-	"github.com/what-da-flac/wtf/go-common/ifaces"
+	"github.com/what-da-flac/wtf/common/ifaces"
 	"go.uber.org/zap"
 )
 
