@@ -6,6 +6,7 @@ DIR_GO:=$(GEN_DIR)/$(GO_PACKAGE_NAME)
 DIR_NODE:=$(GEN_DIR)/node
 DIR_PYTHON:=$(GEN_DIR)/py
 DIR_TS:=$(GEN_DIR)/ts
+FILE_GO=/types.go
 OPEN_API_VERSION=v2.4.1
 OPEN_API_OUTPUT:=openapi-gen.yaml
 
@@ -13,9 +14,9 @@ bundle:
 	redocly bundle open-api/openapi.yaml --output $(OPEN_API_OUTPUT)
 
 clean-go:
-	rm -rf $(DIR_GO)
 	mkdir -p $(DIR_GO)
-	echo 'package go' > $(DIR_GO)/types.go
+	rm -rf $(DIR_GO)/$(FILE_GO)
+	echo 'package go' > $(DIR_GO)/$(FILE_GO)
 
 clean-node:
 	rm -rf $(DIR_NODE)

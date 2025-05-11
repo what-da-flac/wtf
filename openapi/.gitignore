@@ -10,4 +10,4 @@
 # generated files
 openapitools.json
 openapi-gen.yaml
-gen
+gen/golang/types.go

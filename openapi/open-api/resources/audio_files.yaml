@@ -12,7 +12,7 @@ patch:
     content:
       application/json:
         schema:
-          $ref: '../domains/audio_file.yaml'
+          $ref: '../schemas/audio_file_put.yaml'
   responses:
     '200':
       description: Successful response
