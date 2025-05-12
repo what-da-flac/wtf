@@ -18,6 +18,7 @@ type AudioFileDto struct {
 	DurationSeconds int
 	FileExtension   string
 	Format          string
+	SrcHash         string
 	Genre           string
 	Performer       string
 	RecordedDate    int
@@ -37,7 +38,7 @@ func fileToDto(file *golang.AudioFile) *AudioFileDto {
 	return res
 }
 
-func (x *AudioFileDto) toFile() *golang.AudioFile {
+func (x *AudioFileDto) toAudioFile() *golang.AudioFile {
 	res := &golang.AudioFile{}
 	if err := copier.Copy(res, x); err != nil {
 		return nil

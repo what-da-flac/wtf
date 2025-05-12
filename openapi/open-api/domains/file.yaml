@@ -6,6 +6,7 @@ required:
   - filename
   - length
   - content_type
+  - src_hash
   - status
 properties:
   id:
@@ -20,4 +21,6 @@ properties:
   content_type:
     type: string
   status:
+    type: string
+  src_hash:
     type: string

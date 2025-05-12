@@ -7,6 +7,7 @@ required:
   - file_extension
   - format
   - genre
+  - src_hash
   - performer
   - recorded_date
   - sampling_rate
@@ -30,6 +31,8 @@ properties:
   format:
     type: string
   genre:
+    type: string
+  src_hash:
     type: string
   performer:
     type: string
