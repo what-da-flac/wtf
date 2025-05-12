@@ -1,4 +1,3 @@
-import { twMerge } from "tailwind-merge"
 import React from "react";
 
 interface BoxProps {
@@ -11,12 +10,7 @@ const Box: React.FC<BoxProps> = ({
                                      className,
                                  }) => {
     return (
-        <div className={twMerge(`
-        bg-neutral-900
-        rounded-lg
-        h-fit
-        w-full
-        `, className)}>
+        <div className={className}>
             {children}
         </div>
     )

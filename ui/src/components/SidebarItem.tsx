@@ -1,5 +1,4 @@
 import { IconType } from "react-icons"
-import { twMerge } from "tailwind-merge"
 import React from "react";
 import {Link} from "react-router-dom";
 
@@ -16,10 +15,10 @@ const SidebarItem: React.FC<SidebarItemProps> = ({
     return (
         <Link
             to={href}
-            className={twMerge(`flex flex-row h-auto 
+            className="flex flex-row h-auto
             items-center w-full gap-x-4 font-medium 
             cursor-pointer hover:text-white transition 
-            text-neutral-400 py-1`, active && "text-white")}
+            text-neutral-400 py-1"
         >
             <Icon size={26} />
             <p className="truncate w-full">{label}</p>
