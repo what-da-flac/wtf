@@ -1,11 +1,16 @@
 package main
 
 import (
+	"crypto/sha256"
+	"errors"
 	"fmt"
+	"io"
 	"math"
 	"os"
 	"path/filepath"
 	"time"
+
+	"gorm.io/gorm"
 
 	_ "github.com/lib/pq"
 	"github.com/what-da-flac/wtf/common/brokers"
@@ -92,6 +97,22 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 			_ = os.Remove(src)
 		}()
 
+		// calculate hash for source file
+		hash, err := CalculateHash(src)
+		if err != nil {
+			logger.Error(err)
+			return true, err
+		}
+		// check if hash has been processed previously
+		if _, err = container.repository.FindByHash(hash); err == nil {
+			logger.Warn("file already exists with hash: %s", hash)
+			return true, err
+		}
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			logger.Error(err)
+			return true, err
+		}
+
 		dstPathName := config.Paths.Resolve(msg.DstPathName)
 		if dstPathName == "" {
 			err := fmt.Errorf("invalid path name: %s", msg.DstPathName)
@@ -146,6 +167,7 @@ func processMessageFn(container *Container) func(msg golang.MediaInfoInput) (ack
 			Id:          container.identifier.UUIDv4(),
 			Length:      int(info.Size()),
 			Status:      "converted",
+			SrcHash:     hash,
 		}
 		audioFile := domains.NewAudioFile(dstAudio, file)
 		err = container.repository.InsertAudioFile(&audioFile)
@@ -175,4 +197,20 @@ func ExtractAudio(filename string) (*golang.Audio, error) {
 	}
 	audio := domains.NewAudio(info)
 	return &audio, nil
+}
+
+func CalculateHash(filename string) (string, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return "", err
+	}
+	defer func() { _ = file.Close() }()
+
+	hasher := sha256.New()
+	if _, err := io.Copy(hasher, file); err != nil {
+		return "", err
+	}
+
+	hashSum := hasher.Sum(nil)
+	return fmt.Sprintf("%x", hashSum), nil
 }

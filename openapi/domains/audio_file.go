@@ -23,5 +23,6 @@ func NewAudioFile(audio *golang.Audio, file *golang.File) golang.AudioFile {
 		Created:         file.Created,
 		Length:          file.Length,
 		ContentType:     file.ContentType,
+		SrcHash:         file.SrcHash,
 	}
 }

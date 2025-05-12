@@ -1,0 +1,1 @@
+ALTER TABLE audio_files DROP COLUMN src_hash;

@@ -1,0 +1,1 @@
+ALTER TABLE audio_files ADD src_hash TEXT NOT NULL DEFAULT ('') UNIQUE;
