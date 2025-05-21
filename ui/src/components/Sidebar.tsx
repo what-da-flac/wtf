@@ -31,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     ], [location.pathname])
     return (
         <div className="sidebar-layout">
-            <div className="sidebar">
+            <div className="sidebar box-red">
                 <Box>
                     <div className="sidebar-items sidebar-section">
                         {routes.map((item) => (

@@ -6,17 +6,15 @@ import LibraryNew from "../pages/LibraryNew.tsx";
 
 const Layout = () => {
         return (
-            <div className="layout">
+            <div>
                 <Sidebar>
-                    <div>
-                        I am another section within main layout
-                        <hr/>
+                    <div className="box-green">
+                        <Routes>
+                            <Route path="/" element={<Home/>}/>
+                            <Route path="/library/new" element={<LibraryNew/>}/>
+                            <Route path="/search" element={<Search/>}/>
+                        </Routes>
                     </div>
-                    <Routes>
-                        <Route path="/" element={<Home/>}/>
-                        <Route path="/library/new" element={<LibraryNew/>}/>
-                        <Route path="/search" element={<Search/>}/>
-                    </Routes>
                 </Sidebar>
                 <div>
                 </div>
