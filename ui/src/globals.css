@@ -84,7 +84,7 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .styled-table tbody {
-    color: #1FC742;
+    color: lightcyan;
 }
 
 .styled-table tbody tr:hover {
