@@ -59,10 +59,9 @@ const FileUpload: React.FC = () => {
         setUploading(false);
     };
     return (
-        <div className="max-w-xl mx-auto mt-10 p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+        <div>
             <label
                 htmlFor="file_input"
-                className="block text-sm font-medium text-gray-700 mb-2"
             >
                 Upload files
             </label>
@@ -72,42 +71,39 @@ const FileUpload: React.FC = () => {
                 multiple
                 accept=".mp3,.flac,.m4a,audio/m4a,audio/mp3,audio/flac"
                 onChange={handleFileChange}
-                className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none"
             />
             <p className="mt-1 text-sm text-gray-500">You can select multiple images or files.</p>
 
             <div className="mt-6">
-                <div className="flex justify-between items-center mb-2">
+                <div>
                     {files.length > 0 && (
                         <button
                             onClick={uploadFiles}
                             disabled={uploading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2 rounded disabled:opacity-50"
                         >
                             {uploading ? "Uploading..." : "Upload All"}
                         </button>
                     )}
                 </div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">File Details:</h3>
-                <div className="overflow-auto">
-                    <table className="min-w-full text-sm text-left border border-gray-200 rounded">
-                        <thead className="bg-gray-100 text-gray-700">
+                <h3>File Details:</h3>
+                <div>
+                    <table className="styled-table">
+                        <thead>
                         <tr>
-                            <th className="px-4 py-2">Name</th>
-                            <th className="px-4 py-2">Size</th>
-                            <th className="px-4 py-2">Type</th>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Type</th>
                             <th></th>
                         </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody>
                         {files.map((file, index) => (
-                            <tr key={index} className="text-gray-700">
-                                <td className="px-4 py-2 truncate">{file.name}</td>
-                                <td className="px-4 py-2">{formatSize(file.size)}</td>
-                                <td className="px-4 py-2">{file.type || "—"}</td>
-                                <td onClick={() => onRemove(file)}>
+                            <tr key={index}>
+                                <td>{file.name}</td>
+                                <td  className="center">{formatSize(file.size)}</td>
+                                <td  className="center">{file.type || "—"}</td>
+                                <td onClick={() => onRemove(file)} className="center">
                                     <button
-                                        className="bg-red-500 hover:bg-red-700 text-white text-xs px-4 py-2 rounded cursor-pointer"
                                     >
                                         <TbX/>
                                     </button>
@@ -117,9 +113,9 @@ const FileUpload: React.FC = () => {
                         </tbody>
                     </table>
                     {uploadResults.length > 0 && (
-                        <div className="mt-4 space-y-1">
+                        <div>
                             {uploadResults.map((msg, idx) => (
-                                <div key={idx} className="text-sm text-gray-700">
+                                <div key={idx}>
                                     {msg}
                                 </div>
                             ))}

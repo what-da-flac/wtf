@@ -48,10 +48,78 @@ body,
     padding: 8px;
 }
 
+.main-content>div {
+    padding: 10px;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-weight: normal;
+}
+
 @media (max-width: 768px) {
     .sidebar {
         display: none;
     }
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.80em;
+}
+
+.styled-table th,
+.styled-table td {
+    border: 1px solid #025B18;
+    padding: 8px;
+}
+
+.styled-table thead {
+    background-color: #023612;
+    color: #1FC742;
+}
+
+.styled-table tbody tr:nth-child(even) {
+    background-color: #023612;
+}
+
+.styled-table tbody {
+    color: #1FC742;
+}
+
+.styled-table tbody tr:hover {
+    opacity: 75%;
+}
+
+.styled-table tbody td>button {
+    background-color: inherit;
+    border: none;
+    color:#1FC742;
+}
+
+.styled-table tbody td>button:hover {
+    cursor: pointer;
+}
+
+.styled-table td.center {
+    text-align: center;
+}
+
+/* these are base colors to be used as palette */
+.back-color-black {
+    background-color: #010101;
+}
+.back-color-gray {
+    background-color: #686868;
+}
+.back-color-light-green {
+    background-color: #1FC742;
+}
+.back-color-green {
+    background-color: #025B18;
+}
+.back-color-dark-green {
+    background-color: #023612;
 }
 
 /* these classes are just for me to understand how css works*/
