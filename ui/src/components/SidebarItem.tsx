@@ -10,18 +10,14 @@ interface SidebarItemProps {
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({
-                                                     icon: Icon, label, active, href,
+                                                     icon: Icon, label, href,
                                                  }) => {
     return (
         <Link
             to={href}
-            className="flex flex-row h-auto
-            items-center w-full gap-x-4 font-medium 
-            cursor-pointer hover:text-white transition 
-            text-neutral-400 py-1"
-        >
+            className="box-red">
             <Icon size={26} />
-            <p className="truncate w-full">{label}</p>
+            <p>{label}</p>
         </Link>
     )
 }

@@ -5,19 +5,19 @@ import {Link} from "react-router-dom";
 
 const Library = () => {
     return (
-        <div className="flex flex-col">
-            <div className="flex items-center justify-between px-5 pt-4">
-                <div className="inline-flex items-center gap-x-2">
-                    <TbPlaylist size={26} className="text-neutral-400" />
-                    <p className="text-neutral-400 font-medium">
+        <div className="box-red">
+            <div>
+                <div className="box-red">
+                    <TbPlaylist size={26} />
+                    <p>
                         Your Library
                     </p>
                 </div>
                 <Link to={`/library/new`}>
-                    <AiOutlinePlus size={20} className="text-neutral-400 cursor-pointer hover:text-white transition"/>
+                    <AiOutlinePlus size={20}/>
                 </Link>
             </div>
-            <div className="flex flex-col mt-4 px-3">
+            <div>
                 This is Library component
             </div>
         </div>
