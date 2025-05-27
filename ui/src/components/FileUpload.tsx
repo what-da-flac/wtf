@@ -84,7 +84,6 @@ const FileUpload: React.FC = () => {
                         </button>
                     )}
                 </div>
-                <h3>File Details:</h3>
                 <div>
                     <table className="styled-table">
                         <thead>
