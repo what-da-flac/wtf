@@ -1,7 +1,6 @@
 import React, {ChangeEvent, useState} from "react";
-import {TbX} from "react-icons/tb";
-import axios from "axios";
-import environment from "../lib/environment.ts"
+import FileList from "./FileList.tsx";
+import {postFile} from '../lib/api.ts'
 
 const FileUpload: React.FC = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -14,13 +13,6 @@ const FileUpload: React.FC = () => {
             setFiles(selectedFiles);
             setUploadResults([]);
         }
-    };
-
-    const formatSize = (bytes: number) => {
-        const sizes = ["Bytes", "KB", "MB", "GB"];
-        if (bytes === 0) return "0 Byte";
-        const i = Math.floor(Math.log(bytes) / Math.log(1024));
-        return parseFloat((bytes / Math.pow(1024, i)).toFixed(2)) + " " + sizes[i];
     };
 
     const onRemove = (file: File) => {
@@ -38,16 +30,11 @@ const FileUpload: React.FC = () => {
                 results.push(`❌ ${file.name}: unsupported file type`);
                 continue;
             }
-            // TODO: consolidate all api calls into another file
             const formData = new FormData();
             formData.append("file", file);
 
             try {
-                await axios.post(`${environment.apiURL}/v1/files`, formData, {
-                    headers: {
-                        "Content-Type": "multipart/form-data",
-                    },
-                });
+                await postFile(formData);
                 results.push(`✅ ${file.name}`);
             } catch (error) {
                 console.error(error);
@@ -85,31 +72,7 @@ const FileUpload: React.FC = () => {
                     )}
                 </div>
                 <div>
-                    <table className="styled-table">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Size</th>
-                            <th>Type</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {files.map((file, index) => (
-                            <tr key={index}>
-                                <td>{file.name}</td>
-                                <td  className="center">{formatSize(file.size)}</td>
-                                <td  className="center">{file.type || "—"}</td>
-                                <td onClick={() => onRemove(file)} className="center">
-                                    <button
-                                    >
-                                        <TbX/>
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                    <FileList files={files} onRemove={onRemove}/>
                     {uploadResults.length > 0 && (
                         <div>
                             {uploadResults.map((msg, idx) => (
