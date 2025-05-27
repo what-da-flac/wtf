@@ -60,19 +60,17 @@ const FileUpload: React.FC = () => {
     };
     return (
         <div>
-            <label
-                htmlFor="file_input"
-            >
-                Upload files
-            </label>
-            <input
-                id="file_input"
-                type="file"
-                multiple
-                accept=".mp3,.flac,.m4a,audio/m4a,audio/mp3,audio/flac"
-                onChange={handleFileChange}
-            />
-            <p className="mt-1 text-sm text-gray-500">You can select multiple images or files.</p>
+            <div className="upload-button-wrapper">
+                <button className="upload-button">Select Files</button>
+                <input
+                    id="file_input"
+                    type="file"
+                    multiple
+                    accept=".mp3,.flac,.m4a,audio/m4a,audio/mp3,audio/flac"
+                    onChange={handleFileChange}
+                />
+            </div>
+            <p className="mt-1 text-sm text-gray-500">You can select multiple files.</p>
 
             <div className="mt-6">
                 <div>
@@ -80,6 +78,7 @@ const FileUpload: React.FC = () => {
                         <button
                             onClick={uploadFiles}
                             disabled={uploading}
+                            className="button"
                         >
                             {uploading ? "Uploading..." : "Upload All"}
                         </button>

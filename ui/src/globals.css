@@ -48,11 +48,11 @@ body,
     padding: 8px;
 }
 
-.main-content>div {
+.main-content > div {
     padding: 10px;
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
     font-weight: normal;
 }
 
@@ -60,6 +60,58 @@ h1,h2,h3,h4,h5,h6 {
     .sidebar {
         display: none;
     }
+}
+
+
+.button {
+    border-radius: 10px;
+    border-style: none;
+    background-color: #023612;
+    color: #1FC742;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 15px;
+    height: 50px;
+    line-height: 1.5;
+    overflow: hidden;
+    padding: 14px 30px;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: top;
+    white-space: nowrap;
+}
+
+.button:hover {
+    background-color: #1FC742;
+    color: #023612;
+    transition-duration: .5s;
+}
+
+
+.upload-button-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-button {
+    border: 1px solid #1FC742;
+    background-color: #010101;
+    color: #1FC742;
+    cursor: pointer;
+    padding: 14px 30px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+
+.upload-button-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
 }
 
 .styled-table {
@@ -91,13 +143,13 @@ h1,h2,h3,h4,h5,h6 {
     opacity: 75%;
 }
 
-.styled-table tbody td>button {
+.styled-table tbody td > button {
     background-color: inherit;
     border: none;
-    color:#1FC742;
+    color: #1FC742;
 }
 
-.styled-table tbody td>button:hover {
+.styled-table tbody td > button:hover {
     cursor: pointer;
 }
 
@@ -109,15 +161,19 @@ h1,h2,h3,h4,h5,h6 {
 .back-color-black {
     background-color: #010101;
 }
+
 .back-color-gray {
     background-color: #686868;
 }
+
 .back-color-light-green {
     background-color: #1FC742;
 }
+
 .back-color-green {
     background-color: #025B18;
 }
+
 .back-color-dark-green {
     background-color: #023612;
 }
