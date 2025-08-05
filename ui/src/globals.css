@@ -121,7 +121,12 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 0.80em;
 }
 
-.styled-table th,
+.styled-table th {
+    border: 1px solid #025B18;
+    padding: 8px;
+    font-weight: normal;
+}
+
 .styled-table td {
     border: 1px solid #025B18;
     padding: 8px;

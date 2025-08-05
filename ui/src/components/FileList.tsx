@@ -15,7 +15,7 @@ const FileList: React.FC<BoxProps> = ({
         <table className="styled-table">
             <thead>
             <tr>
-                <th>Name</th>
+                <th>Filename</th>
                 <th>Size</th>
                 <th>Type</th>
                 <th></th>
