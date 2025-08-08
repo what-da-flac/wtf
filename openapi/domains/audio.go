@@ -3,6 +3,7 @@ package domains
 import (
 	"math"
 	"strconv"
+	"time"
 
 	"github.com/what-da-flac/wtf/openapi/gen/golang"
 )
@@ -23,6 +24,7 @@ func NewAudio(info *MediaInfo) golang.Audio {
 		r.Format = track.Format
 	}
 	if track := info.General(); track != nil {
+		const dateFormat = "2006-01-02 15:04:05 MST"
 		r.Album = track.Album
 		r.FileExtension = track.FileExtension
 		r.Genre = track.Genre
@@ -39,6 +41,9 @@ func NewAudio(info *MediaInfo) golang.Audio {
 		}
 		if val, err := strconv.Atoi(track.TrackPositionTotal); err == nil {
 			r.TotalTrackCount = val
+		}
+		if val, err := time.Parse(dateFormat, track.RecordedDate); err == nil {
+			r.RecordedDate = val.Year()
 		}
 	}
 
