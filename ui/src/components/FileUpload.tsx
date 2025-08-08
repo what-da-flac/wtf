@@ -10,7 +10,14 @@ const FileUpload: React.FC = () => {
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const selectedFiles = Array.from(e.target.files);
-            setFiles(selectedFiles);
+            setFiles(prevFiles => {
+                // Combine existing files with new files, avoiding duplicates
+                const allFiles = [...prevFiles, ...selectedFiles];
+                const uniqueFiles = allFiles.filter((file, index, self) => 
+                    index === self.findIndex(f => f.name === file.name)
+                );
+                return uniqueFiles;
+            });
             setUploadResults([]);
         }
     };
